@@ -83,18 +83,8 @@ trait UtilTrait {
         return array_keys($this->loadPlayersBasicInfos());
     }
 
-    function getRoundCardCount() {
-        return count($this->getPlayersIds()) + 2;
-    }
-
     function getPlayerName(int $playerId) {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
-    }
-
-    function getPlayer(int $id) {
-        $sql = "SELECT * FROM player WHERE player_id = $id";
-        $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbResult) => new BagOfChipsPlayer($dbResult), array_values($dbResults))[0];
     }
 
     function incPlayerTokens(int $playerId, int $amount, $message = '', $args = []) {

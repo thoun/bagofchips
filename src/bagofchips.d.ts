@@ -52,110 +52,37 @@ interface BagOfChipsGame extends Game {
 
     getPlayerId(): number;
     getPlayer(playerId: number): BagOfChipsPlayer;
-    //getGain(type: number): string;
-    //getColor(color: number): string;
-    getTooltipGain(type: number): string;
-    getTooltipColor(color: number): string;
     getGameStateName(): string;
     getCurrentPlayerTable(): PlayerTable | null;
 
     setTooltip(id: string, html: string): void;
-    highlightPlayerTokens(playerId: number | null): void;
-    onTableChipClick(chip: Chip): void;
-    onHandCardClick(card: Card): void;
-    onTableCardClick(card: Card): void;
-    onPlayedCardClick(card: Card): void;
-}
-
-interface EnteringPlayActionArgs {
-    canRecruit: boolean;
-    canExplore: boolean;
-    canTrade: boolean;
-    possibleChips: Chip[];
-}
-
-interface EnteringChooseNewCardArgs {
-    centerCards: Card[];
-    freeColor: number;
-    recruits: number;
-    allFree: boolean;
-}
-
-interface EnteringPayChipArgs {
-    selectedChip: Chip;
-    recruits: number;
-}
-
-interface EnteringTradeArgs {
-    bracelets: number;
-    gainsByBracelets: { [bracelets: number]: number };
-}
-
-// playCard
-interface NotifPlayCardArgs {
-    playerId: number;
-    card: Card;
-    newHandCard: Card;
-    effectiveGains: { [type: number]: number };
-}
-
-// card
-interface NotifNewCardArgs {
-    playerId: number;
-    card: Card;
-    cardDeckTop?: Card;
-    cardDeckCount: number;
-}
-
-// takeChip
-interface NotifTakeChipArgs {
-    playerId: number;
-    chip: Chip;
-    effectiveGains: { [type: number]: number };
-}
-
-// newTableChip
-interface NotifNewTableChipArgs {
-    chip: Chip;
-    letter: string;    
-    chipDeckTop?: Chip;
-    chipDeckCount: number;
-}
-
-// trade
-interface NotifTradeArgs {
-    playerId: number;
-    effectiveGains: { [type: number]: number };
+    onHandCardSelectionChange(card: Card[]): void;
 }
 
 // discardCards
 interface NotifDiscardCardsArgs {
     playerId: number;
+    discard: Card[];
+}
+
+// placeCards
+interface NotifPlaceCardsArgs {
+    playerId: number;
+    minus: Card[];
+    plus: Card[];
+}
+
+// newHand
+interface NotifNewHandArgs {
     cards: Card[];
-    cardDiscardCount: number;
 }
 
-// discardTableCard
-interface NotifDiscardTableCardArgs {
-    card: Card;
+// revealChips
+interface NotifRevealChipsArgs {
+    slot: number;
+    chips: Chip[];
 }
 
-// reserveChip
-interface NotifReserveChipArgs {
-    playerId: number;
-    chip: Chip;
-}
-
-// score
-interface NotifScoreArgs {
-    playerId: number;
-    newScore: number;
-    incScore: number;
-}
-
-// cardDeckReset
-interface NotifCardDeckResetArgs {  
-    cardDeckTop?: Card;
-    cardDeckCount: number;
-    cardDiscardCount: number;
+// endTurn
+interface NotifEndTurnArgs {
 }

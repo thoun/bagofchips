@@ -39,108 +39,24 @@
       }
   	} 
 
-    public function goTrade() {
-        self::setAjaxMode();     
-
-        $this->game->goTrade();
-
-        self::ajaxResponse();
-    } 
-
-    public function playCard() {
-        self::setAjaxMode();     
-
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->playCard($id);
-
-        self::ajaxResponse();
-    }
-
-    public function takeChip() {
-        self::setAjaxMode();     
-
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->takeChip($id);
-
-        self::ajaxResponse();
-    }
-
-    public function chooseNewCard() {
-        self::setAjaxMode();     
-
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->chooseNewCard($id);
-
-        self::ajaxResponse();
-    }
-
-    public function payChip() {
+    public function discardCards() {
         self::setAjaxMode();   
 
         $idsStr = self::getArg( "ids", AT_numberlist, true );
         $ids = array_map(fn($str) => intval($str), explode(',', $idsStr));
-        $recruits = self::getArg("recruits", AT_posint, true);
-        $this->game->payChip($ids, $recruits);
+        $this->game->discardCards($ids);
 
         self::ajaxResponse();
     }
 
-    public function reserveChip() {
-        self::setAjaxMode();     
+    public function placeCards() {
+        self::setAjaxMode();   
 
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->reserveChip($id);
-
-        self::ajaxResponse();
-    }
-
-    public function discardTableCard() {
-        self::setAjaxMode();     
-
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->discardTableCard($id);
-
-        self::ajaxResponse();
-    }
-
-    public function pass() {
-        self::setAjaxMode();     
-
-        $this->game->pass();
-
-        self::ajaxResponse();
-    }
-
-    public function trade() {
-        self::setAjaxMode();     
-
-        $number = self::getArg("number", AT_posint, true);
-        $this->game->trade($number);
-
-        self::ajaxResponse();
-    }
-
-    public function cancel() {
-        self::setAjaxMode();     
-
-        $this->game->cancel();
-
-        self::ajaxResponse();
-    }
-
-    public function endTurn() {
-        self::setAjaxMode();     
-
-        $this->game->endTurn();
-
-        self::ajaxResponse();
-    }
-
-    public function discardCard() {
-        self::setAjaxMode();     
-
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->discardCard($id);
+        $minusStr = self::getArg( "minus", AT_numberlist, true );
+        $minus = array_map(fn($str) => intval($str), explode(',', $minusStr));
+        $plusStr = self::getArg( "plus", AT_numberlist, true );
+        $plus = array_map(fn($str) => intval($str), explode(',', $plusStr));
+        $this->game->placeCards($minus, $plus);
 
         self::ajaxResponse();
     }

@@ -8,12 +8,10 @@ class PlayerTable {
     public minus: LineStock<Card>;
     public discard: Deck<Card>;
     public plus: LineStock<Card>;
-    public reservedChips?: LineStock<Chip>;
-    public limitSelection: number | null = null;
 
     private currentPlayer: boolean;
 
-    constructor(private game: BagOfChipsGame, player: BagOfChipsPlayer, reservePossible: boolean) {
+    constructor(private game: BagOfChipsGame, player: BagOfChipsPlayer) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
 
@@ -44,8 +42,7 @@ class PlayerTable {
             this.hand = new LineStock<Card>(this.game.cardsManager, handDiv, {
                 sort: (a: Card, b: Card) => a.points - b.points,
             });
-            this.hand.onCardClick = (card: Card) => this.game.onHandCardClick(card);
-            
+            this.hand.onSelectionChange = (selection: Card[]) => this.game.onHandCardSelectionChange(selection);            
             this.hand.addCards(player.hand);
 
         }
@@ -64,5 +61,20 @@ class PlayerTable {
 
     public setHandSelectable(selectable: boolean) {
         this.hand.setSelectionMode(selectable ? 'multiple' : 'none');
+    }
+
+    public discardCards(discard: Card[]): Promise<any> {
+        return this.discard.addCards(discard, { fromStock: this.currentPlayer ? this.hand : this.voidStock });
+    }
+
+    public placeCards(minus: Card[], plus: Card[]): Promise<any> {
+        return Promise.all([
+            this.minus.addCards(minus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
+            this.plus.addCards(plus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
+        ]);
+    }
+    
+    public newHand(cards: Card[]): Promise<any> {
+        return this.hand.addCards(cards);
     }
 }

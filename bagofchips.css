@@ -713,6 +713,8 @@ body > .card {
   background-size: auto 100%;
   background-image: url("img/maps.png");
   border-radius: 32px;
+  display: flex;
+  gap: 10px;
 }
 #table-center .map[data-phase="1"] {
   background-position-x: 0%;
@@ -725,6 +727,9 @@ body > .card {
 }
 #table-center .map[data-phase="4"] {
   background-position-x: 100%;
+}
+#table-center .map .slot {
+  flex: 1;
 }
 
 .player-board {

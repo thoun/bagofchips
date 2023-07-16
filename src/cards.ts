@@ -11,8 +11,8 @@ class CardsManager extends CardManager<Card> {
                 game.setTooltip(div.id, this.getTooltip(card));
             },
             isCardVisible: card => Boolean(card.type),
-            cardWidth: 120,
-            cardHeight: 221,
+            cardWidth: 495,
+            cardHeight: 692,
         });
     }
 

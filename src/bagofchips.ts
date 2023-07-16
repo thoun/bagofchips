@@ -17,7 +17,7 @@ const DIFFERENT = 0;
 const VP = 1;
 const BRACELET = 2;
 const RECRUIT = 3;
-const REPUTATION = 4;
+const REWARD = 4;
 const CARD = 5;
 
 class BagOfChips implements BagOfChipsGame {
@@ -29,10 +29,7 @@ class BagOfChips implements BagOfChipsGame {
     private gamedatas: BagOfChipsGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
-    //private handCounters: Counter[] = [];
-    private reputationCounters: Counter[] = [];
-    private recruitCounters: Counter[] = [];
-    private braceletCounters: Counter[] = [];
+    private rewardsCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -53,14 +50,14 @@ class BagOfChips implements BagOfChipsGame {
     */
 
     public setup(gamedatas: BagOfChipsGamedatas) {
-        if (!gamedatas.variantOption) {
+        /* TODO if (!gamedatas.variantOption) {
             (this as any).dontPreloadImage('artefacts.jpg');
         }
         if (gamedatas.boatSideOption == 2) {
             (this as any).dontPreloadImage('boats-normal.png');
         } else {
             (this as any).dontPreloadImage('boats-advanced.png');
-        }
+        }*/
 
         log( "Starting game setup" );
         
@@ -94,19 +91,9 @@ class BagOfChips implements BagOfChipsGame {
             onDimensionsChange: () => {
                 const tablesAndCenter = document.getElementById('tables-and-center');
                 const clientWidth = tablesAndCenter.clientWidth;
-                tablesAndCenter.classList.toggle('double-column', clientWidth > 1478);
-                const wasDoublePlayerColumn = tablesAndCenter.classList.contains('double-player-column');
-                const isDoublePlayerColumn = clientWidth > 1798;
-                if (wasDoublePlayerColumn != isDoublePlayerColumn) {
-                    tablesAndCenter.classList.toggle('double-player-column', isDoublePlayerColumn);
-                    this.playersTables.forEach(table => table.setDoubleColumn(isDoublePlayerColumn));
-                }
+                tablesAndCenter.classList.toggle('double-column', clientWidth > 2678); // TODO
             },
         });
-
-        if (gamedatas.lastTurn) {
-            this.notif_lastTurn(false);
-        }
 
         new HelpManager(this, { 
             buttons: [
@@ -117,7 +104,7 @@ class BagOfChips implements BagOfChipsGame {
                     buttonBackground: '#5890a9',
                 }),
                 new BgaHelpExpandableButton({
-                    unfoldedHtml: this.getColorAddHtml(),
+                    //unfoldedHtml: this.getColorAddHtml(),
                     foldedContentExtraClasses: 'color-help-folded-content',
                     unfoldedContentExtraClasses: 'color-help-unfolded-content',
                     expandedWidth: '120px',
@@ -139,83 +126,11 @@ class BagOfChips implements BagOfChipsGame {
     //
     public onEnteringState(stateName: string, args: any) {
         log('Entering state: ' + stateName, args.args);
-
-        switch (stateName) {
-            case 'playAction':
-                this.onEnteringPlayAction(args.args);
-                break;
-            case 'chooseNewCard':
-                this.onEnteringChooseNewCard(args.args);
-                break;
-            case 'payChip':
-                this.onEnteringPayChip(args.args);
-                break;
-            case 'discardTableCard':
-                this.onEnteringDiscardTableCard();
-                break;
-            case 'reserveChip':
-                this.onEnteringReserveChip();
-                break;
-        }
-    }
-    
-    private setGamestateDescription(property: string = '') {
-        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
-        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
-        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`;
-        (this as any).updatePageTitle();
     }
 
-    private onEnteringPlayAction(args: EnteringPlayActionArgs) {
-        if (!args.canExplore && !args.canRecruit) {
-            this.setGamestateDescription('TradeOnly');
-        } else if (!args.canExplore) {
-            this.setGamestateDescription('RecruitOnly');
-        } else if (!args.canRecruit) {
-            this.setGamestateDescription('ExploreOnly');
-        }
-
+    private onEnteringSelectCards() {
         if ((this as any).isCurrentPlayerActive()) {
-            if (args.canExplore) {
-                this.tableCenter.setChipsSelectable(true, args.possibleChips);
-                this.getCurrentPlayerTable()?.setChipsSelectable(true, args.possibleChips);
-            }
-            if (args.canRecruit) {
-                this.getCurrentPlayerTable()?.setHandSelectable(true);
-            }
-        }
-    }
-
-    private onEnteringChooseNewCard(args: EnteringChooseNewCardArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setCardsSelectable(true, args.allFree ? null : args.freeColor, args.recruits);
-        }
-    }
-
-    private onEnteringDiscardTableCard() {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setCardsSelectable(true, null, 0);
-        }
-    }
-
-    private onEnteringDiscardCard(args: EnteringPayChipArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.getCurrentPlayerTable()?.setCardsSelectable(true, [0]);
-        }
-    }
-
-    private onEnteringPayChip(args: EnteringPayChipArgs) {
-        const selectedCardDiv = this.chipsManager.getCardElement(args.selectedChip);
-        selectedCardDiv.classList.add('selected-pay-chip');
-
-        if ((this as any).isCurrentPlayerActive()) {
-            this.getCurrentPlayerTable()?.setCardsSelectable(true, args.selectedChip.cost);
-        }
-    }
-
-    private onEnteringReserveChip() {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setChipsSelectable(true, this.tableCenter.getVisibleChips());
+            this.getCurrentPlayerTable().setHandSelectable(true);
         }
     }
 
@@ -223,78 +138,15 @@ class BagOfChips implements BagOfChipsGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'playAction':
-                this.onLeavingPlayAction();
-                break;
-            case 'chooseNewCard':
-                this.onLeavingChooseNewCard();
-                break;
-            case 'payChip':
-                this.onLeavingPayChip();
-                break;
-            case 'discardTableCard':
-                this.onLeavingDiscardTableCard();
-                break;
-            case 'discardCard':
-                this.onLeavingDiscardCard();
-                break;
-            case 'reserveChip':
-                this.onLeavingReserveChip();
+            case 'discardCards':
+            case 'placeCards':
+                this.onLeavingSelectCards();
                 break;
         }
     }
 
-    private onLeavingPlayAction() {
-        this.tableCenter.setChipsSelectable(false);
+    private onLeavingSelectCards() {
         this.getCurrentPlayerTable()?.setHandSelectable(false);
-        this.getCurrentPlayerTable()?.setChipsSelectable(false);
-    }
-    
-    private onLeavingChooseNewCard() {
-        this.tableCenter.setCardsSelectable(false);
-    }
-
-    private onLeavingPayChip() {
-        document.querySelectorAll('.selected-pay-chip').forEach(elem => elem.classList.remove('selected-pay-chip'));
-        this.getCurrentPlayerTable()?.setCardsSelectable(false);
-    }
-    
-    private onLeavingDiscardTableCard() {
-        this.tableCenter.setCardsSelectable(false);
-    }
-
-    private onLeavingDiscardCard() {
-        this.getCurrentPlayerTable()?.setCardsSelectable(false);
-    }
-
-    private onLeavingReserveChip() {
-        this.tableCenter.setChipsSelectable(false);
-    }
-
-    private setPayChipLabelAndState(args?: EnteringPayChipArgs) {
-        if (!args) {
-            args = this.gamedatas.gamestate.args;
-        }
-
-        const selectedCards = this.getCurrentPlayerTable().getSelectedCards();
-
-        const button = document.getElementById(`payChip_button`);
-
-        const total = Object.values(args.selectedChip.cost).reduce((a, b) => a + b, 0);
-        const cards = selectedCards.length;
-        const recruits = total - cards;
-        let message = '';
-        if (recruits > 0 && cards > 0) {
-            message = _("Pay the ${cards} selected card(s) and ${recruits} recruit(s)")
-        } else if (cards > 0) {
-            message = _("Pay the ${cards} selected card(s)");
-        } else if (recruits > 0) {
-            message = _("Pay ${recruits} recruit(s)");
-        }
-
-        button.innerHTML = message.replace('${recruits}', ''+recruits).replace('${cards}', ''+cards);
-        button.classList.toggle('disabled', args.recruits < recruits);
-        button.dataset.recruits = ''+recruits;
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -304,53 +156,40 @@ class BagOfChips implements BagOfChipsGame {
         
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'playAction':
-                    const playActionArgs = args as EnteringPlayActionArgs;
-                    (this as any).addActionButton(`goTrade_button`, _("Trade"), () => this.goTrade());
-                    if (!playActionArgs.canTrade) {
-                        document.getElementById(`goTrade_button`).classList.add('disabled');
-                    }
-                    if (!playActionArgs.canExplore || !playActionArgs.canRecruit) {
-                        (this as any).addActionButton(`endTurn_button`, _("End turn"), () => this.endTurn());
-                    }
+                case 'discardCards':
+                    this.onEnteringSelectCards();
+                    (this as any).addActionButton(`discardCards_button`, '', () => this.discardCards());
+                    this.onHandCardSelectionChange([]);
                     break;
-                case 'chooseNewCard':
-                    const chooseNewCardArgs = args as EnteringChooseNewCardArgs;
-                    [1, 2, 3, 4, 5].forEach(color => {
-                        const free = chooseNewCardArgs.allFree || color == chooseNewCardArgs.freeColor;
-                        (this as any).addActionButton(`chooseNewCard${color}_button`, _("Take ${color}").replace('${color}', `<div class="color" data-color="${color}"></div>`) + ` (${free ? _('free') : `1 <div class="recruit icon"></div>`})`, () => this.chooseNewCard(chooseNewCardArgs.centerCards.find(card => card.locationArg == color).id), null, null, free ? undefined : 'gray');
-                        if (!free && chooseNewCardArgs.recruits < 1) {
-                            document.getElementById(`chooseNewCard${color}_button`).classList.add('disabled');
-                        }
-                    });
+                case 'placeCards':
+                    this.onEnteringSelectCards();
+                    (this as any).addActionButton(`placeMinus_button`, '', () => this.placeCards());
+                    (this as any).addActionButton(`placePlus_button`, '', () => this.placeCards());
+                    this.onHandCardSelectionChange([]);
                     break;
-                case 'payChip':
-                    (this as any).addActionButton(`payChip_button`, '', () => this.payChip());
-                    this.setPayChipLabelAndState(args);
-
-                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
-                    break;
-                case 'trade':
-                    const tradeArgs = args as EnteringTradeArgs;
-                    [1, 2, 3].forEach(number => {
-                        (this as any).addActionButton(`trade${number}_button`, _("Trade ${number} bracelet(s)").replace('${number}', number), () => this.trade(number, tradeArgs.gainsByBracelets));
-                        const button = document.getElementById(`trade${number}_button`);
-                        if (tradeArgs.bracelets < number) {
-                            button.classList.add('disabled');
-                        } else {
-                            button.addEventListener('mouseenter', () => this.getCurrentPlayerTable().showColumns(number));
-                            button.addEventListener('mouseleave', () => this.getCurrentPlayerTable().showColumns(0));
-                        }
-                    });
-                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
-                    break;
-
-                // multiplayer state    
-                case 'discardCard':
-                    this.onEnteringDiscardCard(args);
-                    break;
-                    
             }
+        }
+    }    
+    
+    public onHandCardSelectionChange(selection: Card[]): void {
+        if (this.gamedatas.gamestate.name == 'discardCards') {
+            const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
+
+            const button = document.getElementById('discardCards_button');
+            button.innerHTML = label;
+            button.classList.toggle('disabled', selection.length != +this.gamedatas.gamestate.args.number);
+        } else if (this.gamedatas.gamestate.name == 'placeCards') {
+            const minusLabel = _('Set selected card on minus side');
+
+            const minusButton = document.getElementById('placeMinus_button');
+            minusButton.innerHTML = minusLabel;
+            minusButton.classList.toggle('disabled', selection.length != 1);
+
+            const plusLabel = _('Set selected cards on plus side');
+
+            const plusButton = document.getElementById('placePlus_button');
+            plusButton.innerHTML = plusLabel;
+            plusButton.classList.toggle('disabled', selection.length != 2);
         }
     }
 
@@ -421,59 +260,23 @@ class BagOfChips implements BagOfChipsGame {
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);   
 
-            document.getElementById(`player_score_${player.id}`).insertAdjacentHTML('beforebegin', `<div class="vp icon"></div>`);
-            document.getElementById(`icon_point_${player.id}`).remove();
-
-            /*
-                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
-                    <div class="player-hand-card"></div> 
-                    <span id="playerhand-counter-${player.id}"></span>
-                </div>*/
             let html = `<div class="counters">
             
-                <div id="reputation-counter-wrapper-${player.id}" class="reputation-counter">
-                    <div class="reputation icon"></div>
-                    <span id="reputation-counter-${player.id}"></span> <span class="reputation-legend"><div class="vp icon"></div> / ${_('round')}</span>
+                <div id="reward-counter-wrapper-${player.id}" class="reward-counter">
+                    <div class="reward icon"></div>
+                    <span id="reward-counter-${player.id}"></span>
                 </div>
 
-            </div><div class="counters">
-            
-                <div id="recruit-counter-wrapper-${player.id}" class="recruit-counter">
-                    <div class="recruit icon"></div>
-                    <span id="recruit-counter-${player.id}"></span>
-                </div>
-            
-                <div id="bracelet-counter-wrapper-${player.id}" class="bracelet-counter">
-                    <div class="bracelet icon"></div>
-                    <span id="bracelet-counter-${player.id}"></span>
-                </div>
-                
-            </div>
-            <div>${playerId == gamedatas.firstPlayerId ? `<div id="first-player">${_('First player')}</div>` : ''}</div>`;
+            </div>`;
 
             dojo.place(html, `player_board_${player.id}`);
 
-            /*const handCounter = new ebg.counter();
-            handCounter.create(`playerhand-counter-${playerId}`);
-            handCounter.setValue(player.handCount);
-            this.handCounters[playerId] = handCounter;*/
-
-            this.reputationCounters[playerId] = new ebg.counter();
-            this.reputationCounters[playerId].create(`reputation-counter-${playerId}`);
-            this.reputationCounters[playerId].setValue(player.reputation);
-
-            this.recruitCounters[playerId] = new ebg.counter();
-            this.recruitCounters[playerId].create(`recruit-counter-${playerId}`);
-            this.recruitCounters[playerId].setValue(player.recruit);
-
-            this.braceletCounters[playerId] = new ebg.counter();
-            this.braceletCounters[playerId].create(`bracelet-counter-${playerId}`);
-            this.braceletCounters[playerId].setValue(player.bracelet);
+            this.rewardsCounters[playerId] = new ebg.counter();
+            this.rewardsCounters[playerId].create(`reward-counter-${playerId}`);
+            this.rewardsCounters[playerId].setValue(player.rewards);
         });
 
-        this.setTooltipToClass('reputation-counter', _('Reputation'));
-        this.setTooltipToClass('recruit-counter', _('Recruits'));
-        this.setTooltipToClass('bracelet-counter', _('Bracelets'));
+        this.setTooltipToClass('reward-counter', _('Rewards'));
     }
 
     private createPlayerTables(gamedatas: BagOfChipsGamedatas) {
@@ -485,63 +288,12 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     private createPlayerTable(gamedatas: BagOfChipsGamedatas, playerId: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId], gamedatas.reservePossible);
+        const table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     }
 
-    private updateGains(playerId: number, gains: { [type: number]: number }) {
-        Object.entries(gains).forEach(entry => {
-            const type = Number(entry[0]);
-            const amount = entry[1];
-
-            if (amount != 0) {
-                switch (type) {
-                    case VP:
-                        this.setScore(playerId, (this as any).scoreCtrl[playerId].getValue() + amount);
-                        break;
-                    case BRACELET:
-                        this.setBracelets(playerId, this.braceletCounters[playerId].getValue() + amount);
-                        break;
-                    case RECRUIT:
-                        this.setRecruits(playerId, this.recruitCounters[playerId].getValue() + amount);
-                        break;
-                    case REPUTATION:
-                        this.setReputation(playerId, this.tableCenter.getReputation(playerId) + amount);
-                        break;
-                }
-            }
-        });
-    }
-
-    private setScore(playerId: number, score: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(score);
-        this.tableCenter.setScore(playerId, score);
-    }
-
-    private setReputation(playerId: number, count: number) {
-        this.reputationCounters[playerId].toValue(count);
-        this.tableCenter.setReputation(playerId, count);
-    }
-
-    private setRecruits(playerId: number, count: number) {
-        this.recruitCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('recruits', count);
-    }
-
-    private setBracelets(playerId: number, count: number) {
-        this.braceletCounters[playerId].toValue(count);
-        this.getPlayerTable(playerId).updateCounter('bracelets', count);
-    }
-
-    public highlightPlayerTokens(playerId: number | null): void {
-        this.tableCenter.highlightPlayerTokens(playerId);
-    }
-
-    private getColorAddHtml() {
-        return [1, 2, 3, 4, 5].map(number => `
-            <div class="color" data-color="${number}"></div>
-            <span class="label"> ${this.getColor(number)}</span>
-        `).join('');
+    private setReward(playerId: number, count: number) {
+        this.rewardsCounters[playerId].toValue(count);
     }
 
     private getHelpHtml() {
@@ -561,8 +313,8 @@ class BagOfChips implements BagOfChipsGame {
                 <div class="help-label">${_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("They are used for Trading.")}</div>
             </div>
             <div class="help-section">
-                <div class="icon reputation"></div>
-                <div class="help-label">${_("Gain 1 <strong>Reputation Point</strong>: The player moves their token forward 1 space on the Reputation Track.")}</div>
+                <div class="icon reward"></div>
+                <div class="help-label">${_("Gain 1 <strong>Reward Point</strong>: The player moves their token forward 1 space on the Reward Track.")}</div>
             </div>
             <div class="help-section">
                 <div class="icon take-card"></div>
@@ -590,153 +342,30 @@ class BagOfChips implements BagOfChipsGame {
         }
     }
     
-    public onTableChipClick(chip: Chip): void {
-        if (this.gamedatas.gamestate.name == 'reserveChip') {
-            this.reserveChip(chip.id);
-        } else {
-            this.takeChip(chip.id);
-        }
-    }
-
-    public onHandCardClick(card: Card): void {
-        this.playCard(card.id);
-    }
-
-    public onTableCardClick(card: Card): void {
-        if (this.gamedatas.gamestate.name == 'discardTableCard') {
-            this.discardTableCard(card.id);
-        } else {
-            this.chooseNewCard(card.id);
-        }
-    }
-
-    public onPlayedCardClick(card: Card): void {
-        if (this.gamedatas.gamestate.name == 'discardCard') {
-            this.discardCard(card.id);
-        } else {
-            this.setPayChipLabelAndState();
-        }
-    }
-  	
-    public goTrade() {
-        if(!(this as any).checkAction('goTrade')) {
+    public discardCards() {
+        if(!(this as any).checkAction('discardCards')) {
             return;
         }
 
-        this.takeAction('goTrade');
-    }
-  	
-    public playCard(id: number) {
-        if(!(this as any).checkAction('playCard')) {
-            return;
-        }
+        const ids = this.getCurrentPlayerTable().hand.getSelection().map(card => card.id);
 
-        this.takeAction('playCard', {
-            id
-        });
-    }
-  	
-    public takeChip(id: number) {
-        if(!(this as any).checkAction('takeChip')) {
-            return;
-        }
-
-        this.takeAction('takeChip', {
-            id
-        });
-    }
-  	
-    public reserveChip(id: number) {
-        if(!(this as any).checkAction('reserveChip')) {
-            return;
-        }
-
-        this.takeAction('reserveChip', {
-            id
-        });
-    }
-  	
-    public chooseNewCard(id: number) {
-        if(!(this as any).checkAction('chooseNewCard')) {
-            return;
-        }
-
-        this.takeAction('chooseNewCard', {
-            id
-        });
-    }
-  	
-    public payChip() {
-        if(!(this as any).checkAction('payChip')) {
-            return;
-        }
-
-        const ids = this.getCurrentPlayerTable().getSelectedCards().map(card => card.id);
-        const recruits = Number(document.getElementById(`payChip_button`).dataset.recruits);
-
-        this.takeAction('payChip', {
+        this.takeAction('discardCards', {
             ids: ids.join(','),
-            recruits
         });
     }
-  	
-    public trade(number: number, gainsByBracelets: { [bracelets: number]: number } | null) {
-        if(!(this as any).checkAction('trade')) {
+    
+    public placeCards() {
+        if(!(this as any).checkAction('placeCards')) {
             return;
         }
 
-        let warning = null;
-        if (gainsByBracelets != null) {
-            if (gainsByBracelets[number] == 0) {
-                warning = _("Are you sure you want to trade ${bracelets} bracelet(s) ?").replace('${bracelets}', number) + ' '+ _("There is nothing to gain yet with this number of bracelet(s)");
-            } else if (number > 1 && gainsByBracelets[number] == gainsByBracelets[number - 1]) {
-                warning = _("Are you sure you want to trade ${bracelets} bracelet(s) ?").replace('${bracelets}', number) + ' '+ _("You would gain the same with one less bracelet");
-            }
-        }
+        const ids = this.getCurrentPlayerTable().hand.getSelection().map(card => card.id);
+        const others = this.getCurrentPlayerTable().hand.getCards().filter(card => !ids.includes(card.id)).map(card => card.id);
 
-        if (warning != null) {
-            (this as any).confirmationDialog(warning, () => this.trade(number, null));
-            return;
-        }
 
-        this.takeAction('trade', {
-            number
-        });
-    }
-  	
-    public cancel() {
-        if(!(this as any).checkAction('cancel')) {
-            return;
-        }
-
-        this.takeAction('cancel');
-    }
-  	
-    public endTurn() {
-        if(!(this as any).checkAction('endTurn')) {
-            return;
-        }
-
-        this.takeAction('endTurn');
-    }
-  	
-    public discardTableCard(id: number) {
-        if(!(this as any).checkAction('discardTableCard')) {
-            return;
-        }
-
-        this.takeAction('discardTableCard', {
-            id
-        });
-    }
-  	
-    public discardCard(id: number) {
-        if(!(this as any).checkAction('discardCard')) {
-            return;
-        }
-
-        this.takeAction('discardCard', {
-            id
+        this.takeAction('placeCards', {
+            minus: (ids.length == 1 ? ids : others).join(','),
+            plus: (ids.length == 2 ? ids : others).join(','),
         });
     }
 
@@ -762,21 +391,11 @@ class BagOfChips implements BagOfChipsGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['playCard', undefined],
-            ['takeCard', undefined],
-            ['newTableCard', undefined],
-            ['takeChip', undefined],
             ['discardCards', undefined],
-            ['newTableChip', undefined],
-            ['trade', ANIMATION_MS],
-            ['takeDeckCard', undefined],
-            ['discardTableCard', undefined],
-            ['reserveChip', undefined],
-            ['score', ANIMATION_MS],
-            ['bracelet', ANIMATION_MS],
-            ['recruit', ANIMATION_MS],
-            ['cardDeckReset', undefined],
-            ['lastTurn', 1],
+            ['placeCards', undefined],
+            ['newHand', undefined],
+            ['revealChips', undefined],
+            ['endTurn', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -806,132 +425,26 @@ class BagOfChips implements BagOfChipsGame {
         }
     }
 
-    notif_playCard(args: NotifPlayCardArgs) {
-        const playerId = args.playerId;
-        const playerTable = this.getPlayerTable(playerId);
-
-        const promise = playerTable.playCard(args.card);
-
-        this.updateGains(playerId, args.effectiveGains);
-
-        return promise;
-    }
-
-    notif_takeCard(args: NotifNewCardArgs) {
-        const playerId = args.playerId;
-        const currentPlayer = this.getPlayerId() == playerId;
-        const playerTable = this.getPlayerTable(playerId);
-        
-        return (currentPlayer ? playerTable.hand : playerTable.voidStock).addCard(args.card);
-    }
-
-    notif_newTableCard(args: NotifNewCardArgs) {
-        this.tableCenter.cardDeck.setCardNumber(args.cardDeckCount, args.cardDeckTop);
-        return this.tableCenter.newTableCard(args.card);
-    }
-
-    notif_takeChip(args: NotifTakeChipArgs) {
-        const playerId = args.playerId;
-        const promise = this.getPlayerTable(playerId).chips.addCard(args.chip);
-
-        this.updateGains(playerId, args.effectiveGains);
-
-        return promise;
-    }
-
     notif_discardCards(args: NotifDiscardCardsArgs) {
-        return this.tableCenter.cardDiscard.addCards(args.cards, undefined, undefined, 50).then(
-            () => this.tableCenter.setDiscardCount(args.cardDiscardCount)
-        );
+        return this.getPlayerTable(args.playerId).discardCards(args.discard);
     }
 
-    notif_newTableChip(args: NotifNewTableChipArgs) {
-        return this.tableCenter.newTableChip(args.chip, args.letter, args.chipDeckCount, args.chipDeckTop);
+    notif_placeCards(args: NotifPlaceCardsArgs) {
+        return this.getPlayerTable(args.playerId).placeCards(args.minus, args.plus);
     }
 
-    notif_score(args: NotifScoreArgs) {
-        this.setScore(args.playerId, +args.newScore);
+    notif_newHand(args: NotifNewHandArgs) {
+        return this.getCurrentPlayerTable().newHand(args.cards);
     }
 
-    notif_bracelet(args: NotifScoreArgs) {
-        this.setBracelets(args.playerId, +args.newScore);
+    notif_revealChips(args: NotifRevealChipsArgs) {
+        return this.tableCenter.revealChips(args.slot, args.chips);
     }
 
-    notif_recruit(args: NotifScoreArgs) {
-        this.setRecruits(args.playerId, +args.newScore);
-    }
-
-    notif_trade(args: NotifTradeArgs) {
-        const playerId = args.playerId;
-
-        this.updateGains(playerId, args.effectiveGains);
-    }
-
-    notif_takeDeckCard(args: NotifNewCardArgs) {
-        const playerId = args.playerId;
-        const playerTable = this.getPlayerTable(playerId);
-
-        const promise = playerTable.playCard(args.card, document.getElementById('board'));
-
-        this.tableCenter.cardDeck.setCardNumber(args.cardDeckCount, args.cardDeckTop);
-
-        return promise;
-    }
-
-    notif_discardTableCard(args: NotifDiscardTableCardArgs) {
-        return this.tableCenter.cardDiscard.addCard(args.card);
-    }
-
-    notif_reserveChip(args: NotifReserveChipArgs) {
-        const playerId = args.playerId;
-        const playerTable = this.getPlayerTable(playerId);
-
-        return playerTable.reserveChip(args.chip);
-    }
-
-    notif_cardDeckReset(args: NotifCardDeckResetArgs) {
-        this.tableCenter.cardDeck.setCardNumber(args.cardDeckCount, args.cardDeckTop);
-        this.tableCenter.setDiscardCount(args.cardDiscardCount);
-
-        return this.tableCenter.cardDeck.shuffle();
+    notif_endTurn() {
+        // TODO clean all
     }
     
-    /** 
-     * Show last turn banner.
-     */ 
-    notif_lastTurn(animate: boolean = true) {
-        dojo.place(`<div id="last-round">
-            <span class="last-round-text ${animate ? 'animate' : ''}">${_("This is the final round!")}</span>
-        </div>`, 'page-title');
-    }
-
-    public getGain(type: number): string {
-        switch (type) {
-            case 1: return _("Victory Point");
-            case 2: return _("Bracelet");
-            case 3: return _("Recruit");
-            case 4: return _("Reputation");
-            case 5: return _("Card");
-        }
-    }
-
-    public getTooltipGain(type: number): string {
-        return `${this.getGain(type)} (<div class="icon" data-type="${type}"></div>)`;
-    }
-
-    public getColor(color: number): string {
-        switch (color) {
-            case 1: return _("Red");
-            case 2: return _("Yellow");
-            case 3: return _("Green");
-            case 4: return _("Blue");
-            case 5: return _("Purple");
-        }
-    }
-
-    public getTooltipColor(color: number): string {
-        return `${this.getColor(color)} (<div class="color" data-color="${color}"></div>)`;
-    }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
