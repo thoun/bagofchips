@@ -13,6 +13,12 @@ class TableCenter {
     private artifacts: LineStock<number>;
         
     constructor(private game: BagOfChipsGame, gamedatas: BagOfChipsGamedatas) {
+        const tableCenter = document.getElementById(`table-center`);
+        [1, 2, 3, 4].forEach(phase => {
+            tableCenter.insertAdjacentHTML('beforeend', `
+                <div id="map${phase}" class="map" data-phase="${phase}"></div>
+            `);
+        });
         /*['A', 'B'].forEach(letter => {
             this.chipsDecks[letter] = new Deck<Chip>(game.chipsManager, document.getElementById(`table-chips-${letter}-deck`), {
                 cardNumber: gamedatas.centerChipsDeckCount[letter],

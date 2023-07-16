@@ -120,7 +120,7 @@ class BagOfChips extends Table {
         }
 
         // setup the initial game situation here
-        $this->setupCards(array_keys($players));
+        $this->setupCards();
         $this->setupChips();
 
         // TODO TEMP
@@ -145,7 +145,7 @@ class BagOfChips extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_no playerNo, player_tokens tokens FROM player ";
+        $sql = "SELECT player_id id, player_no playerNo, player_rewards rewards FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // Gather all information about current game situation (visible by player $current_player_id).
@@ -155,25 +155,18 @@ class BagOfChips extends Table {
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
 
-            $player['tokens'] = intval($player['tokens']);
-            $player['playedCards'] = [];
-            foreach ([1,2,3,4,5] as $color) {
-                $player['playedCards'][$color] = $this->getCardsByLocation('played'.$playerId.'-'.$color);
-            }
+            $player['rewards'] = intval($player['rewards']);
+            
+            $player['minus'] = $this->getCardsByLocation('minus', $playerId);
+            $player['discard'] = Card::onlyIds($this->getCardsByLocation('discard', $playerId));
+            $player['plus'] = $this->getCardsByLocation('plus', $playerId);
 
             if ($currentPlayerId == $playerId) {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);
             }
         }
-        $result['centerChipsDeckTop'] = [];
-        $result['centerChipsDeckCount'] = [];
-        $result['centerChips'] = [];
 
-        /*foreach (['A', 'B'] as $letter) {
-            $result['centerChipsDeckTop'][$letter] = Chip::onlyId($this->getChipFromDb($this->chips->getCardOnTop('deck'.$letter)));
-            $result['centerChipsDeckCount'][$letter] = intval($this->chips->countCardInLocation('deck'.$letter));
-            $result['centerChips'][$letter] = $this->getChipsByLocation('slot'.$letter);
-        }*/
+        $result['chips'] = $this->getChipsByLocation('table');
   
         return $result;
     }

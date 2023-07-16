@@ -1,41 +1,13 @@
 <?php
 
 /*
- * Chip types
+ * Chips types / Color (english)
  */
-define('A', 'A');
-define('B', 'B');
-
-/*
- * Color
- */
-define('EQUAL', -1);
-const DIFFERENT = 0;
-const RED = 1;
-const YELLOW = 2;
-const GREEN = 3;
-const BLUE = 4;
-const PURPLE = 5;
-
-/*
- * Gain
- */
-const VP = 1;
-const BRACELET = 2;
-const RECRUIT = 3;
-const REPUTATION = 4;
-const CARD = 5;
-
-/*
- * Artifacts
- */
-const ARTIFACT_MEAD_CUP = 1;
-const ARTIFACT_SILVER_COIN = 2;
-const ARTIFACT_CAULDRON = 3;
-const ARTIFACT_GOLDEN_BRACELET = 4;
-const ARTIFACT_HELMET = 5;
-const ARTIFACT_AMULET = 6;
-const ARTIFACT_WEATHERVANE = 7;
+const ORANGE = 1;
+const PURPLE = 2;
+const RED = 3;
+const GREEN = 4;
+const YELLOW = 5;
 
 /*
  * State constants

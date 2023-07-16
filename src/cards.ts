@@ -3,26 +3,25 @@ class CardsManager extends CardManager<Card> {
         super(game, {
             getId: (card) => `card-${card.id}`,
             setupDiv: (card: Card, div: HTMLElement) => {
-                div.classList.add('bagofchips-card');
-                div.dataset.cardId = ''+card.id;
+                div.classList.add('objective');
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => { 
-                div.dataset.color = ''+card.color;
-                div.dataset.gain = ''+card.gain;
+                div.dataset.type = ''+card.type;
+                div.dataset.subType = ''+card.subType;
                 game.setTooltip(div.id, this.getTooltip(card));
             },
-            isCardVisible: card => Boolean(card.color),
+            isCardVisible: card => Boolean(card.type),
             cardWidth: 120,
             cardHeight: 221,
         });
     }
 
     private getTooltip(card: Card): string {
-        let message = `
+        let message = `TODO`;/*
         <strong>${_("Color:")}</strong> ${this.game.getTooltipColor(card.color)}
         <br>
         <strong>${_("Gain:")}</strong> <strong>1</strong> ${this.game.getTooltipGain(card.gain)}
-        `;
+        `;*/
  
         return message;
     }

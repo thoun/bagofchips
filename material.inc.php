@@ -22,29 +22,59 @@
 require_once(__DIR__.'/modules/php/constants.inc.php');
 require_once(__DIR__.'/modules/php/objects/card.php');
 
-$this->CARDS = [    
-    new CardType(BLUE, VP, [2 => 2, 3 => 3, 4 => 4]),
-    new CardType(BLUE, BRACELET, [2 => 1, 3 => 2, 4 => 2]),
-    new CardType(BLUE, RECRUIT, [2 => 1, 3 => 1, 4 => 1]),
-    new CardType(BLUE, REPUTATION, [2 => 2, 3 => 2, 4 => 3]),
+$this->CARDS = [
+    1 => [ // one of each
+        1 => new CardType(1, [1]),
+        2 => new CardType(42, [2]),
+    ],
+    2 => [ // min colors
+        1 => new CardType(4, [YELLOW => 3, GREEN => 3]),
+        2 => new CardType(9, [RED => 2, GREEN => 3]),
+        3 => new CardType(16, [PURPLE => 2, RED => 2]),
+        4 => new CardType(120, [ORANGE => 3]),
+        5 => new CardType(140, [PURPLE => 4]),
+        6 => new CardType(160, [RED => 5]),
+        7 => new CardType(180, [GREEN => 6]),
+        8 => new CardType(200, [YELLOW => 7]),
+    ],
+    3 => [ // color A = color B
+        1 => new CardType(25, [GREEN, YELLOW]),
+        2 => new CardType(30, [RED, GREEN]),
+        3 => new CardType(35, [PURPLE, RED]),
+        4 => new CardType(40, [ORANGE, PURPLE]),
+        5 => new CardType(70, [PURPLE, GREEN]),
+        6 => new CardType(100, [PURPLE, YELLOW]),
+        7 => new CardType(110, [ORANGE, GREEN]),
+    ],
+    
+    4 => [ // last chip color
+        1 => new CardType(61, [YELLOW]),
+        2 => new CardType(71, [GREEN]),
+        3 => new CardType(81, [RED]),
+        4 => new CardType(91, [PURPLE]),
+        5 => new CardType(111, [ORANGE]),
+    ],
+    
+    5 => [ // no color
+        1 => new CardType(201, [ORANGE]),
+        2 => new CardType(202, [PURPLE]),
+    ],
+    
+    6 => [ // points / color
+        1 => new CardType(5, [YELLOW]),
+        2 => new CardType(8, [GREEN]),
+        3 => new CardType(11, [RED]),
+        4 => new CardType(15, [PURPLE]),
+        5 => new CardType(22, [ORANGE]),
+    ],
 
-    new CardType(YELLOW, VP, [2 => 3, 3 => 4, 4 => 5]),
-    new CardType(YELLOW, BRACELET, [2 => 1, 3 => 1, 4 => 2]),
-    new CardType(YELLOW, RECRUIT, [2 => 0, 3 => 1, 4 => 1]),
-    new CardType(YELLOW, REPUTATION, [2 => 2, 3 => 2, 4 => 2]),
-
-    new CardType(PURPLE, VP, [2 => 1, 3 => 2, 4 => 4]),
-    new CardType(PURPLE, BRACELET, [2 => 2, 3 => 2, 4 => 2]),
-    new CardType(PURPLE, RECRUIT, [2 => 2, 3 => 2, 4 => 2]),
-    new CardType(PURPLE, REPUTATION, [2 => 1, 3 => 2, 4 => 2]),
-
-    new CardType(GREEN, VP, [2 => 2, 3 => 3, 4 => 4]),
-    new CardType(GREEN, BRACELET, [2 => 1, 3 => 1, 4 => 2]),
-    new CardType(GREEN, RECRUIT, [2 => 2, 3 => 3, 4 => 3]),
-    new CardType(GREEN, REPUTATION, [2 => 1, 3 => 1, 4 => 1]),
-
-    new CardType(RED, VP, [2 => 3, 3 => 3, 4 => 4]),
-    new CardType(RED, BRACELET, [2 => 2, 3 => 3, 4 => 3]),
-    new CardType(RED, RECRUIT, [2 => 1, 3 => 1, 4 => 2]),
-    new CardType(RED, REPUTATION, [2 => 0, 3 => 1, 4 => 1]),
+    7 => [ // more A than B
+        1 => new CardType(45, [GREEN, YELLOW]),
+        2 => new CardType(50, [RED, GREEN]),
+        3 => new CardType(55, [PURPLE, RED]),
+        4 => new CardType(60, [ORANGE, PURPLE]),
+        5 => new CardType(80, [RED, YELLOW]),
+        6 => new CardType(90, [ORANGE, RED]),
+        7 => new CardType(-1, [ORANGE, YELLOW]), // special
+    ],
 ];

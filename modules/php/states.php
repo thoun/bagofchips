@@ -14,6 +14,15 @@ trait StateTrait {
     function stStartRound() {
         $this->setGlobalVariable(PHASE, 0);
         
+        $playersIds = $this->getPlayersIds();
+
+        foreach($playersIds as $playerId) {
+            $cards = $this->getCardsFromDb($this->cards->pickCardsForLocation(6, 'deck', 'hand', $playerId));
+            self::notifyPlayer($playerId, 'newHand', '', [
+                'cards' => $cards,
+            ]);
+        }
+        
         $this->gamestate->nextState('next');
     }
 
@@ -64,24 +73,21 @@ trait StateTrait {
     }
 
     function stEndTurn() {
+        // TODO score
 
+        $this->cards->moveAllCardsInLocation('hand', 'deck');
+        $this->cards->shuffle('deck');
         $this->chips->moveAllCardsInLocation('table', 'bag');
-        self::notifyAllPlayers('chipsInBag', '', []);
+        $this->chips->shuffle('bag');
+        self::notifyAllPlayers('endTurn', '', []);
 
-        $end = false; // TODO
+        $end = $this->getMaxPlayerTokens() >= 4;
 
         $this->gamestate->nextState($end ? 'endScore' : 'newTurn');
     }
 
     function stEndScore() {
-        $playersIds = $this->getPlayersIds();
-
-        foreach($playersIds as $playerId) {
-            $player = $this->getPlayer($playerId);
-            //$scoreAux = $player->recruit + $player->bracelet;
-            //$this->DbQuery("UPDATE player SET player_score_aux = player_recruit + player_bracelet WHERE player_id = $playerId");
-        }
-        $this->DbQuery("UPDATE player SET player_score_aux = player_recruit + player_bracelet");
+        $this->DbQuery("UPDATE player SET player_score = player_rewards");
 
         $this->gamestate->nextState('endGame');
     }

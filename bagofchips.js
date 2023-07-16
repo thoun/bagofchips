@@ -2000,15 +2000,14 @@ var CardsManager = /** @class */ (function (_super) {
         var _this = _super.call(this, game, {
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) {
-                div.classList.add('bagofchips-card');
-                div.dataset.cardId = '' + card.id;
+                div.classList.add('objective');
             },
             setupFrontDiv: function (card, div) {
-                div.dataset.color = '' + card.color;
-                div.dataset.gain = '' + card.gain;
+                div.dataset.type = '' + card.type;
+                div.dataset.subType = '' + card.subType;
                 game.setTooltip(div.id, _this.getTooltip(card));
             },
-            isCardVisible: function (card) { return Boolean(card.color); },
+            isCardVisible: function (card) { return Boolean(card.type); },
             cardWidth: 120,
             cardHeight: 221,
         }) || this;
@@ -2016,7 +2015,11 @@ var CardsManager = /** @class */ (function (_super) {
         return _this;
     }
     CardsManager.prototype.getTooltip = function (card) {
-        var message = "\n        <strong>".concat(_("Color:"), "</strong> ").concat(this.game.getTooltipColor(card.color), "\n        <br>\n        <strong>").concat(_("Gain:"), "</strong> <strong>1</strong> ").concat(this.game.getTooltipGain(card.gain), "\n        ");
+        var message = "TODO"; /*
+        <strong>${_("Color:")}</strong> ${this.game.getTooltipColor(card.color)}
+        <br>
+        <strong>${_("Gain:")}</strong> <strong>1</strong> ${this.game.getTooltipGain(card.gain)}
+        `;*/
         return message;
     };
     return CardsManager;
@@ -2027,50 +2030,16 @@ var ChipsManager = /** @class */ (function (_super) {
         var _this = _super.call(this, game, {
             getId: function (card) { return "chip-".concat(card.id); },
             setupDiv: function (card, div) {
-                div.classList.add('bagofchips-chip');
-                div.dataset.cardId = '' + card.id;
-                div.dataset.type = '' + card.type;
+                div.classList.add('chip');
+                div.dataset.type = '' + card.color;
             },
-            setupFrontDiv: function (card, div) {
-                div.dataset.number = '' + card.number;
-                if (card.number) {
-                    game.setTooltip(div.id, _this.getTooltip(card));
-                }
-            },
-            isCardVisible: function (card) { return Boolean(card.number); },
-            cardWidth: 221,
-            cardHeight: 120,
+            isCardVisible: function () { return true; },
+            cardWidth: 254,
+            cardHeight: 354,
         }) || this;
         _this.game = game;
         return _this;
     }
-    ChipsManager.prototype.getCost = function (cost) {
-        var _this = this;
-        var keys = Object.keys(cost).map(function (c) { return Number(c); });
-        if (keys.length == 1 && keys[0] == DIFFERENT) {
-            return _("${number} different color cards").replace('${number}', "<strong>".concat(cost[keys[0]], "</strong>"));
-        }
-        else if (keys.length == 1 && keys[0] == EQUAL) {
-            return _("${number} cards of the same color").replace('${number}', "<strong>".concat(cost[keys[0]], "</strong>"));
-        }
-        else {
-            return keys.map(function (color) { return _("${number} ${color} cards").replace('${number}', "<strong>".concat(cost[color], "</strong>")).replace('${color}', _this.game.getTooltipColor(color)); }).join(', ');
-        }
-    };
-    ChipsManager.prototype.getGains = function (gains) {
-        var _this = this;
-        return Object.entries(gains).map(function (entry) { return "<strong>".concat(entry[1], "</strong> ").concat(_this.game.getTooltipGain(Number(entry[0]))); }).join(', ');
-    };
-    ChipsManager.prototype.getType = function (type) {
-        switch (type) {
-            case 1: return _("Trading Lands");
-            case 2: return _("Lands of Influence");
-        }
-    };
-    ChipsManager.prototype.getTooltip = function (chip) {
-        var message = "\n        <strong>".concat(_("Exploration cost:"), "</strong> ").concat(this.getCost(chip.cost), " (recruits can be used as jokers)\n        <br>\n        <strong>").concat(_("Immediate gains:"), "</strong> ").concat(this.getGains(chip.immediateGains), "\n        <br>\n        <strong>").concat(_("Type:"), "</strong> ").concat(this.getType(chip.type), "\n        ");
-        return message;
-    };
     return ChipsManager;
 }(CardManager));
 var POINT_CASE_SIZE_LEFT = 38.8;
@@ -2082,6 +2051,10 @@ var TableCenter = /** @class */ (function () {
         this.chips = [];
         this.vp = new Map();
         this.reputation = new Map();
+        var tableCenter = document.getElementById("table-center");
+        [1, 2, 3, 4].forEach(function (phase) {
+            tableCenter.insertAdjacentHTML('beforeend', "\n                <div id=\"map".concat(phase, "\" class=\"map\" data-phase=\"").concat(phase, "\"></div>\n            "));
+        });
         /*['A', 'B'].forEach(letter => {
             this.chipsDecks[letter] = new Deck<Chip>(game.chipsManager, document.getElementById(`table-chips-${letter}-deck`), {
                 cardNumber: gamedatas.centerChipsDeckCount[letter],
@@ -2244,170 +2217,35 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player, reservePossible) {
         var _this = this;
         this.game = game;
-        this.played = [];
         this.limitSelection = null;
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, ";\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n            <div class=\"cols\">\n            <div class=\"col col1\">\n        ");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, ";\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div id=\"player-table-".concat(this.playerId, "-chips\" class=\"chips\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-boat\" class=\"boat\" data-color=\"").concat(player.color, "\" data-recruits=\"").concat(player.recruit, "\" data-bracelets=\"").concat(player.bracelet, "\">");
-        for (var i = 1; i <= 3; i++) {
-            if (this.currentPlayer) {
-                html += "<div id=\"player-table-".concat(this.playerId, "-column").concat(i, "\" class=\"column\" data-number=\"").concat(i, "\"></div>");
-            }
-            html += "\n            <div class=\"icon bracelet\" data-number=\"".concat(i, "\"></div>\n            <div class=\"icon recruit\" data-number=\"").concat(i, "\"></div>\n            ");
-        }
-        html += "\n            </div>\n            <div class=\"visible-cards\">";
-        for (var i = 1; i <= 5; i++) {
-            html += "\n                <div id=\"player-table-".concat(this.playerId, "-played-").concat(i, "\" class=\"cards\"></div>\n                ");
-        }
-        html += "\n            </div>\n            </div>\n            \n            <div class=\"col col2\"></div>\n            </div>\n        </div>\n        ";
+        html += "\n            <div class=\"player-visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-minus\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-plus\"></div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
             this.hand = new LineStock(this.game.cardsManager, handDiv, {
-                sort: function (a, b) { return a.color == b.color ? a.gain - b.gain : a.color - b.color; },
+                sort: function (a, b) { return a.points - b.points; },
             });
             this.hand.onCardClick = function (card) { return _this.game.onHandCardClick(card); };
             this.hand.addCards(player.hand);
         }
         this.voidStock = new VoidStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-name")));
-        /*for (let i = 1; i <= 5; i++) {
-            const playedDiv = document.getElementById(`player-table-${this.playerId}-played-${i}`);
-            this.played[i] = new LineStock<Card>(this.game.cardsManager, playedDiv, {
-                direction: 'column',
-                center: false,
-            });
-            this.played[i].onCardClick = card => {
-                this.game.onPlayedCardClick(card);
-                if (this.limitSelection !== null) {
-                    this.updateSelectable();
-                }
-            }
-            this.played[i].addCards(player.playedCards[i]);
-            playedDiv.style.setProperty('--card-overlap', '195px');
-        }
-        
-        const chipsDiv = document.getElementById(`player-table-${this.playerId}-chips`);
-        this.chips = new LineStock<Chip>(this.game.chipsManager, chipsDiv, {
-            center: false,
+        this.minus = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-minus")));
+        this.minus.addCards(player.minus);
+        this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
+            topCard: player.discard[0],
+            cardNumber: player.discard.length,
         });
-        chipsDiv.style.setProperty('--card-overlap', '94px');
-        
-        this.chips.addCards(player.chips);
-
-        if (reservePossible) {
-            this.reservedChips = new LineStock<Chip>(this.game.chipsManager, document.getElementById(`player-table-${this.playerId}-reserved-chips`), {
-                center: false,
-            });
-            this.reservedChips.addCards(player.reservedChips);
-            this.reservedChips.onCardClick = (card: Chip) => this.game.onTableChipClick(card);
-        }
-
-        [document.getElementById(`player-table-${this.playerId}-name`), document.getElementById(`player-table-${this.playerId}-boat`)].forEach(elem => {
-            elem.addEventListener('mouseenter', () => this.game.highlightPlayerTokens(this.playerId));
-            elem.addEventListener('mouseleave', () => this.game.highlightPlayerTokens(null));
-        });*/
+        this.plus = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-plus")));
+        this.plus.addCards(player.plus);
     }
-    PlayerTable.prototype.updateCounter = function (type, count) {
-        document.getElementById("player-table-".concat(this.playerId, "-boat")).dataset[type] = '' + count;
-    };
-    PlayerTable.prototype.playCard = function (card, fromElement) {
-        return this.played[card.color].addCard(card, {
-            fromElement: fromElement
-        });
-    };
     PlayerTable.prototype.setHandSelectable = function (selectable) {
-        this.hand.setSelectionMode(selectable ? 'single' : 'none');
-    };
-    PlayerTable.prototype.setCardsSelectable = function (selectable, cost) {
-        if (cost === void 0) { cost = null; }
-        var colors = cost == null ? [] : Object.keys(cost).map(function (key) { return Number(key); });
-        var equalOrDifferent = cost == null ? false : [EQUAL, DIFFERENT].includes(colors[0]);
-        this.limitSelection = equalOrDifferent ? colors[0] : null;
-        for (var i = 1; i <= 5; i++) {
-            this.played[i].setSelectionMode(selectable ? 'multiple' : 'none');
-            if (selectable) {
-                var selectableCards = this.played[i].getCards().filter(function (card) {
-                    var disabled = !selectable || cost == null;
-                    if (!disabled) {
-                        if (colors.length != 1 || (colors.length == 1 && !equalOrDifferent)) {
-                            disabled = !colors.includes(card.color);
-                        }
-                    }
-                    return !disabled;
-                });
-                this.played[i].setSelectableCards(selectableCards);
-            }
-        }
-    };
-    PlayerTable.prototype.getSelectedCards = function () {
-        var cards = [];
-        for (var i = 1; i <= 5; i++) {
-            cards.push.apply(cards, this.played[i].getSelection());
-        }
-        return cards;
-    };
-    PlayerTable.prototype.reserveChip = function (chip) {
-        return this.reservedChips.addCard(chip);
-    };
-    PlayerTable.prototype.setChipsSelectable = function (selectable, selectableCards) {
-        if (selectableCards === void 0) { selectableCards = null; }
-        if (!this.reservedChips) {
-            return;
-        }
-        this.reservedChips.setSelectionMode(selectable ? 'single' : 'none');
-        this.reservedChips.setSelectableCards(selectableCards);
-    };
-    PlayerTable.prototype.showColumns = function (number) {
-        if (number > 0) {
-            document.getElementById("player-table-".concat(this.playerId, "-boat")).style.setProperty('--column-height', "".concat(35 * (this.chips.getCards().length + 1), "px"));
-        }
-        for (var i = 1; i <= 3; i++) {
-            document.getElementById("player-table-".concat(this.playerId, "-column").concat(i)).classList.toggle('highlight', i <= number);
-        }
-    };
-    PlayerTable.prototype.updateSelectable = function () {
-        var _this = this;
-        var selectedCards = this.getSelectedCards();
-        var selectedColors = selectedCards.map(function (card) { return card.color; });
-        var color = selectedCards.length ? selectedCards[0].color : null;
-        for (var i = 1; i <= 5; i++) {
-            var selectableCards = this.played[i].getCards().filter(function (card) {
-                var disabled = false;
-                if (_this.limitSelection === DIFFERENT) {
-                    disabled = selectedColors.includes(card.color) && !selectedCards.includes(card);
-                }
-                else if (_this.limitSelection === EQUAL) {
-                    disabled = color !== null && card.color != color;
-                }
-                return !disabled;
-            });
-            this.played[i].setSelectableCards(selectableCards);
-        }
-    };
-    PlayerTable.prototype.setDoubleColumn = function (isDoublePlayerColumn) {
-        var chips = document.getElementById("player-table-".concat(this.playerId, "-chips"));
-        var boat = document.getElementById("player-table-".concat(this.playerId, "-boat"));
-        var reservedChips = document.getElementById("player-table-".concat(this.playerId, "-reserved-chips-wrapper"));
-        if (isDoublePlayerColumn) {
-            var col2 = document.getElementById("player-table-".concat(this.playerId)).querySelector('.col2');
-            col2.appendChild(chips);
-            col2.appendChild(boat);
-            if (reservedChips) {
-                col2.appendChild(reservedChips);
-            }
-        }
-        else {
-            var visibleCards = document.getElementById("player-table-".concat(this.playerId)).querySelector('.visible-cards');
-            visibleCards.insertAdjacentElement('beforebegin', chips);
-            visibleCards.insertAdjacentElement('beforebegin', boat);
-            if (reservedChips) {
-                visibleCards.insertAdjacentElement('afterend', reservedChips);
-            }
-        }
+        this.hand.setSelectionMode(selectable ? 'multiple' : 'none');
     };
     return PlayerTable;
 }());

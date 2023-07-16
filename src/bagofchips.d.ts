@@ -6,31 +6,28 @@ interface Card {
     id: number;
     location: string;
     locationArg: number;
-    color: number;
-    gain: number;
+    type: number;
+    subType: number;
+    points: number;
+    params: number[];
 }
 
 interface Chip {
     id: number;
     location: string;
     locationArg: number;
-    type: number;
-    number: number;
-    cost: { [color: number]: number };
-    immediateGains: { [type: number]: number };
-    gains: (number | null)[];
+    color: number;
 }
 
 interface BagOfChipsPlayer extends Player {
     playerNo: number;
-    reputation: number;
-    recruit: number;
-    bracelet: number;
-    //handCount: number;
+    rewards: number;
+    
     hand?: Card[];
-    playedCards: { [color: number]: Card[] };
-    chips: Chip[];
-    reservedChips?: Chip[];
+
+    minus: Card[];
+    discard: Card[];
+    plus: Card[];
 }
 
 interface BagOfChipsGamedatas {
@@ -46,19 +43,7 @@ interface BagOfChipsGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    cardDeckTop?: Card;
-    cardDeckCount: number;
-    cardDiscardCount: number;
-    centerCards: Card[];
-    centerChipsDeckTop: { [letter: string]: Chip };
-    centerChipsDeckCount: { [letter: string]: number };
-    centerChips: { [letter: string]: Chip[] };
-    boatSideOption: number;
-    variantOption: number;
-    artifacts?: number[];
-    firstPlayerId: number;
-    lastTurn: boolean;
-    reservePossible: boolean;
+    chips: Chip[];
 }
 
 interface BagOfChipsGame extends Game {

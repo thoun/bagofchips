@@ -97,41 +97,15 @@ trait UtilTrait {
         return array_map(fn($dbResult) => new BagOfChipsPlayer($dbResult), array_values($dbResults))[0];
     }
 
-    function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
+    function incPlayerTokens(int $playerId, int $amount, $message = '', $args = []) {
         if ($amount != 0) {
-            $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
+            $this->DbQuery("UPDATE player SET `player_rewards` = `player_rewards` + $amount WHERE player_id = $playerId");
         }
             
-        $this->notifyAllPlayers('score', $message, [
+        $this->notifyAllPlayers('rewards', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'newScore' => $this->getPlayer($playerId)->score,
-            'incScore' => $amount,
-        ] + $args);
-    }
-
-    function incPlayerRecruit(int $playerId, int $amount, $message = '', $args = []) {
-        if ($amount != 0) {
-            $this->DbQuery("UPDATE player SET `player_recruit` = `player_recruit` + $amount WHERE player_id = $playerId");
-        }
-
-        $this->notifyAllPlayers('recruit', $message, [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'newScore' => $this->getPlayer($playerId)->recruit,
-            'incScore' => $amount,
-        ] + $args);
-    }
-
-    function incPlayerBracelet(int $playerId, int $amount, $message = '', $args = []) {
-        if ($amount != 0) {
-            $this->DbQuery("UPDATE player SET `player_bracelet` = `player_bracelet` + $amount WHERE player_id = $playerId");
-        }
-
-        $this->notifyAllPlayers('bracelet', $message, [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'newScore' => $this->getPlayer($playerId)->bracelet,
             'incScore' => $amount,
         ] + $args);
     }
@@ -140,7 +114,7 @@ trait UtilTrait {
         if ($dbCard == null) {
             return null;
         }
-        return new Card($dbCard);
+        return new Card($dbCard, $this->CARDS);
     }
 
     function getCardsFromDb(array $dbCards) {
@@ -154,47 +128,25 @@ trait UtilTrait {
         return count($cards) > 0 ? $cards[0] : null;
     }
 
-    function getCardsByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $number = null) {
+    function getCardsByLocation(string $location, /*int|null*/ $location_arg = null) {
         $sql = "SELECT * FROM `card` WHERE `card_location` = '$location'";
         if ($location_arg !== null) {
             $sql .= " AND `card_location_arg` = $location_arg";
-        }
-        if ($type !== null) {
-            $sql .= " AND `card_type` = $type";
-        }
-        if ($number !== null) {
-            $sql .= " AND `card_type_arg` = $number";
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
         return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbResults));
     }
 
-    function setupCards(array $playersIds) {
-        $playerCount = count($playersIds);
-        foreach ($this->CARDS as $cardType) {
-            $cards[] = [ 'type' => $cardType->color, 'type_arg' => $cardType->gain, 'nbr' => $cardType->number[$playerCount] ];
+    function setupCards() {
+        $cards = [];
+        foreach ($this->CARDS as $type => $cardsOfType) {
+            foreach ($cardsOfType as $subTtype => $cardsType) {
+                $cards[] = [ 'type' => $type, 'type_arg' => $subTtype, 'nbr' => 1 ];
+            }
         }
         $this->cards->createCards($cards, 'deck');
         $this->cards->shuffle('deck');
-
-        foreach ([1,2,3,4,5] as $slot) {
-            $this->cards->pickCardForLocation('deck', 'slot', $slot);
-        }
-
-        foreach ($playersIds as $playerId) {
-            $playedCards = $this->getCardsFromDb($this->cards->pickCardsForLocation(2, 'deck', 'played'.$playerId));
-            while ($playedCards[0]->color == $playedCards[1]->color) {
-                $this->cards->moveAllCardsInLocation('played'.$playerId, 'deck');
-                $this->cards->shuffle('deck');
-                $playedCards = $this->getCardsFromDb($this->cards->pickCardsForLocation(2, 'deck', 'played'.$playerId));
-            }
-            foreach ($playedCards as $playedCard) {
-                $this->cards->moveCard($playedCard->id, 'played'.$playerId.'-'.$playedCard->color);
-            }
-
-            $this->cards->pickCardsForLocation(3, 'deck', 'hand', $playerId);
-        }
     }
 
     function getChipFromDb(/*array|null*/ $dbCard) {
@@ -232,6 +184,6 @@ trait UtilTrait {
     }
 
     function getMaxPlayerTokens() {
-        return intval($this->getUniqueValueFromDB("SELECT max(player_tokens) FROM player"));
+        return intval($this->getUniqueValueFromDB("SELECT max(player_rewards) FROM player"));
     }
 }

@@ -1,19 +1,84 @@
-.bagofchips-card {
+.objective {
     display: inline-block;
     position: relative;
-    width: 120px;
-    height: 221px;
+    width: 495px;
+    height: 692px;
     border-radius: 8px;
 
     .card-sides {
         .card-side {
             border-radius: 8px;
             background-size: auto 100%;
-            background-image: url('img/cards.jpg');
 
             &>* {
                 pointer-events: none;
                 user-select: none;
+            }
+
+            &.back {
+                background-image: url('img/card-back.png');
+            }
+
+            @for $type from 1 through 7 {
+                &.front[data-type="#{$type}"] {
+                    background-image: url('img/cards#{$type}.png');
+                }
+            }
+
+            &.front[data-type="1"] {
+                @for $subType from 1 through 2 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 1};
+                    }
+                }
+            }
+
+            &.front[data-type="2"] {
+                @for $subType from 1 through 8 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 7};
+                    }
+                }
+            }
+
+            &.front[data-type="3"] {
+                @for $subType from 1 through 7 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 6};
+                    }
+                }
+            }
+
+            &.front[data-type="4"] {
+                @for $subType from 1 through 5 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 4};
+                    }
+                }
+            }
+
+            &.front[data-type="5"] {
+                @for $subType from 1 through 2 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 1};
+                    }
+                }
+            }
+
+            &.front[data-type="6"] {
+                @for $subType from 1 through 5 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 4};
+                    }
+                }
+            }
+
+            &.front[data-type="7"] {
+                @for $subType from 1 through 7 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 6};
+                    }
+                }
             }
         }
     }    
@@ -33,14 +98,6 @@
 
         .card-side {
             box-shadow: unset;
-        }
-    }
-
-    @for $color from 1 through 5 {
-        @for $gain from 1 through 4 {
-            .front[data-color="#{$color}"][data-gain="#{$gain}"] {
-                background-position-x: #{(($color - 1) * 4 + $gain) * 100% / 20};
-            }
         }
     }
 }

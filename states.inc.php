@@ -105,7 +105,7 @@ $gameGameStates = [
 
     ST_START_ROUND => [
         "name" => "startRound",
-        "description" => "",
+        "description" => clienttranslate('Dealing 6 Objective cards to each player...'),
         "type" => "game",
         "action" => "stStartRound",
         "transitions" => [
