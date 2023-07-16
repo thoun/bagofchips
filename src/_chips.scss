@@ -1,4 +1,4 @@
-.bagofchips-destination {
+.bagofchips-chip {
   display: inline-block;
   position: relative;
   width: 221px;
@@ -9,7 +9,7 @@
       .card-side {
           border-radius: 8px;
           background-size: 200% auto;
-          background-image: url('img/destinations.jpg');
+          background-image: url('img/chips.jpg');
 
           &>* {
               pointer-events: none;
@@ -36,7 +36,7 @@
       }
   }
     
-  &.selected-pay-destination {
+  &.selected-pay-chip {
       outline: 5px solid orange;
 
       .card-side {

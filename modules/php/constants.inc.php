@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Destination types
+ * Chip types
  */
 define('A', 'A');
 define('B', 'B');
@@ -46,7 +46,7 @@ const ST_START_ROUND = 10;
 
 const ST_REVEAL_CHIPS = 20;
 
-const ST_MULTIPLAYER_DISCARD_CARD = 30;
+const ST_MULTIPLAYER_DISCARD_CARDS = 30;
 
 const ST_MULTIPLAYER_PLACE_CARDS = 40;
 
@@ -67,20 +67,12 @@ const TRADE_DONE = 15;
 const GO_DISCARD_TABLE_CARD = 16;
 const GO_RESERVE = 17;
 const PLAYED_CARD_COLOR = 20;
-const SELECTED_DESTINATION = 21;
+const SELECTED_CHIP = 21;
 const COMPLETED_LINES = 22;
-
-/*
- * Options
- */
-const BOAT_SIDE_OPTION = 100;
-const VARIANT_OPTION = 110;
 
 /*
  * Global variables
  */
-define('ARTIFACTS', 'Artifacts');
-define('REMAINING_CARDS_TO_TAKE', 'RemainingCardsToTake');
-//define('UNDO', 'undo');
+const PHASE = 'PHASE';
 
 ?>

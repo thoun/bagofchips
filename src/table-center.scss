@@ -10,11 +10,11 @@
   grid-template-columns: 120px 690px;
   gap: 8px;
 
-  .table-destinations-deck {
+  .table-chips-deck {
     margin-left: -102px;
   }
 
-  #table-destinations-A, #table-destinations-B {
+  #table-chips-A, #table-chips-B {
     .slot {      
       width: 221px;
       height: 120px;
@@ -48,13 +48,6 @@
         }
         &.reputation {
           background-image: url('img/reputation-pawns.png');
-        }
-      }
-        
-      @each $playerColor in $playerColors {
-        $i: index($playerColors, $playerColor) - 1;
-        &[data-color="#{$playerColor}"] .inner { 
-          background-position-x: #{$i * 100% / 3};
         }
       }
       

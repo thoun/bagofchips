@@ -26,44 +26,4 @@
 
 require_once("modules/php/constants.inc.php");
 
- $game_options = [
-
-    BOAT_SIDE_OPTION => [
-        'name' => totranslate('Boat side'),
-        'values' => [
-            1 => [
-                'name' => totranslate('Normal'),
-            ],
-            2 => [
-                'name' => totranslate('Advanced'),
-                'tmdisplay' => totranslate('Advanced boat side'),
-                'nobeginner' => true,
-            ],
-            3 => [
-                'name' => totranslate('Random'),
-                'nobeginner' => true,
-            ],
-        ],
-        'default' => 1,
-    ],
-
-    VARIANT_OPTION => [
-        'name' => totranslate('Artifact variant'),
-        'values' => [
-            1 => [
-                'name' => totranslate('Disabled'),
-            ],
-            2 => [
-                'name' => totranslate('Enabled (with Mead Cup for 2 players)'),
-                'tmdisplay' => totranslate('Artifact variant (with Mead Cup for 2 players)'),
-                'nobeginner' => true,
-            ],
-            3 => [
-                'name' => totranslate('Enabled'),
-                'tmdisplay' => totranslate('Artifact variant'),
-                'nobeginner' => true,
-            ],
-        ],
-        'default' => 1,
-    ],
-];
+$game_options = [];

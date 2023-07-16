@@ -71,11 +71,13 @@ $basicGameStates = [
 ];
 
 $playerActionsGameStates = [
-    ST_MULTIPLAYER_DISCARD_CARD => [
-        "name" => "discardCard",
+    ST_MULTIPLAYER_DISCARD_CARDS => [
+        "name" => "discardCards",
         "description" => clienttranslate('Waiting for other players'),
         "descriptionmyturn" => clienttranslate('${you} must discard ${number} card(s)'),
         "type" => "multipleactiveplayer",
+        "args" => "argDiscardCards",
+        'action' => 'stMakeEveryoneActive',
         "possibleactions" => [ 
             "discardCards",
         ],
@@ -89,6 +91,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('Waiting for other players'),
         "descriptionmyturn" => clienttranslate('${you} must place 2 cards in [+] and 1 card in [-]'),
         "type" => "multipleactiveplayer",
+        'action' => 'stMakeEveryoneActive',
         "possibleactions" => [ 
             "placeCards",
         ],
@@ -117,9 +120,9 @@ $gameGameStates = [
         "action" => "stRevealChips",
         "updateGameProgression" => true,
         "transitions" => [
-            "discard" => ST_MULTIPLAYER_DISCARD_CARD,
+            "discard" => ST_MULTIPLAYER_DISCARD_CARDS,
             "place" => ST_MULTIPLAYER_PLACE_CARDS,
-            "endScore" => ST_END_SCORE,
+            "endRound" => ST_END_ROUND,
         ],
     ],
 

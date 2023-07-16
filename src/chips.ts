@@ -1,13 +1,13 @@
-class DestinationsManager extends CardManager<Destination> {
+class ChipsManager extends CardManager<Chip> {
     constructor (public game: BagOfChipsGame) {
         super(game, {
-            getId: (card) => `destination-${card.id}`,
-            setupDiv: (card: Destination, div: HTMLElement) => {
-                div.classList.add('bagofchips-destination');
+            getId: (card) => `chip-${card.id}`,
+            setupDiv: (card: Chip, div: HTMLElement) => {
+                div.classList.add('bagofchips-chip');
                 div.dataset.cardId = ''+card.id;
                 div.dataset.type = ''+card.type;
             },
-            setupFrontDiv: (card: Destination, div: HTMLElement) => { 
+            setupFrontDiv: (card: Chip, div: HTMLElement) => { 
                 div.dataset.number = ''+card.number;
                 if (card.number) {
                     game.setTooltip(div.id, this.getTooltip(card));
@@ -41,13 +41,13 @@ class DestinationsManager extends CardManager<Destination> {
         }
     }
 
-    private getTooltip(destination: Destination): string {
+    private getTooltip(chip: Chip): string {
         let message = `
-        <strong>${_("Exploration cost:")}</strong> ${this.getCost(destination.cost)} (recruits can be used as jokers)
+        <strong>${_("Exploration cost:")}</strong> ${this.getCost(chip.cost)} (recruits can be used as jokers)
         <br>
-        <strong>${_("Immediate gains:")}</strong> ${this.getGains(destination.immediateGains)}
+        <strong>${_("Immediate gains:")}</strong> ${this.getGains(chip.immediateGains)}
         <br>
-        <strong>${_("Type:")}</strong> ${this.getType(destination.type)}
+        <strong>${_("Type:")}</strong> ${this.getType(chip.type)}
         `;
  
         return message;

@@ -56,11 +56,11 @@
         self::ajaxResponse();
     }
 
-    public function takeDestination() {
+    public function takeChip() {
         self::setAjaxMode();     
 
         $id = self::getArg("id", AT_posint, true);
-        $this->game->takeDestination($id);
+        $this->game->takeChip($id);
 
         self::ajaxResponse();
     }
@@ -74,22 +74,22 @@
         self::ajaxResponse();
     }
 
-    public function payDestination() {
+    public function payChip() {
         self::setAjaxMode();   
 
         $idsStr = self::getArg( "ids", AT_numberlist, true );
         $ids = array_map(fn($str) => intval($str), explode(',', $idsStr));
         $recruits = self::getArg("recruits", AT_posint, true);
-        $this->game->payDestination($ids, $recruits);
+        $this->game->payChip($ids, $recruits);
 
         self::ajaxResponse();
     }
 
-    public function reserveDestination() {
+    public function reserveChip() {
         self::setAjaxMode();     
 
         $id = self::getArg("id", AT_posint, true);
-        $this->game->reserveDestination($id);
+        $this->game->reserveChip($id);
 
         self::ajaxResponse();
     }

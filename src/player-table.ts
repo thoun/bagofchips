@@ -6,8 +6,8 @@ class PlayerTable {
     public voidStock: VoidStock<Card>;
     public hand?: LineStock<Card>;
     public played: LineStock<Card>[] = [];
-    public destinations: LineStock<Destination>;
-    public reservedDestinations?: LineStock<Destination>;
+    public chips: LineStock<Chip>;
+    public reservedChips?: LineStock<Chip>;
     public limitSelection: number | null = null;
 
     private currentPlayer: boolean;
@@ -30,8 +30,8 @@ class PlayerTable {
             </div>`;
         }
         html += `
-            <div id="player-table-${this.playerId}-destinations" class="destinations"></div>
-            <div id="player-table-${this.playerId}-boat" class="boat ${this.game.getBoatSide() == 2 ? 'advanced' : 'normal'}" data-color="${player.color}" data-recruits="${player.recruit}" data-bracelets="${player.bracelet}">`;
+            <div id="player-table-${this.playerId}-chips" class="chips"></div>
+            <div id="player-table-${this.playerId}-boat" class="boat" data-color="${player.color}" data-recruits="${player.recruit}" data-bracelets="${player.bracelet}">`;
         for (let i = 1; i <= 3; i++) {
             if (this.currentPlayer) {
                 html += `<div id="player-table-${this.playerId}-column${i}" class="column" data-number="${i}"></div>`;
@@ -51,16 +51,6 @@ class PlayerTable {
             }
             html += `
             </div>
-        `;
-
-        if (reservePossible) {
-            html += `
-            <div id="player-table-${this.playerId}-reserved-destinations-wrapper" class="block-with-text hand-wrapper">
-                <div class="block-label">${_('Reserved destinations')}</div>
-                <div id="player-table-${this.playerId}-reserved-destinations"></div>
-            </div>`;
-        }
-        html += `
             </div>
             
             <div class="col col2"></div>
@@ -82,7 +72,7 @@ class PlayerTable {
         }
         this.voidStock = new VoidStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-name`));
                 
-        for (let i = 1; i <= 5; i++) {
+        /*for (let i = 1; i <= 5; i++) {
             const playedDiv = document.getElementById(`player-table-${this.playerId}-played-${i}`);
             this.played[i] = new LineStock<Card>(this.game.cardsManager, playedDiv, {
                 direction: 'column',
@@ -98,26 +88,26 @@ class PlayerTable {
             playedDiv.style.setProperty('--card-overlap', '195px');
         }
         
-        const destinationsDiv = document.getElementById(`player-table-${this.playerId}-destinations`);
-        this.destinations = new LineStock<Destination>(this.game.destinationsManager, destinationsDiv, {
+        const chipsDiv = document.getElementById(`player-table-${this.playerId}-chips`);
+        this.chips = new LineStock<Chip>(this.game.chipsManager, chipsDiv, {
             center: false,
         });
-        destinationsDiv.style.setProperty('--card-overlap', '94px');
+        chipsDiv.style.setProperty('--card-overlap', '94px');
         
-        this.destinations.addCards(player.destinations);
+        this.chips.addCards(player.chips);
 
         if (reservePossible) {
-            this.reservedDestinations = new LineStock<Destination>(this.game.destinationsManager, document.getElementById(`player-table-${this.playerId}-reserved-destinations`), {
+            this.reservedChips = new LineStock<Chip>(this.game.chipsManager, document.getElementById(`player-table-${this.playerId}-reserved-chips`), {
                 center: false,
             });            
-            this.reservedDestinations.addCards(player.reservedDestinations);
-            this.reservedDestinations.onCardClick = (card: Destination) => this.game.onTableDestinationClick(card);
+            this.reservedChips.addCards(player.reservedChips);
+            this.reservedChips.onCardClick = (card: Chip) => this.game.onTableChipClick(card);
         }
 
         [document.getElementById(`player-table-${this.playerId}-name`), document.getElementById(`player-table-${this.playerId}-boat`)].forEach(elem => {
             elem.addEventListener('mouseenter', () => this.game.highlightPlayerTokens(this.playerId));
             elem.addEventListener('mouseleave', () => this.game.highlightPlayerTokens(null));
-        });
+        });*/
     }
 
     public updateCounter(type: 'recruits' | 'bracelets', count: number) {
@@ -166,22 +156,22 @@ class PlayerTable {
         return cards;
     }
     
-    public reserveDestination(destination: Destination) {
-        return this.reservedDestinations.addCard(destination);
+    public reserveChip(chip: Chip) {
+        return this.reservedChips.addCard(chip);
     }
     
-    public setDestinationsSelectable(selectable: boolean, selectableCards: Destination[] | null = null) {
-        if (!this.reservedDestinations) {
+    public setChipsSelectable(selectable: boolean, selectableCards: Chip[] | null = null) {
+        if (!this.reservedChips) {
             return;
         }
 
-        this.reservedDestinations.setSelectionMode(selectable ? 'single' : 'none');
-        this.reservedDestinations.setSelectableCards(selectableCards);
+        this.reservedChips.setSelectionMode(selectable ? 'single' : 'none');
+        this.reservedChips.setSelectableCards(selectableCards);
     }
     
     public showColumns(number: number) {
         if (number > 0) {
-            document.getElementById(`player-table-${this.playerId}-boat`).style.setProperty('--column-height', `${35 * (this.destinations.getCards().length + 1)}px`);
+            document.getElementById(`player-table-${this.playerId}-boat`).style.setProperty('--column-height', `${35 * (this.chips.getCards().length + 1)}px`);
         }
 
         for (let i = 1; i <= 3; i++) {
@@ -209,22 +199,22 @@ class PlayerTable {
     }
     
     public setDoubleColumn(isDoublePlayerColumn: boolean): void {
-        const destinations = document.getElementById(`player-table-${this.playerId}-destinations`);
+        const chips = document.getElementById(`player-table-${this.playerId}-chips`);
         const boat = document.getElementById(`player-table-${this.playerId}-boat`);
-        const reservedDestinations = document.getElementById(`player-table-${this.playerId}-reserved-destinations-wrapper`);
+        const reservedChips = document.getElementById(`player-table-${this.playerId}-reserved-chips-wrapper`);
         if (isDoublePlayerColumn) {
             const col2 = document.getElementById(`player-table-${this.playerId}`).querySelector('.col2');
-            col2.appendChild(destinations);
+            col2.appendChild(chips);
             col2.appendChild(boat);
-            if (reservedDestinations) {
-                col2.appendChild(reservedDestinations);
+            if (reservedChips) {
+                col2.appendChild(reservedChips);
             }
         } else {
             const visibleCards = document.getElementById(`player-table-${this.playerId}`).querySelector('.visible-cards');
-            visibleCards.insertAdjacentElement('beforebegin', destinations);
+            visibleCards.insertAdjacentElement('beforebegin', chips);
             visibleCards.insertAdjacentElement('beforebegin', boat);
-            if (reservedDestinations) {
-                visibleCards.insertAdjacentElement('afterend', reservedDestinations);
+            if (reservedChips) {
+                visibleCards.insertAdjacentElement('afterend', reservedChips);
             }
         }
     }

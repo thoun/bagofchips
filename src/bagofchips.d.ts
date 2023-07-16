@@ -10,7 +10,7 @@ interface Card {
     gain: number;
 }
 
-interface Destination {
+interface Chip {
     id: number;
     location: string;
     locationArg: number;
@@ -29,8 +29,8 @@ interface BagOfChipsPlayer extends Player {
     //handCount: number;
     hand?: Card[];
     playedCards: { [color: number]: Card[] };
-    destinations: Destination[];
-    reservedDestinations?: Destination[];
+    chips: Chip[];
+    reservedChips?: Chip[];
 }
 
 interface BagOfChipsGamedatas {
@@ -50,9 +50,9 @@ interface BagOfChipsGamedatas {
     cardDeckCount: number;
     cardDiscardCount: number;
     centerCards: Card[];
-    centerDestinationsDeckTop: { [letter: string]: Destination };
-    centerDestinationsDeckCount: { [letter: string]: number };
-    centerDestinations: { [letter: string]: Destination[] };
+    centerChipsDeckTop: { [letter: string]: Chip };
+    centerChipsDeckCount: { [letter: string]: number };
+    centerChips: { [letter: string]: Chip[] };
     boatSideOption: number;
     variantOption: number;
     artifacts?: number[];
@@ -63,8 +63,7 @@ interface BagOfChipsGamedatas {
 
 interface BagOfChipsGame extends Game {
     cardsManager: CardsManager;
-    destinationsManager: DestinationsManager;
-    artifactsManager: ArtifactsManager;
+    chipsManager: ChipsManager;
 
     getPlayerId(): number;
     getPlayer(playerId: number): BagOfChipsPlayer;
@@ -72,14 +71,12 @@ interface BagOfChipsGame extends Game {
     //getColor(color: number): string;
     getTooltipGain(type: number): string;
     getTooltipColor(color: number): string;
-    getBoatSide(): number;
-    getVariantOption(): number;
     getGameStateName(): string;
     getCurrentPlayerTable(): PlayerTable | null;
 
     setTooltip(id: string, html: string): void;
     highlightPlayerTokens(playerId: number | null): void;
-    onTableDestinationClick(destination: Destination): void;
+    onTableChipClick(chip: Chip): void;
     onHandCardClick(card: Card): void;
     onTableCardClick(card: Card): void;
     onPlayedCardClick(card: Card): void;
@@ -89,7 +86,7 @@ interface EnteringPlayActionArgs {
     canRecruit: boolean;
     canExplore: boolean;
     canTrade: boolean;
-    possibleDestinations: Destination[];
+    possibleChips: Chip[];
 }
 
 interface EnteringChooseNewCardArgs {
@@ -99,8 +96,8 @@ interface EnteringChooseNewCardArgs {
     allFree: boolean;
 }
 
-interface EnteringPayDestinationArgs {
-    selectedDestination: Destination;
+interface EnteringPayChipArgs {
+    selectedChip: Chip;
     recruits: number;
 }
 
@@ -125,19 +122,19 @@ interface NotifNewCardArgs {
     cardDeckCount: number;
 }
 
-// takeDestination
-interface NotifTakeDestinationArgs {
+// takeChip
+interface NotifTakeChipArgs {
     playerId: number;
-    destination: Destination;
+    chip: Chip;
     effectiveGains: { [type: number]: number };
 }
 
-// newTableDestination
-interface NotifNewTableDestinationArgs {
-    destination: Destination;
+// newTableChip
+interface NotifNewTableChipArgs {
+    chip: Chip;
     letter: string;    
-    destinationDeckTop?: Destination;
-    destinationDeckCount: number;
+    chipDeckTop?: Chip;
+    chipDeckCount: number;
 }
 
 // trade
@@ -158,10 +155,10 @@ interface NotifDiscardTableCardArgs {
     card: Card;
 }
 
-// reserveDestination
-interface NotifReserveDestinationArgs {
+// reserveChip
+interface NotifReserveChipArgs {
     playerId: number;
-    destination: Destination;
+    chip: Chip;
 }
 
 // score

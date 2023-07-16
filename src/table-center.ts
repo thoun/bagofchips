@@ -2,10 +2,10 @@ const POINT_CASE_SIZE_LEFT = 38.8;
 const POINT_CASE_SIZE_TOP = 37.6;
 
 class TableCenter {
-    public destinationsDecks: Deck<Destination>[] = [];
+    public chipsDecks: Deck<Chip>[] = [];
     public cardDeck: Deck<Card>;
     public cardDiscard: VoidStock<Card>;
-    public destinations: SlotStock<Destination>[] = [];
+    public chips: SlotStock<Chip>[] = [];
     public cards: SlotStock<Card>;
     private vp = new Map<number, number>();
     private reputation = new Map<number, number>(); 
@@ -13,21 +13,21 @@ class TableCenter {
     private artifacts: LineStock<number>;
         
     constructor(private game: BagOfChipsGame, gamedatas: BagOfChipsGamedatas) {
-        ['A', 'B'].forEach(letter => {
-            this.destinationsDecks[letter] = new Deck<Destination>(game.destinationsManager, document.getElementById(`table-destinations-${letter}-deck`), {
-                cardNumber: gamedatas.centerDestinationsDeckCount[letter],
-                topCard: gamedatas.centerDestinationsDeckTop[letter],
+        /*['A', 'B'].forEach(letter => {
+            this.chipsDecks[letter] = new Deck<Chip>(game.chipsManager, document.getElementById(`table-chips-${letter}-deck`), {
+                cardNumber: gamedatas.centerChipsDeckCount[letter],
+                topCard: gamedatas.centerChipsDeckTop[letter],
                 counter: {
                     position: 'right',
                 },
             });
 
-            this.destinations[letter] = new SlotStock<Destination>(game.destinationsManager, document.getElementById(`table-destinations-${letter}`), {
+            this.chips[letter] = new SlotStock<Chip>(game.chipsManager, document.getElementById(`table-chips-${letter}`), {
                 slotsIds: [1, 2, 3],
                 mapCardToSlot: card => card.locationArg,
             });
-            this.destinations[letter].addCards(gamedatas.centerDestinations[letter]);
-            this.destinations[letter].onCardClick = (card: Destination) => this.game.onTableDestinationClick(card);
+            this.chips[letter].addCards(gamedatas.centerChips[letter]);
+            this.chips[letter].onCardClick = (card: Chip) => this.game.onTableChipClick(card);
         })
 
         const cardDeckDiv = document.getElementById(`card-deck`);
@@ -60,8 +60,8 @@ class TableCenter {
         // points
         players.forEach(player =>
             html += `
-            <div id="player-${player.id}-vp-marker" class="marker ${/*this.game.isColorBlindMode() ? 'color-blind' : */''}" data-player-id="${player.id}" data-player-no="${player.playerNo}" data-color="${player.color}"><div class="inner vp"></div></div>
-            <div id="player-${player.id}-reputation-marker" class="marker ${/*this.game.isColorBlindMode() ? 'color-blind' : */''}" data-player-id="${player.id}" data-player-no="${player.playerNo}" data-color="${player.color}"><div class="inner reputation"></div></div>
+            <div id="player-${player.id}-vp-marker" class="marker ${/_*this.game.isColorBlindMode() ? 'color-blind' : *_/''}" data-player-id="${player.id}" data-player-no="${player.playerNo}" data-color="${player.color}"><div class="inner vp"></div></div>
+            <div id="player-${player.id}-reputation-marker" class="marker ${/_*this.game.isColorBlindMode() ? 'color-blind' : *_/''}" data-player-id="${player.id}" data-player-no="${player.playerNo}" data-color="${player.color}"><div class="inner reputation"></div></div>
             `
         );
         dojo.place(html, 'board');
@@ -70,30 +70,23 @@ class TableCenter {
             this.reputation.set(Number(player.id), Math.min(14, Number(player.reputation)));
         });
         this.moveVP();
-        this.moveReputation();
-
-        if (gamedatas.variantOption >= 2) {
-            document.getElementById('table-center').insertAdjacentHTML('afterbegin', `<div></div><div id="artifacts"></div>`);
-        
-            this.artifacts = new LineStock<number>(this.game.artifactsManager, document.getElementById(`artifacts`));
-            this.artifacts.addCards(gamedatas.artifacts);
-        }
+        this.moveReputation();*/
     }
     
     public newTableCard(card: Card): Promise<boolean> {
         return this.cards.addCard(card);
     }
     
-    public newTableDestination(destination: Destination, letter: string, destinationDeckCount: number, destinationDeckTop?: Destination): Promise<boolean> {
-        const promise = this.destinations[letter].addCard(destination);
-        this.destinationsDecks[letter].setCardNumber(destinationDeckCount, destinationDeckTop);
+    public newTableChip(chip: Chip, letter: string, chipDeckCount: number, chipDeckTop?: Chip): Promise<boolean> {
+        const promise = this.chips[letter].addCard(chip);
+        this.chipsDecks[letter].setCardNumber(chipDeckCount, chipDeckTop);
         return promise;
     } 
     
-    public setDestinationsSelectable(selectable: boolean, selectableCards: Destination[] | null = null) {
+    public setChipsSelectable(selectable: boolean, selectableCards: Chip[] | null = null) {
         ['A', 'B'].forEach(letter => {
-            this.destinations[letter].setSelectionMode(selectable ? 'single' : 'none');
-            this.destinations[letter].setSelectableCards(selectableCards);
+            this.chips[letter].setSelectionMode(selectable ? 'single' : 'none');
+            this.chips[letter].setSelectableCards(selectableCards);
         });
     }
 
@@ -179,10 +172,10 @@ class TableCenter {
         }
     }
     
-    public getVisibleDestinations(): Destination[] {
+    public getVisibleChips(): Chip[] {
         return [
-            ...this.destinations['A'].getCards(),
-            ...this.destinations['B'].getCards(),
+            ...this.chips['A'].getCards(),
+            ...this.chips['B'].getCards(),
         ];
     }
 

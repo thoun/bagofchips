@@ -594,149 +594,149 @@ body > .card {
     box-shadow: 0 0 5px 3px rgb(255, 212, 131);
   }
 }
-.bagofchips-destination {
+.bagofchips-chip {
   display: inline-block;
   position: relative;
   width: 221px;
   height: 120px;
   border-radius: 8px;
 }
-.bagofchips-destination .card-sides .card-side {
+.bagofchips-chip .card-sides .card-side {
   border-radius: 8px;
   background-size: 200% auto;
-  background-image: url("img/destinations.jpg");
+  background-image: url("img/chips.jpg");
 }
-.bagofchips-destination .card-sides .card-side > * {
+.bagofchips-chip .card-sides .card-side > * {
   pointer-events: none;
   user-select: none;
 }
-.bagofchips-destination.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
+.bagofchips-chip.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;
 }
-.bagofchips-destination.bga-cards_selectable-card:not(.bga-cards_disabled-card) .card-side {
+.bagofchips-chip.bga-cards_selectable-card:not(.bga-cards_disabled-card) .card-side {
   box-shadow: unset;
 }
-.bagofchips-destination.bga-cards_selected-card:not(.bga-cards_disabled-card) {
+.bagofchips-chip.bga-cards_selected-card:not(.bga-cards_disabled-card) {
   box-shadow: 0 0 5px 5px orange;
 }
-.bagofchips-destination.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
+.bagofchips-chip.bga-cards_selected-card:not(.bga-cards_disabled-card) .card-side {
   box-shadow: unset;
 }
-.bagofchips-destination.selected-pay-destination {
+.bagofchips-chip.selected-pay-chip {
   outline: 5px solid orange;
 }
-.bagofchips-destination.selected-pay-destination .card-side {
+.bagofchips-chip.selected-pay-chip .card-side {
   box-shadow: unset;
 }
-.bagofchips-destination[data-type="1"] .card-side {
+.bagofchips-chip[data-type="1"] .card-side {
   background-position-x: 0%;
 }
-.bagofchips-destination[data-type="2"] .card-side {
+.bagofchips-chip[data-type="2"] .card-side {
   background-position-x: 100%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="1"] {
+.bagofchips-chip[data-type="1"] .front[data-number="1"] {
   background-position-y: 5%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="2"] {
+.bagofchips-chip[data-type="1"] .front[data-number="2"] {
   background-position-y: 10%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="3"] {
+.bagofchips-chip[data-type="1"] .front[data-number="3"] {
   background-position-y: 15%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="4"] {
+.bagofchips-chip[data-type="1"] .front[data-number="4"] {
   background-position-y: 20%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="5"] {
+.bagofchips-chip[data-type="1"] .front[data-number="5"] {
   background-position-y: 25%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="6"] {
+.bagofchips-chip[data-type="1"] .front[data-number="6"] {
   background-position-y: 30%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="7"] {
+.bagofchips-chip[data-type="1"] .front[data-number="7"] {
   background-position-y: 35%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="8"] {
+.bagofchips-chip[data-type="1"] .front[data-number="8"] {
   background-position-y: 40%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="9"] {
+.bagofchips-chip[data-type="1"] .front[data-number="9"] {
   background-position-y: 45%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="10"] {
+.bagofchips-chip[data-type="1"] .front[data-number="10"] {
   background-position-y: 50%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="11"] {
+.bagofchips-chip[data-type="1"] .front[data-number="11"] {
   background-position-y: 55%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="12"] {
+.bagofchips-chip[data-type="1"] .front[data-number="12"] {
   background-position-y: 60%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="13"] {
+.bagofchips-chip[data-type="1"] .front[data-number="13"] {
   background-position-y: 65%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="14"] {
+.bagofchips-chip[data-type="1"] .front[data-number="14"] {
   background-position-y: 70%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="15"] {
+.bagofchips-chip[data-type="1"] .front[data-number="15"] {
   background-position-y: 75%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="16"] {
+.bagofchips-chip[data-type="1"] .front[data-number="16"] {
   background-position-y: 80%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="17"] {
+.bagofchips-chip[data-type="1"] .front[data-number="17"] {
   background-position-y: 85%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="18"] {
+.bagofchips-chip[data-type="1"] .front[data-number="18"] {
   background-position-y: 90%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="19"] {
+.bagofchips-chip[data-type="1"] .front[data-number="19"] {
   background-position-y: 95%;
 }
-.bagofchips-destination[data-type="1"] .front[data-number="20"] {
+.bagofchips-chip[data-type="1"] .front[data-number="20"] {
   background-position-y: 100%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="21"] {
+.bagofchips-chip[data-type="2"] .front[data-number="21"] {
   background-position-y: 5%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="22"] {
+.bagofchips-chip[data-type="2"] .front[data-number="22"] {
   background-position-y: 10%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="23"] {
+.bagofchips-chip[data-type="2"] .front[data-number="23"] {
   background-position-y: 15%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="24"] {
+.bagofchips-chip[data-type="2"] .front[data-number="24"] {
   background-position-y: 20%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="25"] {
+.bagofchips-chip[data-type="2"] .front[data-number="25"] {
   background-position-y: 25%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="26"] {
+.bagofchips-chip[data-type="2"] .front[data-number="26"] {
   background-position-y: 30%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="27"] {
+.bagofchips-chip[data-type="2"] .front[data-number="27"] {
   background-position-y: 35%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="28"] {
+.bagofchips-chip[data-type="2"] .front[data-number="28"] {
   background-position-y: 40%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="29"] {
+.bagofchips-chip[data-type="2"] .front[data-number="29"] {
   background-position-y: 45%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="30"] {
+.bagofchips-chip[data-type="2"] .front[data-number="30"] {
   background-position-y: 50%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="31"] {
+.bagofchips-chip[data-type="2"] .front[data-number="31"] {
   background-position-y: 55%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="32"] {
+.bagofchips-chip[data-type="2"] .front[data-number="32"] {
   background-position-y: 60%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="33"] {
+.bagofchips-chip[data-type="2"] .front[data-number="33"] {
   background-position-y: 65%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="34"] {
+.bagofchips-chip[data-type="2"] .front[data-number="34"] {
   background-position-y: 70%;
 }
-.bagofchips-destination[data-type="2"] .front[data-number="35"] {
+.bagofchips-chip[data-type="2"] .front[data-number="35"] {
   background-position-y: 75%;
 }
 
@@ -748,47 +748,6 @@ body > .card {
     box-shadow: 0 0 5px 3px rgb(255, 212, 131);
   }
 }
-.card.artifact {
-  display: inline-block;
-  position: relative;
-  width: 221px;
-  height: 120px;
-  border-radius: 8px;
-}
-.card.artifact .card-sides .card-side {
-  border-radius: 8px;
-}
-.card.artifact .card-sides .card-side > * {
-  pointer-events: none;
-  user-select: none;
-}
-.card.artifact .card-sides .card-side.front {
-  background-size: 100% auto;
-  background-image: url("img/artefacts.jpg");
-  box-shadow: 0px 0px 3px 2px black;
-}
-.card.artifact .card-sides .card-side.front[data-number="1"] {
-  background-position-y: 0%;
-}
-.card.artifact .card-sides .card-side.front[data-number="2"] {
-  background-position-y: 16.6666666667%;
-}
-.card.artifact .card-sides .card-side.front[data-number="3"] {
-  background-position-y: 33.3333333333%;
-}
-.card.artifact .card-sides .card-side.front[data-number="4"] {
-  background-position-y: 50%;
-}
-.card.artifact .card-sides .card-side.front[data-number="5"] {
-  background-position-y: 66.6666666667%;
-}
-.card.artifact .card-sides .card-side.front[data-number="6"] {
-  background-position-y: 83.3333333333%;
-}
-.card.artifact .card-sides .card-side.front[data-number="7"] {
-  background-position-y: 100%;
-}
-
 #table-center-wrapper {
   display: flex;
   justify-content: center;
@@ -800,10 +759,10 @@ body > .card {
   grid-template-columns: 120px 690px;
   gap: 8px;
 }
-#table-center .table-destinations-deck {
+#table-center .table-chips-deck {
   margin-left: -102px;
 }
-#table-center #table-destinations-A .slot, #table-center #table-destinations-B .slot {
+#table-center #table-chips-A .slot, #table-center #table-chips-B .slot {
   width: 221px;
   height: 120px;
 }
@@ -834,18 +793,6 @@ body > .card {
 }
 #table-center #board .marker .inner.reputation {
   background-image: url("img/reputation-pawns.png");
-}
-#table-center #board .marker[data-color="7c5654"] .inner {
-  background-position-x: 0%;
-}
-#table-center #board .marker[data-color=d6d6d7] .inner {
-  background-position-x: 33.3333333333%;
-}
-#table-center #board .marker[data-color=b79d86] .inner {
-  background-position-x: 66.6666666667%;
-}
-#table-center #board .marker[data-color="1e2c36"] .inner {
-  background-position-x: 100%;
 }
 #table-center #board .marker.color-blind .inner::after {
   font-size: 120%;
@@ -989,18 +936,6 @@ body > .card {
 .player-table .boat.advanced {
   background-image: url("img/boats-advanced.png");
 }
-.player-table .boat[data-color="7c5654"] {
-  background-position-y: 0%;
-}
-.player-table .boat[data-color=d6d6d7] {
-  background-position-y: 33.3333333333%;
-}
-.player-table .boat[data-color=b79d86] {
-  background-position-y: 66.6666666667%;
-}
-.player-table .boat[data-color="1e2c36"] {
-  background-position-y: 100%;
-}
 .player-table .boat[data-recruits="0"] .icon.recruit[data-number="1"] {
   top: 108px;
   left: 50px;
@@ -1133,11 +1068,11 @@ body > .card {
 .player-table .visible-cards .cards .card:not(:first-child) {
   margin-top: calc(-1 * var(--card-overlap));
 }
-.player-table .destinations {
+.player-table .chips {
   flex-direction: column-reverse;
   width: 221px;
 }
-.player-table .destinations .card:not(:last-child) {
+.player-table .chips .card:not(:last-child) {
   margin-top: calc(-1 * var(--card-overlap));
 }
 .player-table .col {
@@ -1315,37 +1250,4 @@ html, .mode_3d #game_play_area_background {
 }
 #tables-and-center.double-column > div {
   flex: 1;
-}
-
-.artifact-tooltip > div {
-  padding: 5px;
-}
-.artifact-tooltip > div:not(:last-child) {
-  border-bottom: 1px solid gray;
-}
-
-#last-round {
-  margin: 5px -5px -5px;
-  text-align: center;
-  background-color: #900;
-  color: white;
-  text-shadow: 0 0 1px #900, 0 0 5px #900, 0 0 6px #900, 0 0 7px #900;
-}
-#last-round .last-round-text {
-  display: inline-block;
-}
-#last-round .last-round-text.animate {
-  animation: last-round-animation 2s 1 forwards ease-in-out;
-}
-
-@keyframes last-round-animation {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(3);
-  }
-  100% {
-    transform: scale(1);
-  }
 }

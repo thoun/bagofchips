@@ -97,55 +97,55 @@ $commonStats = [
         "type" => "int"
     ],
     
-    // destinations
-    "discoveredDestinations" => [
+    // chips
+    "discoveredChips" => [
         "id" => 40,
-        "name" => totranslate("Discovered destinations"),
+        "name" => totranslate("Discovered chips"),
         "type" => "int"
     ],    
-    "discoveredDestinations1" => [
+    "discoveredChips1" => [
         "id" => 41,
         "name" => totranslate("Discovered trading Lands"),
         "type" => "int"
     ],    
-    "discoveredDestinations2" => [
+    "discoveredChips2" => [
         "id" => 42,
         "name" => totranslate("Discovered Lands of influence"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination" => [
+    "assetsCollectedByChip" => [
         "id" => 43,
-        "name" => totranslate("Assets gained by destinations"),
+        "name" => totranslate("Assets gained by chips"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination1" => [
+    "assetsCollectedByChip1" => [
         "id" => 44,
-        "name" => totranslate("Victory points gained by destinations"),
+        "name" => totranslate("Victory points gained by chips"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination2" => [
+    "assetsCollectedByChip2" => [
         "id" => 45,
-        "name" => totranslate("Bracelets gained by destinations"),
+        "name" => totranslate("Bracelets gained by chips"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination3" => [
+    "assetsCollectedByChip3" => [
         "id" => 46,
-        "name" => totranslate("Recruits gained by destinations"),
+        "name" => totranslate("Recruits gained by chips"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination4" => [
+    "assetsCollectedByChip4" => [
         "id" => 47,
-        "name" => totranslate("Reputation gained by destinations"),
+        "name" => totranslate("Reputation gained by chips"),
         "type" => "int"
     ],
-    "assetsCollectedByDestination5" => [
+    "assetsCollectedByChip5" => [
         "id" => 48,
-        "name" => totranslate("Cards gained by destinations"),
+        "name" => totranslate("Cards gained by chips"),
         "type" => "int"
     ],
-    "recruitsUsedToPayDestination" => [
+    "recruitsUsedToPayChip" => [
         "id" => 50,
-        "name" => totranslate("Recruits used to take a destination"),
+        "name" => totranslate("Recruits used to take a chip"),
         "type" => "int"
     ],
 

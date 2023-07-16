@@ -39,13 +39,6 @@
       background-image: url('img/boats-advanced.png');
     }
 
-    @each $playerColor in $playerColors {
-      $i: index($playerColors, $playerColor) - 1;
-      &[data-color="#{$playerColor}"] { 
-        background-position-y: #{$i * 100% / 3};
-      }
-    }
-
     &[data-recruits="0"] {
       .icon.recruit[data-number="1"] {
         top: 108px;
@@ -195,7 +188,7 @@
     }
   }
 
-  .destinations {
+  .chips {
     flex-direction: column-reverse;
     width: 221px;
 

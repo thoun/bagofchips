@@ -88,24 +88,19 @@ $gameinfos = [
 'language_dependency' => false,
 
 // Complexity of the game, from 0 (extremely simple) to 5 (extremely complex)
-'complexity' => 2,    
+'complexity' => 1,    
 
 // Luck of the game, from 0 (absolutely no luck in this game) to 5 (totally luck driven)
 'luck' => 3,    
 
 // Strategy of the game, from 0 (no strategy can be setup) to 5 (totally based on strategy)
-'strategy' => 3,    
+'strategy' => 2,    
 
 // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
-'diplomacy' => 2,    
+'diplomacy' => 1,    
 
 // Colors attributed to players
-  'player_colors' => [ // TODO
-    '7c5654',
-    'd6d6d7',
-    'b79d86',
-    '1e2c36',
-  ],
+  'player_colors' => ['ff0000', '008000', '0000ff', 'ffa500', '000000', 'e94190', '982fff', '72c3b1', 'f07f16', 'bdd002', '7b7b7b'],
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
@@ -137,8 +132,8 @@ $gameinfos = [
 // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
 // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
 'presentation' => [
-    totranslate("You are the leader of a band of Vikings that you send to new destinations. Manage the recruitment of your crew and choose the best territories to explore. Depending on the destinations reached (for trading or influence) and the Vikings that accompany you, you can increase your reputation to gain even more wealth."),
-], // TODO
+    totranslate("Bag of Chips is a party game in which you will face crucial choices to score as many points as possible at the end of each round. Be careful, though, because if you're too greedy, you will lose a lot!"),
+],
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 

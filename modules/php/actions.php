@@ -40,7 +40,7 @@ trait ActionTrait {
             throw new BgaUserException("You can't play this card");
         }
 
-        $this->cards->moveCard($card->id, 'played'.$playerId.'-'.$card->color, intval($this->destinations->countCardInLocation('played'.$playerId.'-'.$card->color)));
+        $this->cards->moveCard($card->id, 'played'.$playerId.'-'.$card->color, intval($this->chips->countCardInLocation('played'.$playerId.'-'.$card->color)));
 
         $cardsOfColor = $this->getCardsByLocation('played'.$playerId.'-'.$card->color);
         $gains = array_map(fn($card) => $card->gain, $cardsOfColor);
@@ -149,27 +149,27 @@ trait ActionTrait {
         $this->redirectAfterAction($playerId, true);
     }
 
-    public function takeDestination(int $id) {
-        self::checkAction('takeDestination');
+    public function takeChip(int $id) {
+        self::checkAction('takeChip');
 
         if (boolval($this->getGameStateValue(EXPLORE_DONE))) {
             throw new BgaUserException("Invalid action");
         }
 
         $args = $this->argPlayAction();
-        $destination = $this->array_find($args['possibleDestinations'], fn($c) => $c->id == $id);
+        $chip = $this->array_find($args['possibleChips'], fn($c) => $c->id == $id);
 
-        if ($destination == null) {
-            throw new BgaUserException("You can't take this destination");
+        if ($chip == null) {
+            throw new BgaUserException("You can't take this chip");
         }
 
-        $this->setGameStateValue(SELECTED_DESTINATION, $id);
+        $this->setGameStateValue(SELECTED_CHIP, $id);
 
-        $this->gamestate->nextState('payDestination');
+        $this->gamestate->nextState('payChip');
     }
 
-    public function payDestination(array $ids, int $recruits) {
-        self::checkAction('payDestination');
+    public function payChip(array $ids, int $recruits) {
+        self::checkAction('payChip');
 
         $playerId = intval($this->getActivePlayerId());
         
@@ -177,8 +177,8 @@ trait ActionTrait {
             throw new BgaUserException("Not enough recruits");
         }
 
-        $destination = $this->getDestinationFromDb($this->destinations->getCard($this->getGameStateValue(SELECTED_DESTINATION)));
-        $fromReserve = $destination->location == 'reserved';
+        $chip = $this->getChipFromDb($this->chips->getCard($this->getGameStateValue(SELECTED_CHIP)));
+        $fromReserve = $chip->location == 'reserved';
         
         // will contain only selected cards of player
         $playedCardsByColor = [];
@@ -193,23 +193,23 @@ trait ActionTrait {
             }
         }
 
-        $valid = $this->canTakeDestination($destination, $selectedPlayedCardsColors, $recruits, true);
+        $valid = $this->canTakeChip($chip, $selectedPlayedCardsColors, $recruits, true);
         if (!$valid) {
-            throw new BgaUserException("Invalid payment for this destination");
+            throw new BgaUserException("Invalid payment for this chip");
         }
 
         if ($recruits > 0) {
-            $this->incPlayerRecruit($playerId, -$recruits, clienttranslate('${player_name} pays ${number} recruit(s) for the selected destination'), [
+            $this->incPlayerRecruit($playerId, -$recruits, clienttranslate('${player_name} pays ${number} recruit(s) for the selected chip'), [
                 'number' => $recruits, // for logs
             ]);
-            $this->incStat($recruits, 'recruitsUsedToPayDestination');
-            $this->incStat($recruits, 'recruitsUsedToPayDestination', $playerId);
+            $this->incStat($recruits, 'recruitsUsedToPayChip');
+            $this->incStat($recruits, 'recruitsUsedToPayChip', $playerId);
         }
 
         if (count($cardsToDiscard)) {
             $this->cards->moveCards(array_map(fn($card) => $card->id, $cardsToDiscard), 'discard');
 
-            self::notifyAllPlayers('discardCards', clienttranslate('${player_name} discards ${number} cards(s) for the selected destination'), [
+            self::notifyAllPlayers('discardCards', clienttranslate('${player_name} discards ${number} cards(s) for the selected chip'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'cards' => $cardsToDiscard,
@@ -218,125 +218,100 @@ trait ActionTrait {
             ]);
         }
 
-        $destinationIndex = intval($this->destinations->countCardInLocation('played'.$playerId));
-        $this->destinations->moveCard($destination->id, 'played'.$playerId, $destinationIndex);
+        $chipIndex = intval($this->chips->countCardInLocation('played'.$playerId));
+        $this->chips->moveCard($chip->id, 'played'.$playerId, $chipIndex);
 
-        $effectiveGains = $this->gainResources($playerId, $destination->immediateGains, 'explore');
-        $type = $destination->type == 2 ? 'B' : 'A';
+        $effectiveGains = $this->gainResources($playerId, $chip->immediateGains, 'explore');
+        $type = $chip->type == 2 ? 'B' : 'A';
 
-        self::notifyAllPlayers('takeDestination', clienttranslate('${player_name} takes a destination from line ${letter} and gains ${gains}'), [
+        self::notifyAllPlayers('takeChip', clienttranslate('${player_name} takes a chip from line ${letter} and gains ${gains}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'destination' => $destination,
+            'chip' => $chip,
             'effectiveGains' => $effectiveGains,
             'gains' => $effectiveGains, // for logs
             'letter' => $type, // for logs
         ]);
                     
-        $this->incStat(1, 'discoveredDestinations');
-        $this->incStat(1, 'discoveredDestinations', $playerId);
-        $this->incStat(1, 'discoveredDestinations'.$destination->type);
-        $this->incStat(1, 'discoveredDestinations'.$destination->type, $playerId);
+        $this->incStat(1, 'discoveredChips');
+        $this->incStat(1, 'discoveredChips', $playerId);
+        $this->incStat(1, 'discoveredChips'.$chip->type);
+        $this->incStat(1, 'discoveredChips'.$chip->type, $playerId);
 
         $allGains = array_reduce($effectiveGains, fn($a, $b) => $a + $b, 0);
-        $this->incStat($allGains, 'assetsCollectedByDestination');
-        $this->incStat($allGains, 'assetsCollectedByDestination', $playerId);
+        $this->incStat($allGains, 'assetsCollectedByChip');
+        $this->incStat($allGains, 'assetsCollectedByChip', $playerId);
         foreach ($effectiveGains as $type => $count) {
             if ($count > 0) {
-                $this->incStat($count, 'assetsCollectedByDestination'.$type);
-                $this->incStat($count, 'assetsCollectedByDestination'.$type, $playerId);
+                $this->incStat($count, 'assetsCollectedByChip'.$type);
+                $this->incStat($count, 'assetsCollectedByChip'.$type, $playerId);
             }
         }
 
         $remainingCardsToTake = $this->getGlobalVariable(REMAINING_CARDS_TO_TAKE);
         if ($remainingCardsToTake != null) {
             $remainingCardsToTake->fromReserve = $fromReserve;
-            $remainingCardsToTake->destination = $destination;
-            $remainingCardsToTake->destinationIndex = $destinationIndex;
+            $remainingCardsToTake->chip = $chip;
+            $remainingCardsToTake->chipIndex = $chipIndex;
             $this->setGlobalVariable(REMAINING_CARDS_TO_TAKE, $remainingCardsToTake);
 
             $this->gamestate->nextState('discardCardsForDeck');
         } else {
-            $this->endExplore($playerId, $fromReserve, $destination, $destinationIndex);
+            $this->endExplore($playerId, $fromReserve, $chip, $chipIndex);
         }
     }
 
-    public function endExplore(int $playerId, bool $fromReserve, object $destination, int $destinationIndex) {
+    public function endExplore(int $playerId, bool $fromReserve, object $chip, int $chipIndex) {
         if (!$fromReserve) {
-            $type = $destination->type == 2 ? 'B' : 'A';
-            $newDestination = $this->getDestinationFromDb($this->destinations->pickCardForLocation('deck'.$type, 'slot'.$type, $destination->locationArg));
-            $newDestination->location = 'slot'.$type;
-            $newDestination->locationArg = $destination->locationArg;
+            $type = $chip->type == 2 ? 'B' : 'A';
+            $newChip = $this->getChipFromDb($this->chips->pickCardForLocation('deck'.$type, 'slot'.$type, $chip->locationArg));
+            $newChip->location = 'slot'.$type;
+            $newChip->locationArg = $chip->locationArg;
 
-            self::notifyAllPlayers('newTableDestination', '', [
-                'destination' => $newDestination,
+            self::notifyAllPlayers('newTableChip', '', [
+                'chip' => $newChip,
                 'letter' => $type,
-                'destinationDeckTop' => Destination::onlyId($this->getDestinationFromDb($this->destinations->getCardOnTop('deck'.$type))),
-                'destinationDeckCount' => intval($this->destinations->countCardInLocation('deck'.$type)),
+                'chipDeckTop' => Chip::onlyId($this->getChipFromDb($this->chips->getCardOnTop('deck'.$type))),
+                'chipDeckCount' => intval($this->chips->countCardInLocation('deck'.$type)),
             ]);
         }
 
         $this->setGameStateValue(RECRUIT_DONE, 1);
         $this->setGameStateValue(EXPLORE_DONE, 1);
 
-        if ($this->getVariantOption() >= 2) {
-            $artifacts = $this->getGlobalVariable(ARTIFACTS, true) ?? [];
-            if (in_array(ARTIFACT_HELMET, $artifacts) && $destinationIndex > 0 && $destination->type == 2) {
-                $previousDestination = $this->getDestinationsByLocation('played'.$playerId)[$destinationIndex - 1];
-                if ($previousDestination->type == 1) {
-                    $this->setGameStateValue(RECRUIT_DONE, 0);
-                    self::notifyAllPlayers('log', clienttranslate('${player_name} can do the recruit action thanks to ${artifact_name} effect'), [
-                        'player_name' => $this->getPlayerName($playerId),
-                        'artifact_name' => $this->getArtifactName(ARTIFACT_HELMET), // for logs
-                        'i18n' => ['artifact_name'],
-                    ]);
-
-                    $this->incStat(1, 'activatedArtifacts');
-                    $this->incStat(1, 'activatedArtifacts', $playerId);
-                }
-            }
-
-            if (in_array(ARTIFACT_MEAD_CUP, $artifacts)) {
-                $this->setGameStateValue(GO_DISCARD_TABLE_CARD, 1);
-
-                $this->incStat(1, 'activatedArtifacts');
-                $this->incStat(1, 'activatedArtifacts', $playerId);
-            }
-        }
-
         $this->redirectAfterAction($playerId, true);
     }
 
-    public function reserveDestination(int $id) {
-        self::checkAction('reserveDestination');
+    public function reserveChip(int $id) {
+        self::checkAction('reserveChip');
 
         $playerId = intval($this->getActivePlayerId());
 
-        $destination = $this->getDestinationFromDb($this->destinations->getCard($id));
+        $chip = $this->getChipFromDb($this->chips->getCard($id));
 
-        if ($destination == null || !in_array($destination->location, ['slotA', 'slotB'])) {
-            throw new BgaUserException("You can't reserve this destination");
+        if ($chip == null || !in_array($chip->location, ['slotA', 'slotB'])) {
+            throw new BgaUserException("You can't reserve this chip");
         }
 
-        $this->destinations->moveCard($destination->id, 'reserved', $playerId);
-        $type = $destination->type == 2 ? 'B' : 'A';
+        $this->chips->moveCard($chip->id, 'reserved', $playerId);
+        $type = $chip->type == 2 ? 'B' : 'A';
 
-        self::notifyAllPlayers('reserveDestination', clienttranslate('${player_name} takes a destination from line ${letter}'), [
+        self::notifyAllPlayers('reserveChip', clienttranslate('${player_name} takes a chip from line ${letter}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'destination' => $destination,
+            'chip' => $chip,
             'letter' => $type, // for logs
         ]);
 
-        $newDestination = $this->getDestinationFromDb($this->destinations->pickCardForLocation('deck'.$type, 'slot'.$type, $destination->locationArg));
-        $newDestination->location = 'slot'.$type;
-        $newDestination->locationArg = $destination->locationArg;
+        $newChip = $this->getChipFromDb($this->chips->pickCardForLocation('deck'.$type, 'slot'.$type, $chip->locationArg));
+        $newChip->location = 'slot'.$type;
+        $newChip->locationArg = $chip->locationArg;
 
-        self::notifyAllPlayers('newTableDestination', '', [
-            'destination' => $newDestination,
+        self::notifyAllPlayers('newTableChip', '', [
+            'chip' => $newChip,
             'letter' => $type,
-            'destinationDeckTop' => Destination::onlyId($this->getDestinationFromDb($this->destinations->getCardOnTop('deck'.$type))),
-            'destinationDeckCount' => intval($this->destinations->countCardInLocation('deck'.$type)),
+            'chipDeckTop' => Chip::onlyId($this->getChipFromDb($this->chips->getCardOnTop('deck'.$type))),
+            'chipDeckCount' => intval($this->chips->countCardInLocation('deck'.$type)),
         ]);
 
         $this->gamestate->nextState('next');

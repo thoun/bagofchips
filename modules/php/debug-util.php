@@ -15,11 +15,10 @@ trait DebugUtilTrait {
         //$this->debugSetScore(39);
         //$this->debugSetReputation(8);
 
-        //$this->debugAddDestinations(2343492, 'A', 15);
-        //$this->debugAddDestinations(2343492, 'B', 10);
+        //$this->debugAddChips(2343492, 'A', 15);
+        //$this->debugAddChips(2343492, 'B', 10);
 
         //$this->cards->pickCardsForLocation(13, 'deck', 'void');
-        $this->setGlobalVariable(ARTIFACTS, [1, 6, 7]);
         
         //$this->debugLastTurn();
     }
@@ -49,10 +48,10 @@ trait DebugUtilTrait {
         $this->cards->moveAllCardsInLocation('discard', 'void');
     }
 
-    function debugAddDestinations($playerId, $letter, $number) {
+    function debugAddChips($playerId, $letter, $number) {
         for ($i = 0; $i < $number; $i++) {
-            $destinationIndex = intval($this->destinations->countCardInLocation('played'.$playerId));
-            $this->destinations->pickCardForLocation('deck'.$letter, 'played'.$playerId, $destinationIndex);
+            $chipIndex = intval($this->chips->countCardInLocation('played'.$playerId));
+            $this->chips->pickCardForLocation('deck'.$letter, 'played'.$playerId, $chipIndex);
         }
     }
 
@@ -80,8 +79,8 @@ trait DebugUtilTrait {
 			// tables specific to your schema that use player_ids
 			$this->DbQuery("UPDATE card SET card_location_arg=$sid WHERE card_location_arg = $id" );
 			foreach ([1,2,3,4,5] as $i) { $this->DbQuery("UPDATE card SET card_location='played$sid-$i' WHERE card_location='played$id-$i'" ); }
-			$this->DbQuery("UPDATE destination SET card_location='played$sid' WHERE card_location='played$id'" );
-			$this->DbQuery("UPDATE destination SET card_location_arg=$sid WHERE card_location_arg = $id" );
+			$this->DbQuery("UPDATE chip SET card_location='played$sid' WHERE card_location='played$id'" );
+			$this->DbQuery("UPDATE chip SET card_location_arg=$sid WHERE card_location_arg = $id" );
 
             
 			++$sid;

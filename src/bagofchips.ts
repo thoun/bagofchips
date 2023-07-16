@@ -11,14 +11,6 @@ const ACTION_TIMER_DURATION = 5;
 const LOCAL_STORAGE_ZOOM_KEY = 'BagOfChips-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'BagOfChips-jump-to-folded';
 
-const VP_BY_REPUTATION = {
-    0: 0,
-    3: 1,
-    6: 2,
-    10: 3,
-    14: 5,
-};
-
 const EQUAL = -1;
 const DIFFERENT = 0;
 
@@ -28,14 +20,9 @@ const RECRUIT = 3;
 const REPUTATION = 4;
 const CARD = 5;
 
-function getVpByReputation(reputation: number) {
-    return Object.entries(VP_BY_REPUTATION).findLast(entry => reputation >= Number(entry[0]))[1];
-}
-
 class BagOfChips implements BagOfChipsGame {
     public cardsManager: CardsManager;
-    public destinationsManager: DestinationsManager;
-    public artifactsManager: ArtifactsManager;
+    public chipsManager: ChipsManager;
 
     private zoomManager: ZoomManager;
     private animationManager: AnimationManager;
@@ -83,16 +70,14 @@ class BagOfChips implements BagOfChipsGame {
 
 
         this.cardsManager = new CardsManager(this);
-        this.destinationsManager = new DestinationsManager(this);        
-        this.artifactsManager = new ArtifactsManager(this);
+        this.chipsManager = new ChipsManager(this);        
         this.animationManager = new AnimationManager(this);
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
             topEntries: [
                 new JumpToEntry(_('Main board'), 'table-center', { 'color': '#224757' })
             ],
-            entryClasses: 'triangle-point',
-            defaultFolded: true,
+            entryClasses: 'round-point',
         });
 
         this.tableCenter = new TableCenter(this, gamedatas);
@@ -162,14 +147,14 @@ class BagOfChips implements BagOfChipsGame {
             case 'chooseNewCard':
                 this.onEnteringChooseNewCard(args.args);
                 break;
-            case 'payDestination':
-                this.onEnteringPayDestination(args.args);
+            case 'payChip':
+                this.onEnteringPayChip(args.args);
                 break;
             case 'discardTableCard':
                 this.onEnteringDiscardTableCard();
                 break;
-            case 'reserveDestination':
-                this.onEnteringReserveDestination();
+            case 'reserveChip':
+                this.onEnteringReserveChip();
                 break;
         }
     }
@@ -192,8 +177,8 @@ class BagOfChips implements BagOfChipsGame {
 
         if ((this as any).isCurrentPlayerActive()) {
             if (args.canExplore) {
-                this.tableCenter.setDestinationsSelectable(true, args.possibleDestinations);
-                this.getCurrentPlayerTable()?.setDestinationsSelectable(true, args.possibleDestinations);
+                this.tableCenter.setChipsSelectable(true, args.possibleChips);
+                this.getCurrentPlayerTable()?.setChipsSelectable(true, args.possibleChips);
             }
             if (args.canRecruit) {
                 this.getCurrentPlayerTable()?.setHandSelectable(true);
@@ -213,24 +198,24 @@ class BagOfChips implements BagOfChipsGame {
         }
     }
 
-    private onEnteringDiscardCard(args: EnteringPayDestinationArgs) {
+    private onEnteringDiscardCard(args: EnteringPayChipArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.getCurrentPlayerTable()?.setCardsSelectable(true, [0]);
         }
     }
 
-    private onEnteringPayDestination(args: EnteringPayDestinationArgs) {
-        const selectedCardDiv = this.destinationsManager.getCardElement(args.selectedDestination);
-        selectedCardDiv.classList.add('selected-pay-destination');
+    private onEnteringPayChip(args: EnteringPayChipArgs) {
+        const selectedCardDiv = this.chipsManager.getCardElement(args.selectedChip);
+        selectedCardDiv.classList.add('selected-pay-chip');
 
         if ((this as any).isCurrentPlayerActive()) {
-            this.getCurrentPlayerTable()?.setCardsSelectable(true, args.selectedDestination.cost);
+            this.getCurrentPlayerTable()?.setCardsSelectable(true, args.selectedChip.cost);
         }
     }
 
-    private onEnteringReserveDestination() {
+    private onEnteringReserveChip() {
         if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setDestinationsSelectable(true, this.tableCenter.getVisibleDestinations());
+            this.tableCenter.setChipsSelectable(true, this.tableCenter.getVisibleChips());
         }
     }
 
@@ -244,8 +229,8 @@ class BagOfChips implements BagOfChipsGame {
             case 'chooseNewCard':
                 this.onLeavingChooseNewCard();
                 break;
-            case 'payDestination':
-                this.onLeavingPayDestination();
+            case 'payChip':
+                this.onLeavingPayChip();
                 break;
             case 'discardTableCard':
                 this.onLeavingDiscardTableCard();
@@ -253,24 +238,24 @@ class BagOfChips implements BagOfChipsGame {
             case 'discardCard':
                 this.onLeavingDiscardCard();
                 break;
-            case 'reserveDestination':
-                this.onLeavingReserveDestination();
+            case 'reserveChip':
+                this.onLeavingReserveChip();
                 break;
         }
     }
 
     private onLeavingPlayAction() {
-        this.tableCenter.setDestinationsSelectable(false);
+        this.tableCenter.setChipsSelectable(false);
         this.getCurrentPlayerTable()?.setHandSelectable(false);
-        this.getCurrentPlayerTable()?.setDestinationsSelectable(false);
+        this.getCurrentPlayerTable()?.setChipsSelectable(false);
     }
     
     private onLeavingChooseNewCard() {
         this.tableCenter.setCardsSelectable(false);
     }
 
-    private onLeavingPayDestination() {
-        document.querySelectorAll('.selected-pay-destination').forEach(elem => elem.classList.remove('selected-pay-destination'));
+    private onLeavingPayChip() {
+        document.querySelectorAll('.selected-pay-chip').forEach(elem => elem.classList.remove('selected-pay-chip'));
         this.getCurrentPlayerTable()?.setCardsSelectable(false);
     }
     
@@ -282,20 +267,20 @@ class BagOfChips implements BagOfChipsGame {
         this.getCurrentPlayerTable()?.setCardsSelectable(false);
     }
 
-    private onLeavingReserveDestination() {
-        this.tableCenter.setDestinationsSelectable(false);
+    private onLeavingReserveChip() {
+        this.tableCenter.setChipsSelectable(false);
     }
 
-    private setPayDestinationLabelAndState(args?: EnteringPayDestinationArgs) {
+    private setPayChipLabelAndState(args?: EnteringPayChipArgs) {
         if (!args) {
             args = this.gamedatas.gamestate.args;
         }
 
         const selectedCards = this.getCurrentPlayerTable().getSelectedCards();
 
-        const button = document.getElementById(`payDestination_button`);
+        const button = document.getElementById(`payChip_button`);
 
-        const total = Object.values(args.selectedDestination.cost).reduce((a, b) => a + b, 0);
+        const total = Object.values(args.selectedChip.cost).reduce((a, b) => a + b, 0);
         const cards = selectedCards.length;
         const recruits = total - cards;
         let message = '';
@@ -339,9 +324,9 @@ class BagOfChips implements BagOfChipsGame {
                         }
                     });
                     break;
-                case 'payDestination':
-                    (this as any).addActionButton(`payDestination_button`, '', () => this.payDestination());
-                    this.setPayDestinationLabelAndState(args);
+                case 'payChip':
+                    (this as any).addActionButton(`payChip_button`, '', () => this.payChip());
+                    this.setPayChipLabelAndState(args);
 
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
@@ -396,14 +381,6 @@ class BagOfChips implements BagOfChipsGame {
 
     public getCurrentPlayerTable(): PlayerTable | null {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
-    }
-
-    public getBoatSide(): number {
-        return this.gamedatas.boatSideOption;
-    }
-
-    public getVariantOption(): number {
-        return this.gamedatas.variantOption;
     }
 
     public getGameStateName(): string {
@@ -483,7 +460,7 @@ class BagOfChips implements BagOfChipsGame {
 
             this.reputationCounters[playerId] = new ebg.counter();
             this.reputationCounters[playerId].create(`reputation-counter-${playerId}`);
-            this.reputationCounters[playerId].setValue(getVpByReputation(player.reputation));
+            this.reputationCounters[playerId].setValue(player.reputation);
 
             this.recruitCounters[playerId] = new ebg.counter();
             this.recruitCounters[playerId].create(`recruit-counter-${playerId}`);
@@ -542,7 +519,7 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     private setReputation(playerId: number, count: number) {
-        this.reputationCounters[playerId].toValue(getVpByReputation(count));
+        this.reputationCounters[playerId].toValue(count);
         this.tableCenter.setReputation(playerId, count);
     }
 
@@ -596,11 +573,11 @@ class BagOfChips implements BagOfChipsGame {
         `;
 
         for (let i = 1; i <=7; i++) {
-            html += `
+            /*html += `
             <div class="help-section">
                 <div id="help-artifact-${i}"></div>
                 <div>${this.artifactsManager.getTooltip(i)}</div>
-            </div> `;
+            </div> `;*/
         }
         html += `</div>`;
 
@@ -609,15 +586,15 @@ class BagOfChips implements BagOfChipsGame {
 
     private populateHelp() {
         for (let i = 1; i <=7; i++) {
-            this.artifactsManager.setForHelp(i, `help-artifact-${i}`);
+            //this.artifactsManager.setForHelp(i, `help-artifact-${i}`);
         }
     }
     
-    public onTableDestinationClick(destination: Destination): void {
-        if (this.gamedatas.gamestate.name == 'reserveDestination') {
-            this.reserveDestination(destination.id);
+    public onTableChipClick(chip: Chip): void {
+        if (this.gamedatas.gamestate.name == 'reserveChip') {
+            this.reserveChip(chip.id);
         } else {
-            this.takeDestination(destination.id);
+            this.takeChip(chip.id);
         }
     }
 
@@ -637,7 +614,7 @@ class BagOfChips implements BagOfChipsGame {
         if (this.gamedatas.gamestate.name == 'discardCard') {
             this.discardCard(card.id);
         } else {
-            this.setPayDestinationLabelAndState();
+            this.setPayChipLabelAndState();
         }
     }
   	
@@ -659,22 +636,22 @@ class BagOfChips implements BagOfChipsGame {
         });
     }
   	
-    public takeDestination(id: number) {
-        if(!(this as any).checkAction('takeDestination')) {
+    public takeChip(id: number) {
+        if(!(this as any).checkAction('takeChip')) {
             return;
         }
 
-        this.takeAction('takeDestination', {
+        this.takeAction('takeChip', {
             id
         });
     }
   	
-    public reserveDestination(id: number) {
-        if(!(this as any).checkAction('reserveDestination')) {
+    public reserveChip(id: number) {
+        if(!(this as any).checkAction('reserveChip')) {
             return;
         }
 
-        this.takeAction('reserveDestination', {
+        this.takeAction('reserveChip', {
             id
         });
     }
@@ -689,15 +666,15 @@ class BagOfChips implements BagOfChipsGame {
         });
     }
   	
-    public payDestination() {
-        if(!(this as any).checkAction('payDestination')) {
+    public payChip() {
+        if(!(this as any).checkAction('payChip')) {
             return;
         }
 
         const ids = this.getCurrentPlayerTable().getSelectedCards().map(card => card.id);
-        const recruits = Number(document.getElementById(`payDestination_button`).dataset.recruits);
+        const recruits = Number(document.getElementById(`payChip_button`).dataset.recruits);
 
-        this.takeAction('payDestination', {
+        this.takeAction('payChip', {
             ids: ids.join(','),
             recruits
         });
@@ -788,13 +765,13 @@ class BagOfChips implements BagOfChipsGame {
             ['playCard', undefined],
             ['takeCard', undefined],
             ['newTableCard', undefined],
-            ['takeDestination', undefined],
+            ['takeChip', undefined],
             ['discardCards', undefined],
-            ['newTableDestination', undefined],
+            ['newTableChip', undefined],
             ['trade', ANIMATION_MS],
             ['takeDeckCard', undefined],
             ['discardTableCard', undefined],
-            ['reserveDestination', undefined],
+            ['reserveChip', undefined],
             ['score', ANIMATION_MS],
             ['bracelet', ANIMATION_MS],
             ['recruit', ANIMATION_MS],
@@ -853,9 +830,9 @@ class BagOfChips implements BagOfChipsGame {
         return this.tableCenter.newTableCard(args.card);
     }
 
-    notif_takeDestination(args: NotifTakeDestinationArgs) {
+    notif_takeChip(args: NotifTakeChipArgs) {
         const playerId = args.playerId;
-        const promise = this.getPlayerTable(playerId).destinations.addCard(args.destination);
+        const promise = this.getPlayerTable(playerId).chips.addCard(args.chip);
 
         this.updateGains(playerId, args.effectiveGains);
 
@@ -868,8 +845,8 @@ class BagOfChips implements BagOfChipsGame {
         );
     }
 
-    notif_newTableDestination(args: NotifNewTableDestinationArgs) {
-        return this.tableCenter.newTableDestination(args.destination, args.letter, args.destinationDeckCount, args.destinationDeckTop);
+    notif_newTableChip(args: NotifNewTableChipArgs) {
+        return this.tableCenter.newTableChip(args.chip, args.letter, args.chipDeckCount, args.chipDeckTop);
     }
 
     notif_score(args: NotifScoreArgs) {
@@ -905,11 +882,11 @@ class BagOfChips implements BagOfChipsGame {
         return this.tableCenter.cardDiscard.addCard(args.card);
     }
 
-    notif_reserveDestination(args: NotifReserveDestinationArgs) {
+    notif_reserveChip(args: NotifReserveChipArgs) {
         const playerId = args.playerId;
         const playerTable = this.getPlayerTable(playerId);
 
-        return playerTable.reserveDestination(args.destination);
+        return playerTable.reserveChip(args.chip);
     }
 
     notif_cardDeckReset(args: NotifCardDeckResetArgs) {
