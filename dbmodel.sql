@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `chip` (
 
 -- Example 2: add a custom field to the standard "player" table
 ALTER TABLE `player` ADD `player_rewards` tinyint UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `player` ADD `player_round_score` int(10) NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `global_variables` (
   `name` varchar(50) NOT NULL,

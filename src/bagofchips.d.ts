@@ -83,6 +83,13 @@ interface NotifRevealChipsArgs {
     chips: Chip[];
 }
 
+// scoreCard
+interface NotifScoreCardArgs {
+    playerId: number;
+    card: Card;
+    score: number;
+}
+
 // endTurn
 interface NotifEndTurnArgs {
 }

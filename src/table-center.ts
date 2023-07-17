@@ -23,4 +23,8 @@ class TableCenter {
     public revealChips(slot: number, chips: Chip[]): Promise<any> {
         return this.chips[slot].addCards(chips);
     }
+    
+    public endTurn() {
+        [1, 2, 3, 4, 5].forEach(phase => this.chips[phase].removeAll());
+    }
 }

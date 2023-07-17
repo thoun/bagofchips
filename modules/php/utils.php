@@ -87,7 +87,7 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
-    function incPlayerTokens(int $playerId, int $amount, $message = '', $args = []) {
+    function incPlayerRewards(int $playerId, int $amount, $message = '', $args = []) {
         if ($amount != 0) {
             $this->DbQuery("UPDATE player SET `player_rewards` = `player_rewards` + $amount WHERE player_id = $playerId");
         }
@@ -95,7 +95,7 @@ trait UtilTrait {
         $this->notifyAllPlayers('rewards', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'newScore' => $this->getPlayer($playerId)->score,
+            'newScore' => intval(self::getUniqueValueFromDB("SELECT player_rewards FROM player WHERE player_id = $playerId")),
             'incScore' => $amount,
         ] + $args);
     }
@@ -175,5 +175,104 @@ trait UtilTrait {
 
     function getMaxPlayerTokens() {
         return intval($this->getUniqueValueFromDB("SELECT max(player_rewards) FROM player"));
+    }
+
+    function getTokensToWin() {
+        return count($this->getPlayersIds()) == 2 ? 3 : 4;
+    }
+
+    function isCardScored(Card $card, array $counts, Chip $lastChip) {
+        switch ($card->type) {
+            case 1:
+                return $this->array_every($counts, fn($count) => $count >= $card->params[0]);
+            case 2:
+                foreach ($card->params as $color => $min) {
+                    if ($counts[$color] < $min) {
+                        return false;
+                    }
+                }
+                return true;
+            case 3:
+                return $counts[$card->params[0]] == $counts[$card->params[1]];
+            case 4:
+                return $lastChip->color == $card->params[0];
+            case 5:
+                return $counts[$card->params[0]] == 0;
+            case 6:
+                return $counts[$card->params[0]] > 0;
+            case 7:
+                return $counts[$card->params[0]] > $counts[$card->params[1]];
+        }
+    }
+    
+    function scoreRound() {
+        $chips = $this->getChipsByLocation('table');
+        $counts = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $counts[$i] = count(array_filter($chips, fn($chip) => $chip->color == $i));
+        }
+        $lastChip = $this->array_find($chips, fn($chip) => $chip->locationArg == 5);
+        
+        $playersIds = $this->getPlayersIds();
+        $instantWinner = null;
+
+        foreach($playersIds as $playerId) {
+            $minus = $this->getCardsByLocation('minus', $playerId);
+            $plus = $this->getCardsByLocation('plus', $playerId);
+            
+            foreach ($minus as $card) {
+                $scored = $this->isCardScored($card, $counts, $lastChip);
+                $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
+                $message = null;
+                if ($scored) {
+                    $this->DbQuery("UPDATE player SET player_round_score = player_round_score - $points WHERE player_id = $playerId");
+                    $message = $points == 99999 ?
+                        clienttranslate('${player_name} scores the [-] card and loses the round! ${card_image}') :
+                        clienttranslate('${player_name} scores the [-] card and loses ${points} points ${card_image}');
+                } else {
+                    $message = clienttranslate('${player_name} doesn\'t score the [-] card ${card_image}');
+                }
+                
+                self::notifyAllPlayers($scored ? 'scoreCard' : 'log', $message, [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'card' => $card,
+                    'card_image' => '',
+                    'preserve' => ['card'],
+                    'score' => -$points,
+                    'points' => $points, // for log
+                ]);
+            }
+            
+            foreach ($plus as $card) {
+                $scored = $this->isCardScored($card, $counts, $lastChip);
+                $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
+                if ($scored) {
+                    $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points WHERE player_id = $playerId");
+
+                    if ($points == 99999) {
+                        $instantWinner = $playerId;
+                    }
+                    
+                    $message = $points == 99999 ?
+                        clienttranslate('${player_name} scores the [-] card and wins the game! ${card_image}') :
+                        clienttranslate('${player_name} scores the [+] card and gains ${points} points ${card_image}');
+                } else {
+                    $message = clienttranslate('${player_name} doesn\'t score the [+] card ${card_image}');
+                }
+                
+                self::notifyAllPlayers($scored ? 'scoreCard' : 'log', $message, [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'card' => $card,
+                    'card_image' => '',
+                    'preserve' => ['card'],
+                    'score' => -$points,
+                    'points' => $points, // for log
+                ]);
+            }
+        }
+
+        return $instantWinner;
     }
 }

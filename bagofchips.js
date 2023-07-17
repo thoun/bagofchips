@@ -2061,6 +2061,10 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.revealChips = function (slot, chips) {
         return this.chips[slot].addCards(chips);
     };
+    TableCenter.prototype.endTurn = function () {
+        var _this = this;
+        [1, 2, 3, 4, 5].forEach(function (phase) { return _this.chips[phase].removeAll(); });
+    };
     return TableCenter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
@@ -2110,6 +2114,16 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.newHand = function (cards) {
         return this.hand.addCards(cards);
+    };
+    PlayerTable.prototype.scoreCard = function (card, score) {
+        this.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+    };
+    PlayerTable.prototype.endTurn = function () {
+        var _a;
+        (_a = this.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
+        this.minus.removeAll();
+        this.discard.removeAll();
+        this.plus.removeAll();
     };
     return PlayerTable;
 }());
@@ -2403,6 +2417,7 @@ var BagOfChips = /** @class */ (function () {
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
+            ['scoreCard', ANIMATION_MS * 2],
             ['endTurn', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
@@ -2439,8 +2454,12 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.notif_revealChips = function (args) {
         return this.tableCenter.revealChips(args.slot, args.chips);
     };
+    BagOfChips.prototype.notif_scoreCard = function (args) {
+        return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+    };
     BagOfChips.prototype.notif_endTurn = function () {
-        // TODO clean all
+        this.tableCenter.endTurn();
+        this.playersTables.forEach(function (table) { return table.endTurn(); });
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

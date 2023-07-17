@@ -77,4 +77,15 @@ class PlayerTable {
     public newHand(cards: Card[]): Promise<any> {
         return this.hand.addCards(cards);
     }
+
+    public scoreCard(card: Card, score: number) {
+        (this as any).displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+    }
+    
+    public endTurn(): void {
+        this.hand?.removeAll();
+        this.minus.removeAll();
+        this.discard.removeAll();
+        this.plus.removeAll();
+    }
 }

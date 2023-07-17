@@ -75,6 +75,6 @@ $this->CARDS = [
         4 => new CardType(60, [ORANGE, PURPLE]),
         5 => new CardType(80, [RED, YELLOW]),
         6 => new CardType(90, [ORANGE, RED]),
-        7 => new CardType(-1, [ORANGE, YELLOW]), // special
+        7 => new CardType(99999, [ORANGE, YELLOW]),
     ],
 ];

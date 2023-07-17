@@ -183,7 +183,7 @@ class BagOfChips extends Table {
     */
     function getGameProgression() {
         $maxScore = $this->getMaxPlayerTokens();
-        return $maxScore * 25;
+        return $maxScore * 100 / $this->getTokensToWin();
     }
 
 //////////////////////////////////////////////////////////////////////////////

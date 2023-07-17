@@ -395,6 +395,7 @@ class BagOfChips implements BagOfChipsGame {
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
+            ['scoreCard', ANIMATION_MS * 2],
             ['endTurn', ANIMATION_MS],
         ];
     
@@ -441,8 +442,13 @@ class BagOfChips implements BagOfChipsGame {
         return this.tableCenter.revealChips(args.slot, args.chips);
     }
 
+    notif_scoreCard(args: NotifScoreCardArgs) {
+        return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+    }
+
     notif_endTurn() {
-        // TODO clean all
+        this.tableCenter.endTurn();
+        this.playersTables.forEach(table => table.endTurn());
     }
     
 
