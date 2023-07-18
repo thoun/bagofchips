@@ -506,34 +506,18 @@ body > .card {
 .objective .card-sides .card-side {
   border-radius: 12px;
   background-size: auto 100%;
+  /*&.back {
+      background-image: url('img/us/card-back.png');
+  }*/
+  /*@for $type from 1 through 7 {
+      &.front[data-type="DOLLARtype"] {
+          background-image: url('img/us/cardsDOLLARtype.png');
+      }
+  }*/
 }
 .objective .card-sides .card-side > * {
   pointer-events: none;
   user-select: none;
-}
-.objective .card-sides .card-side.back {
-  background-image: url("img/card-back.png");
-}
-.objective .card-sides .card-side.front[data-type="1"] {
-  background-image: url("img/cards1.png");
-}
-.objective .card-sides .card-side.front[data-type="2"] {
-  background-image: url("img/cards2.png");
-}
-.objective .card-sides .card-side.front[data-type="3"] {
-  background-image: url("img/cards3.png");
-}
-.objective .card-sides .card-side.front[data-type="4"] {
-  background-image: url("img/cards4.png");
-}
-.objective .card-sides .card-side.front[data-type="5"] {
-  background-image: url("img/cards5.png");
-}
-.objective .card-sides .card-side.front[data-type="6"] {
-  background-image: url("img/cards6.png");
-}
-.objective .card-sides .card-side.front[data-type="7"] {
-  background-image: url("img/cards7.png");
 }
 .objective .card-sides .card-side.front[data-type="1"][data-sub-type="1"] {
   background-position-x: 0%;
@@ -673,7 +657,6 @@ body > .card {
 .chip .card-sides .card-side {
   box-shadow: unset;
   background-size: auto 100%;
-  background-image: url("img/chips.png");
 }
 .chip .card-sides .card-side > * {
   pointer-events: none;
@@ -716,7 +699,6 @@ body > .card {
   width: 200px;
   height: 429px;
   background-size: auto 100%;
-  background-image: url("img/maps.png");
   border-radius: 32px;
   display: flex;
   gap: 10px;
@@ -761,16 +743,6 @@ body > .card {
 }
 .player-board .counters > div:last-child {
   flex: 2;
-}
-.player-board .player-hand-card {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-image: url("img/cards.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle;
 }
 .player-board .reputation-legend {
   font-size: 75%;
@@ -865,7 +837,6 @@ body > .card {
 }
 
 .color-help-folded-content {
-  background: url("img/logo-coloradd.svg") #dfe8e8 center no-repeat;
   background-size: contain;
 }
 
@@ -917,7 +888,6 @@ body > .card {
   display: inline-block;
   width: 32px;
   height: 32px;
-  background-image: url("img/icons.png");
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -930,33 +900,6 @@ body > .card {
   background-position-x: 50%;
 }
 .icon.plus {
-  background-position-x: 100%;
-}
-
-.color {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-image: url("img/colors.png");
-  background-size: auto 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle;
-  border-radius: 2px;
-}
-.color[data-color="1"] {
-  background-position-x: 0%;
-}
-.color[data-color="2"] {
-  background-position-x: 25%;
-}
-.color[data-color="3"] {
-  background-position-x: 50%;
-}
-.color[data-color="4"] {
-  background-position-x: 75%;
-}
-.color[data-color="5"] {
   background-position-x: 100%;
 }
 

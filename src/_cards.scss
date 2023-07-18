@@ -15,15 +15,15 @@
                 user-select: none;
             }
 
-            &.back {
-                background-image: url('img/card-back.png');
-            }
+            /*&.back {
+                background-image: url('img/us/card-back.png');
+            }*/
 
-            @for $type from 1 through 7 {
-                &.front[data-type="#{$type}"] {
-                    background-image: url('img/cards#{$type}.png');
+            /*@for $type from 1 through 7 {
+                &.front[data-type="#{DOLLARtype}"] {
+                    background-image: url('img/us/cards#{DOLLARtype}.png');
                 }
-            }
+            }*/
 
             &.front[data-type="1"] {
                 @for $subType from 1 through 2 {

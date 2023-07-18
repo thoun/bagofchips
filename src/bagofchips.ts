@@ -4,6 +4,7 @@ declare const $;
 declare const dojo: Dojo;
 declare const _;
 declare const g_gamethemeurl;
+declare const g_img_preload;
 
 const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
@@ -11,14 +12,11 @@ const ACTION_TIMER_DURATION = 5;
 const LOCAL_STORAGE_ZOOM_KEY = 'BagOfChips-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'BagOfChips-jump-to-folded';
 
-const EQUAL = -1;
-const DIFFERENT = 0;
-
-const VP = 1;
-const BRACELET = 2;
-const RECRUIT = 3;
-const REWARD = 4;
-const CARD = 5;
+const CODES = [
+    null,
+    'us',
+    'fr',
+];
 
 function formatTextIcons(str: string) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
@@ -54,6 +52,17 @@ class BagOfChips implements BagOfChipsGame {
     */
 
     public setup(gamedatas: BagOfChipsGamedatas) {
+        const code = CODES[(this as any).prefs[202].value] ?? this.getCodeByLanguage();
+        //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
+        
+        g_img_preload.push(...[
+            `${code}/card-back.png`,
+            `${code}/card-repartition.png`,
+            ...[1,2,3,4,5,6,7].map(type => `${code}/cards${type}.png`),
+            `${code}/chips.png`,
+            `${code}/icons.png`,
+            `${code}/maps.png`,
+        ]);
         /* TODO if (!gamedatas.variantOption) {
             (this as any).dontPreloadImage('artefacts.jpg');
         }
@@ -240,6 +249,7 @@ class BagOfChips implements BagOfChipsGame {
           var prefId = +match[1];
           var prefValue = +e.target.value;
           (this as any).prefs[prefId].value = prefValue;
+          this.onPreferenceChange(prefId, prefValue);
         }
         
         // Call onPreferenceChange() when any value changes
@@ -250,6 +260,25 @@ class BagOfChips implements BagOfChipsGame {
           dojo.query("#ingame_menu_content .preference_control"),
           el => onchange({ target: el })
         );
+    }
+      
+    private onPreferenceChange(prefId: number, prefValue: number) {
+        switch (prefId) {
+            case 202:
+                const code = CODES[prefValue] ?? this.getCodeByLanguage();
+                document.getElementById(`code-stylesheet`)?.remove();
+                document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
+                break;
+        }
+    }
+    
+    private getCodeByLanguage(): string {
+        switch ((window as any).dataLayer[0].user_lang) {
+            case 'en': return 'us';
+            case 'fr': return 'fr';
+
+            default: return 'us';
+        }
     }
 
     private getOrderedPlayers(gamedatas: BagOfChipsGamedatas) {

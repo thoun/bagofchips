@@ -2147,13 +2147,11 @@ var ANIMATION_MS = 500;
 var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'BagOfChips-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'BagOfChips-jump-to-folded';
-var EQUAL = -1;
-var DIFFERENT = 0;
-var VP = 1;
-var BRACELET = 2;
-var RECRUIT = 3;
-var REWARD = 4;
-var CARD = 5;
+var CODES = [
+    null,
+    'us',
+    'fr',
+];
 function formatTextIcons(str) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
 }
@@ -2176,6 +2174,18 @@ var BagOfChips = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     BagOfChips.prototype.setup = function (gamedatas) {
+        var _this = this;
+        var _a;
+        var code = (_a = CODES[this.prefs[202].value]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
+        //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
+        g_img_preload.push.apply(g_img_preload, __spreadArray(__spreadArray([
+            "".concat(code, "/card-back.png"),
+            "".concat(code, "/card-repartition.png")
+        ], [1, 2, 3, 4, 5, 6, 7].map(function (type) { return "".concat(code, "/cards").concat(type, ".png"); }), true), [
+            "".concat(code, "/chips.png"),
+            "".concat(code, "/icons.png"),
+            "".concat(code, "/maps.png"),
+        ], false));
         /* TODO if (!gamedatas.variantOption) {
             (this as any).dontPreloadImage('artefacts.jpg');
         }
@@ -2184,7 +2194,6 @@ var BagOfChips = /** @class */ (function () {
         } else {
             (this as any).dontPreloadImage('boats-advanced.png');
         }*/
-        var _this = this;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
@@ -2336,11 +2345,29 @@ var BagOfChips = /** @class */ (function () {
             var prefId = +match[1];
             var prefValue = +e.target.value;
             _this.prefs[prefId].value = prefValue;
+            _this.onPreferenceChange(prefId, prefValue);
         };
         // Call onPreferenceChange() when any value changes
         dojo.query(".preference_control").connect("onchange", onchange);
         // Call onPreferenceChange() now
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
+    };
+    BagOfChips.prototype.onPreferenceChange = function (prefId, prefValue) {
+        var _a, _b;
+        switch (prefId) {
+            case 202:
+                var code = (_a = CODES[prefValue]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
+                (_b = document.getElementById("code-stylesheet")) === null || _b === void 0 ? void 0 : _b.remove();
+                document.getElementById("table").insertAdjacentHTML("beforebegin", "<link id=\"code-stylesheet\" rel=\"stylesheet\" type=\"text/css\" href=\"".concat(g_gamethemeurl, "img/").concat(code, "/skin.css\"/>"));
+                break;
+        }
+    };
+    BagOfChips.prototype.getCodeByLanguage = function () {
+        switch (window.dataLayer[0].user_lang) {
+            case 'en': return 'us';
+            case 'fr': return 'fr';
+            default: return 'us';
+        }
     };
     BagOfChips.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;

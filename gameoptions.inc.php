@@ -27,3 +27,16 @@
 require_once("modules/php/constants.inc.php");
 
 $game_options = [];
+   
+$game_preferences = [ 
+    202 => [
+        'name' => totranslate('Skin'),
+        'needReload' => false,
+        'values' => [
+            0 => ['name' => totranslate('Automatic')],
+            1 => ['name' => totranslate('US')],
+            2 => ['name' => totranslate('FR')],
+        ],
+        'default' => 0
+    ],
+    ];
