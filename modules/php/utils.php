@@ -215,10 +215,14 @@ trait UtilTrait {
         
         $playersIds = $this->getPlayersIds();
         $instantWinner = null;
+        $gameWon = false;
 
         foreach($playersIds as $playerId) {
             $minus = $this->getCardsByLocation('minus', $playerId);
             $plus = $this->getCardsByLocation('plus', $playerId);
+
+            $roundLost = false;
+            $roundScore = 0;
             
             foreach ($minus as $card) {
                 $scored = $this->isCardScored($card, $counts, $lastChip);
@@ -229,6 +233,17 @@ trait UtilTrait {
                     $message = $points == 99999 ?
                         clienttranslate('${player_name} scores the [-] card and loses the round! ${card_image}') :
                         clienttranslate('${player_name} scores the [-] card and loses ${points} points ${card_image}');
+
+                    $this->incStat(1, 'validatedMinusObjective');
+                    $this->incStat(1, 'validatedMinusObjective', $playerId);
+                    if ($points == 99999) {
+                        $this->incStat(1, 'specialObjectiveLoss');
+                        $roundLost = true;
+                    } else {
+                        $roundScore -= $points;
+                        $this->incStat($points, 'pointsMinusObjectives');
+                        $this->incStat($points, 'pointsMinusObjectives', $playerId);
+                    }
                 } else {
                     $message = clienttranslate('${player_name} doesn\'t score the [-] card ${card_image}');
                 }
@@ -244,31 +259,56 @@ trait UtilTrait {
                 ]);
             }
             
-            foreach ($plus as $card) {
-                $scored = $this->isCardScored($card, $counts, $lastChip);
-                $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
-                if ($scored) {
-                    $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points WHERE player_id = $playerId");
+            if (!$roundLost) {
+                foreach ($plus as $card) {
+                    $scored = $this->isCardScored($card, $counts, $lastChip);
+                    $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
+                    if ($scored) {
+                        $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points WHERE player_id = $playerId");
 
-                    if ($points == 99999) {
-                        $instantWinner = $playerId;
+                        if ($points == 99999) {
+                            $instantWinner = $playerId;
+                            $gameWon = true;
+                        }
+                        
+                        $message = $points == 99999 ?
+                            clienttranslate('${player_name} scores the [-] card and wins the game! ${card_image}') :
+                            clienttranslate('${player_name} scores the [+] card and gains ${points} points ${card_image}');
+
+                        $this->incStat(1, 'validatedPlusObjective');
+                        $this->incStat(1, 'validatedPlusObjective', $playerId);
+                        if ($points == 99999) {
+                            $this->setStat(1, 'specialObjectiveWin');
+                        } else {
+                            $roundScore += $points;
+                            $this->incStat($points, 'pointsPlusObjectives');
+                            $this->incStat($points, 'pointsPlusObjectives', $playerId);
+                        }
+                    } else {
+                        $message = clienttranslate('${player_name} doesn\'t score the [+] card ${card_image}');
                     }
                     
-                    $message = $points == 99999 ?
-                        clienttranslate('${player_name} scores the [-] card and wins the game! ${card_image}') :
-                        clienttranslate('${player_name} scores the [+] card and gains ${points} points ${card_image}');
-                } else {
-                    $message = clienttranslate('${player_name} doesn\'t score the [+] card ${card_image}');
+                    self::notifyAllPlayers('scoreCard', $message, [
+                        'playerId' => $playerId,
+                        'player_name' => $this->getPlayerName($playerId),
+                        'card' => $card,
+                        'card_image' => '',
+                        'preserve' => ['card'],
+                        'score' => $scored ? $points : 0,
+                        'points' => $scored ? $points : 0, // for log
+                    ]);
                 }
-                
-                self::notifyAllPlayers('scoreCard', $message, [
+            }
+            
+            if ($gameWon) {
+                break;
+            }
+
+            if (!$roundLost && !$gameWon) {
+                self::notifyAllPlayers('log', clienttranslate('${player_name} scores ${number} points this round'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
-                    'card' => $card,
-                    'card_image' => '',
-                    'preserve' => ['card'],
-                    'score' => $scored ? $points : 0,
-                    'points' => $scored ? $points : 0, // for log
+                    'number' => $roundScore, // for log
                 ]);
             }
         }

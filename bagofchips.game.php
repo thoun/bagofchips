@@ -99,21 +99,15 @@ class BagOfChips extends Table {
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         $this->initStat('table', 'roundNumber', 0);
         foreach(['table', 'player'] as $type) {
-            foreach([
-                "reputationPoints", 
-                // cards
-                "playedCards", 
-                "assetsCollectedByPlayedCards", "assetsCollectedByPlayedCards1", "assetsCollectedByPlayedCards2", "assetsCollectedByPlayedCards3", "assetsCollectedByPlayedCards4", 
-                "recruitsUsedToChooseCard", "discardedCards",
-                // chips
-                "discoveredChips", "discoveredChips1", "discoveredChips2",
-                "assetsCollectedByChip", "assetsCollectedByChip1", "assetsCollectedByChip2", "assetsCollectedByChip3", "assetsCollectedByChip4", "assetsCollectedByChip5",
-                "recruitsUsedToPayChip",
-                // trade
-                "tradeActions", "tradeActions1", "tradeActions2", "tradeActions3", "braceletsUsed",
-                "assetsCollectedByTrade", "assetsCollectedByTrade1", "assetsCollectedByTrade2", "assetsCollectedByTrade3", "assetsCollectedByTrade4", "assetsCollectedByTrade5",
-                //	miscellaneous
-                "recruitsMissed", "braceletsMissed",
+            foreach([                      
+                // objectives
+                "validatedMinusObjective", "validatedPlusObjective", "avgValidatedMinusObjective", "avgValidatedPlusObjective",
+                // points
+                "pointsMinusObjectives", "pointsPlusObjectives", "avgPointsMinusObjectives", "avgPointsPlusObjectives",
+                // rewards
+                "rewards", "avgRewardsPerRound",
+                // special objective
+                "specialObjectiveWin", "specialObjectiveLoss",
             ] as $name) {
                 $this->initStat($type, $name, 0);
             }
@@ -124,7 +118,7 @@ class BagOfChips extends Table {
         $this->setupChips();
 
         // TODO TEMP
-        $this->debugSetup();
+        //$this->debugSetup();
 
         /************ End of the game initialization *****/
     }
@@ -206,17 +200,6 @@ class BagOfChips extends Table {
     function zombieTurn( $state, $active_player )
     {
     	$statename = $state['name'];
-    	
-        if ($state['type'] === "activeplayer") {
-            switch ($statename) {
-                default:
-                    $this->gamestate->jumpToState(ST_REVEAL_CHIPS);
-                    break;
-            }
-
-            return;
-        }
-
         if ($state['type'] === "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
             $this->gamestate->setPlayerNonMultiactive( $active_player, 'next');

@@ -12,6 +12,7 @@ trait StateTrait {
     */
 
     function stStartRound() {
+        $this->incStat(1, 'roundNumber');
         $this->setGlobalVariable(PHASE, 0);
         $this->DbQuery("UPDATE player SET player_round_score = 0");
 
@@ -83,7 +84,7 @@ trait StateTrait {
 
         if ($instantWinner != null) {
             $this->DbQuery("UPDATE player SET player_score = 1 WHERE player_id = $instantWinner");
-            $this->gamestate->jumpToState(ST_END_GAME);
+            $this->gamestate->nextState('endScore');
             return;
         }
 
@@ -139,13 +140,15 @@ trait StateTrait {
                     $finalScore[$key] = intval($value);
                 }
             }
-            if ($finalScore[0]['rewards'] == $finalScore[1]['rewards'] && $finalScore[0]['score'] == $finalScore[1]['score']) {
+            if ($finalScores[0]['rewards'] == $finalScores[1]['rewards'] && $finalScores[0]['score'] == $finalScores[1]['score']) {
                 self::notifyAllPlayers('log', clienttranslate('Multiple players are tied in the number of rewards. As they are also tied in the last round score, another round is played.'), []);
                 $end = false;
             }
         }
         
-        if (!$end) {
+        if ($end) {
+            $this->DbQuery("UPDATE player SET player_score = player_rewards, player_score_aux = player_round_score");
+        } else  {
             $this->cards->moveAllCardsInLocation(null, 'deck');
             $this->cards->shuffle('deck');
             $this->chips->moveAllCardsInLocation(null, 'bag');
@@ -157,7 +160,22 @@ trait StateTrait {
     }
 
     function stEndScore() {
-        $this->DbQuery("UPDATE player SET player_score = player_rewards, player_score_aux = player_round_score");
+        $playersIds = $this->getPlayersIds();
+        $rounds = $this->getStat('roundNumber');
+
+        $this->setStat($this->getStat('validatedMinusObjective') / $rounds, 'avgValidatedMinusObjective');
+        $this->setStat($this->getStat('validatedPlusObjective') / $rounds, 'avgValidatedPlusObjective');
+        $this->setStat($this->getStat('pointsMinusObjectives') / $rounds, 'avgPointsMinusObjectives');
+        $this->setStat($this->getStat('pointsPlusObjectives') / $rounds, 'avgPointsPlusObjectives');
+        $this->setStat($this->getStat('rewards') / $rounds, 'avgRewardsPerRound');
+
+        foreach($playersIds as $playerId) {
+            $this->setStat($this->getStat('validatedMinusObjective', $playerId) / $rounds, 'avgValidatedMinusObjective', $playerId);
+            $this->setStat($this->getStat('validatedPlusObjective', $playerId) / $rounds, 'avgValidatedPlusObjective', $playerId);
+            $this->setStat($this->getStat('pointsMinusObjectives', $playerId) / $rounds, 'avgPointsMinusObjectives', $playerId);
+            $this->setStat($this->getStat('pointsPlusObjectives', $playerId) / $rounds, 'avgPointsPlusObjectives', $playerId);
+            $this->setStat($this->getStat('rewards', $playerId) / $rounds, 'avgRewardsPerRound', $playerId);
+        }
 
         $this->gamestate->nextState('endGame');
     }

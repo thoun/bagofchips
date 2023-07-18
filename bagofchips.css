@@ -835,6 +835,9 @@ body > .card {
   width: 200px;
   height: 280px;
 }
+.player-table .scorenumber {
+  z-index: 1000;
+}
 
 .bga-help_expandable-button {
   background: url("img/us/card-repartition.png") center no-repeat;
@@ -842,7 +845,8 @@ body > .card {
 }
 
 #help-popin h1 {
-  color: #5890a9;
+  color: #a91216;
+  font-family: "teeshirt-regular";
   font-size: 18px;
   margin: 8px 0;
 }

@@ -48,180 +48,71 @@
 */
 
 $commonStats = [
-    // repuration
-    "reputationPoints" => [
+    // objectives
+    "validatedMinusObjective" => [
         "id" => 20,
-        "name" => totranslate("Points gained with reputation"),
+        "name" => totranslate("Validated [-] objectives"),
         "type" => "int"
     ],
-
-    // played cards
-    "playedCards" => [
+    "validatedPlusObjective" => [
         "id" => 21,
-        "name" => totranslate("Played cards"),
+        "name" => totranslate("Validated [+] objectives"),
         "type" => "int"
     ],
-    "assetsCollectedByPlayedCards" => [
+    "avgValidatedMinusObjective" => [
         "id" => 22,
-        "name" => totranslate("Assets gained by played cards"),
-        "type" => "int"
+        "name" => totranslate("Validated [-] objectives (average per round)"),
+        "type" => "float"
     ],
-    "assetsCollectedByPlayedCards1" => [
+    "avgValidatedPlusObjective" => [
         "id" => 23,
-        "name" => totranslate("Victory points gained by played cards"),
-        "type" => "int"
+        "name" => totranslate("Validated [+] objectives (average per round)"),
+        "type" => "float"
     ],
-    "assetsCollectedByPlayedCards2" => [
-        "id" => 24,
-        "name" => totranslate("Bracelets gained by played cards"),
-        "type" => "int"
-    ],
-    "assetsCollectedByPlayedCards3" => [
-        "id" => 25,
-        "name" => totranslate("Recruits gained by played cards"),
-        "type" => "int"
-    ],
-    "assetsCollectedByPlayedCards4" => [
-        "id" => 26,
-        "name" => totranslate("Reputation gained by played cards"),
-        "type" => "int"
-    ],
-    "recruitsUsedToChooseCard" => [
+
+    // points
+    "pointsMinusObjectives" => [
         "id" => 30,
-        "name" => totranslate("Recruits used to choose card"),
+        "name" => totranslate("Points lost with [-] objectives"),
         "type" => "int"
     ],
-    "discardedCards" => [
-        "id" => 39,
-        "name" => totranslate("Discarded cards to reform deck"),
+    "pointsPlusObjectives" => [
+        "id" => 31,
+        "name" => totranslate("Points gained with [+] objectives"),
         "type" => "int"
     ],
-    
-    // chips
-    "discoveredChips" => [
+    "avgPointsMinusObjectives" => [
+        "id" => 32,
+        "name" => totranslate("Points lost with [-] objectives (average per round)"),
+        "type" => "float"
+    ],
+    "avgPointsPlusObjectives" => [
+        "id" => 33,
+        "name" => totranslate("Points gained with [+] objectives (average per round)"),
+        "type" => "float"
+    ],
+
+    // rewards
+    "rewards" => [
         "id" => 40,
-        "name" => totranslate("Discovered chips"),
+        "name" => totranslate("Rewards"),
         "type" => "int"
-    ],    
-    "discoveredChips1" => [
+    ],
+    "avgRewardsPerRound" => [
         "id" => 41,
-        "name" => totranslate("Discovered trading Lands"),
-        "type" => "int"
-    ],    
-    "discoveredChips2" => [
-        "id" => 42,
-        "name" => totranslate("Discovered Lands of influence"),
-        "type" => "int"
+        "name" => totranslate("Rewards (average per round)"),
+        "type" => "float"
     ],
-    "assetsCollectedByChip" => [
-        "id" => 43,
-        "name" => totranslate("Assets gained by chips"),
-        "type" => "int"
-    ],
-    "assetsCollectedByChip1" => [
-        "id" => 44,
-        "name" => totranslate("Victory points gained by chips"),
-        "type" => "int"
-    ],
-    "assetsCollectedByChip2" => [
-        "id" => 45,
-        "name" => totranslate("Bracelets gained by chips"),
-        "type" => "int"
-    ],
-    "assetsCollectedByChip3" => [
-        "id" => 46,
-        "name" => totranslate("Recruits gained by chips"),
-        "type" => "int"
-    ],
-    "assetsCollectedByChip4" => [
-        "id" => 47,
-        "name" => totranslate("Reputation gained by chips"),
-        "type" => "int"
-    ],
-    "assetsCollectedByChip5" => [
-        "id" => 48,
-        "name" => totranslate("Cards gained by chips"),
-        "type" => "int"
-    ],
-    "recruitsUsedToPayChip" => [
+
+    // special objective
+    "specialObjectiveWin" => [
         "id" => 50,
-        "name" => totranslate("Recruits used to take a chip"),
-        "type" => "int"
+        "name" => totranslate("Game won with special objective"),
+        "type" => "bool"
     ],
-
-    // trade
-    "tradeActions" => [
-        "id" => 60,
-        "name" => totranslate("Trade actions"),
-        "type" => "int"
-    ],   
-    "tradeActions1" => [
-        "id" => 61,
-        "name" => totranslate("Trade actions with 1 bracelet"),
-        "type" => "int"
-    ],  
-    "tradeActions2" => [
-        "id" => 62,
-        "name" => totranslate("Trade actions with 2 bracelets"),
-        "type" => "int"
-    ],  
-    "tradeActions3" => [
-        "id" => 63,
-        "name" => totranslate("Trade actions with 3 bracelets"),
-        "type" => "int"
-    ], 
-    "braceletsUsed" => [
-        "id" => 64,
-        "name" => totranslate("Bracelets used for trade"),
-        "type" => "int"
-    ], 
-    "assetsCollectedByTrade" => [
-        "id" => 65,
-        "name" => totranslate("Assets gained by trade"),
-        "type" => "int"
-    ],
-    "assetsCollectedByTrade1" => [
-        "id" => 66,
-        "name" => totranslate("Victory points gained by trade"),
-        "type" => "int"
-    ],
-    "assetsCollectedByTrade2" => [
-        "id" => 67,
-        "name" => totranslate("Bracelets gained by trade"),
-        "type" => "int"
-    ],
-    "assetsCollectedByTrade3" => [
-        "id" => 68,
-        "name" => totranslate("Recruits gained by trade"),
-        "type" => "int"
-    ],
-    "assetsCollectedByTrade4" => [
-        "id" => 69,
-        "name" => totranslate("Reputation gained by trade"),
-        "type" => "int"
-    ],
-    "assetsCollectedByTrade5" => [
-        "id" => 70,
-        "name" => totranslate("Cards gained by trade"),
-        "type" => "int"
-    ],  
-
-    // artifacts
-    "activatedArtifacts" => [
-        "id" => 80,
-        "name" => totranslate("Activated artifacts"),
-        "type" => "int"
-    ],
-    
-    //	miscellaneous
-    "recruitsMissed" => [
-        "id" => 90,
-        "name" => totranslate("Recruits missed (already at 3)"),
-        "type" => "int"
-    ],
-    "braceletsMissed" => [
-        "id" => 91,
-        "name" => totranslate("Bracelets missed (already at 3)"),
+    "specialObjectiveLoss" => [
+        "id" => 51,
+        "name" => totranslate("Rounds lost with special objective"),
         "type" => "int"
     ],
 ];

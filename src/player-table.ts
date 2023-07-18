@@ -83,10 +83,14 @@ class PlayerTable {
     }
 
     public scoreCard(card: Card, score: number) {
+        let message = score == 0 ? _('Failed!') : `${score}`;
+        if (score != 0 && card.points == 99999) {
+            message = score > 0 ? _('Win!!!') : _('Round lost!');
+        }
+        
         this.displayScoring(
             this.game.cardsManager.getId(card), 
-            this.game.getPlayer(this.playerId).color, 
-            score == 0 ? _('failed!') : `${score}`
+            message,
         );
     }
     
@@ -99,12 +103,10 @@ class PlayerTable {
         ]);
     }
     
-    private displayScoring(id: string, color: string, value: string) {
-        const duration = 1000;
-        var el: any = dojo.place(`<div class=\"scorenumber\">${value}</div>`, id);
+    private displayScoring(id: string, value: string) {
+        var el: any = dojo.place(`<div class=\"scorenumber\" style="color: #${this.game.getPlayer(this.playerId).color};">${value}</div>`, id);
         (this.game as any).placeOnObject(el, id);
-        dojo.style(el, "color", "#" + color);
         dojo.addClass(el, "scorenumber_anim");
-        (this.game as any).fadeOutAndDestroy(el, duration, 2000);
+        (this.game as any).fadeOutAndDestroy(el, 1000, 2000);
     }
 }

@@ -2139,19 +2139,21 @@ var PlayerTable = /** @class */ (function () {
         return this.hand.addCards(cards, { fromStock: this.voidStock });
     };
     PlayerTable.prototype.scoreCard = function (card, score) {
-        this.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score == 0 ? _('failed!') : "".concat(score));
+        var message = score == 0 ? _('Failed!') : "".concat(score);
+        if (score != 0 && card.points == 99999) {
+            message = score > 0 ? _('Win!!!') : _('Round lost!');
+        }
+        this.displayScoring(this.game.cardsManager.getId(card), message);
     };
     PlayerTable.prototype.endRound = function () {
         var _a, _b;
         return this.voidStock.addCards(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], ((_b = (_a = this.hand) === null || _a === void 0 ? void 0 : _a.getCards()) !== null && _b !== void 0 ? _b : []), true), this.minus.getCards(), true), this.discard.getCards(), true), this.plus.getCards(), true));
     };
-    PlayerTable.prototype.displayScoring = function (id, color, value) {
-        var duration = 1000;
-        var el = dojo.place("<div class=\"scorenumber\">".concat(value, "</div>"), id);
+    PlayerTable.prototype.displayScoring = function (id, value) {
+        var el = dojo.place("<div class=\"scorenumber\" style=\"color: #".concat(this.game.getPlayer(this.playerId).color, ";\">").concat(value, "</div>"), id);
         this.game.placeOnObject(el, id);
-        dojo.style(el, "color", "#" + color);
         dojo.addClass(el, "scorenumber_anim");
-        this.game.fadeOutAndDestroy(el, duration, 2000);
+        this.game.fadeOutAndDestroy(el, 1000, 2000);
     };
     return PlayerTable;
 }());
@@ -2215,9 +2217,10 @@ var BagOfChips = /** @class */ (function () {
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
             topEntries: [
-                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#224757' })
+                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#a91216' })
             ],
             entryClasses: 'round-point',
+            defaultFolded: true,
         });
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerPanels(gamedatas);
@@ -2240,7 +2243,7 @@ var BagOfChips = /** @class */ (function () {
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    buttonBackground: '#db2028',
+                    buttonBackground: '#a91216',
                 }),
                 new BgaHelpExpandableButton({
                     expandedWidth: '200px',

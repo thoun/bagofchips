@@ -86,9 +86,10 @@ class BagOfChips implements BagOfChipsGame {
         new JumpToManager(this, {
             localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
             topEntries: [
-                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#224757' })
+                new JumpToEntry(_('Main board'), 'table-center', { 'color': '#a91216' })
             ],
             entryClasses: 'round-point',
+            defaultFolded: true,
         });
 
         this.tableCenter = new TableCenter(this, gamedatas);
@@ -114,7 +115,7 @@ class BagOfChips implements BagOfChipsGame {
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    buttonBackground: '#db2028',
+                    buttonBackground: '#a91216',
                 }),
                 new BgaHelpExpandableButton({
                     expandedWidth: '200px',
