@@ -501,10 +501,10 @@ body > .card {
   position: relative;
   width: 200px;
   height: 280px;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .objective .card-sides .card-side {
-  border-radius: 8px;
+  border-radius: 12px;
   background-size: auto 100%;
 }
 .objective .card-sides .card-side > * {
@@ -790,7 +790,7 @@ body > .card {
 }
 
 .player-table {
-  min-width: 640px;
+  min-width: 830px;
   width: 100%;
   position: relative;
   background: rgba(255, 255, 255, 0.2);
@@ -811,7 +811,7 @@ body > .card {
   justify-content: center;
   align-items: center;
   font-size: 20pt;
-  font-family: "copperplate-gothic-bold";
+  font-family: "teeshirt-regular";
 }
 .player-table .block-with-text {
   display: flex;
@@ -833,7 +833,29 @@ body > .card {
   background: rgba(255, 255, 255, 0.5333333333);
   border-radius: 10px;
   align-self: stretch;
-  margin-bottom: 10px;
+}
+.player-table .player-visible-cards {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px;
+}
+.player-table .visible-cards .slot, .player-table .discard-cards {
+  position: relative;
+}
+.player-table .visible-cards .slot::before, .player-table .discard-cards::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: 3px dashed white;
+  border-radius: 12px;
+}
+.player-table .visible-cards .slot {
+  width: 200px;
+  height: 280px;
 }
 
 .color-help-folded-content {
@@ -885,23 +907,6 @@ body > .card {
     margin-top: 8px;
   }
 }
-@font-face {
-  font-family: "copperplate-gothic-bold";
-  src: url("img/copperplate-gothic-bold.woff2") format("woff2"), url("img/copperplate-gothic-bold.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-}
-html, .mode_3d #game_play_area_background {
-  background: url("img/background.jpg") #b5b4b4;
-  background-size: 100% auto;
-  background-repeat: no-repeat;
-  background-position: top;
-}
-
-#bga-zoom-wrapper {
-  padding-top: 32px;
-}
-
 .icon {
   display: inline-block;
   width: 32px;

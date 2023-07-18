@@ -5,9 +5,9 @@ class PlayerTable {
     public playerId: number;
     public voidStock: VoidStock<Card>;
     public hand?: LineStock<Card>;
-    public minus: LineStock<Card>;
+    public minus: SlotStock<Card>;
     public discard: Deck<Card>;
-    public plus: LineStock<Card>;
+    public plus: SlotStock<Card>;
 
     private currentPlayer: boolean;
 
@@ -28,9 +28,9 @@ class PlayerTable {
         }
         html += `
             <div class="player-visible-cards">
-                <div id="player-table-${this.playerId}-minus"></div>
-                <div id="player-table-${this.playerId}-discard"></div>
-                <div id="player-table-${this.playerId}-plus"></div>
+                <div id="player-table-${this.playerId}-minus" class="visible-cards"></div>
+                <div id="player-table-${this.playerId}-discard" class="discard-cards"></div>
+                <div id="player-table-${this.playerId}-plus" class="visible-cards"></div>
             </div>
         </div>
         `;
@@ -49,14 +49,18 @@ class PlayerTable {
         this.voidStock = new VoidStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-name`));
 
         
-        this.minus = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-minus`));
-        this.minus.addCards(player.minus);
+        this.minus = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-minus`), {
+            slotsIds: [0],
+        });
+        player.minus.forEach((card, index) => this.minus.addCard(card, undefined, { slot: index }));
         this.discard = new Deck<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-discard`), {
             topCard: player.discard[0],
             cardNumber: player.discard.length,
         });
-        this.plus = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-plus`));
-        this.plus.addCards(player.plus);
+        this.plus = new SlotStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-plus`), {
+            slotsIds: [0, 1],
+        });
+        player.plus.forEach((card, index) => this.plus.addCard(card, undefined, { slot: index }));
     }
 
     public setHandSelectable(selectable: boolean) {
@@ -69,8 +73,8 @@ class PlayerTable {
 
     public placeCards(minus: Card[], plus: Card[]): Promise<any> {
         return Promise.all([
-            this.minus.addCards(minus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
-            this.plus.addCards(plus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
+            ...minus.map((card, index) => this.minus.addCard(card, { fromStock: this.currentPlayer ? this.hand : this.voidStock }, { slot: index })),
+            ...plus.map((card, index) => this.plus.addCard(card, { fromStock: this.currentPlayer ? this.hand : this.voidStock }, { slot: index })),
         ]);
     }
     

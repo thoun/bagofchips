@@ -2080,7 +2080,7 @@ var PlayerTable = /** @class */ (function () {
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div class=\"player-visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-minus\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-plus\"></div>\n            </div>\n        </div>\n        ");
+        html += "\n            <div class=\"player-visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-minus\" class=\"visible-cards\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard-cards\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-plus\" class=\"visible-cards\"></div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
@@ -2091,14 +2091,18 @@ var PlayerTable = /** @class */ (function () {
             this.hand.addCards(player.hand);
         }
         this.voidStock = new VoidStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-name")));
-        this.minus = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-minus")));
-        this.minus.addCards(player.minus);
+        this.minus = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-minus")), {
+            slotsIds: [0],
+        });
+        player.minus.forEach(function (card, index) { return _this.minus.addCard(card, undefined, { slot: index }); });
         this.discard = new Deck(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-discard")), {
             topCard: player.discard[0],
             cardNumber: player.discard.length,
         });
-        this.plus = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-plus")));
-        this.plus.addCards(player.plus);
+        this.plus = new SlotStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-plus")), {
+            slotsIds: [0, 1],
+        });
+        player.plus.forEach(function (card, index) { return _this.plus.addCard(card, undefined, { slot: index }); });
     }
     PlayerTable.prototype.setHandSelectable = function (selectable) {
         this.hand.setSelectionMode(selectable ? 'multiple' : 'none');
@@ -2107,10 +2111,8 @@ var PlayerTable = /** @class */ (function () {
         return this.discard.addCards(discard, { fromStock: this.currentPlayer ? this.hand : this.voidStock });
     };
     PlayerTable.prototype.placeCards = function (minus, plus) {
-        return Promise.all([
-            this.minus.addCards(minus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
-            this.plus.addCards(plus, { fromStock: this.currentPlayer ? this.hand : this.voidStock }),
-        ]);
+        var _this = this;
+        return Promise.all(__spreadArray(__spreadArray([], minus.map(function (card, index) { return _this.minus.addCard(card, { fromStock: _this.currentPlayer ? _this.hand : _this.voidStock }, { slot: index }); }), true), plus.map(function (card, index) { return _this.plus.addCard(card, { fromStock: _this.currentPlayer ? _this.hand : _this.voidStock }, { slot: index }); }), true));
     };
     PlayerTable.prototype.newHand = function (cards) {
         return this.hand.addCards(cards);
@@ -2195,7 +2197,7 @@ var BagOfChips = /** @class */ (function () {
             onDimensionsChange: function () {
                 var tablesAndCenter = document.getElementById('tables-and-center');
                 var clientWidth = tablesAndCenter.clientWidth;
-                tablesAndCenter.classList.toggle('double-column', clientWidth > 2678); // TODO
+                tablesAndCenter.classList.toggle('double-column', clientWidth > 1680); // 830px + 20px + 830px
             },
         });
         new HelpManager(this, {
@@ -2416,10 +2418,10 @@ var BagOfChips = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
-            ['discardCards', ANIMATION_MS],
-            ['placeCards', ANIMATION_MS],
-            ['newHand', ANIMATION_MS],
-            ['revealChips', ANIMATION_MS],
+            ['discardCards', undefined],
+            ['placeCards', undefined],
+            ['newHand', undefined],
+            ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2],
             ['rewards', 1],
             ['endTurn', ANIMATION_MS],
@@ -2459,7 +2461,7 @@ var BagOfChips = /** @class */ (function () {
         return this.tableCenter.revealChips(args.slot, args.chips);
     };
     BagOfChips.prototype.notif_scoreCard = function (args) {
-        return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
     };
     BagOfChips.prototype.notif_rewards = function (args) {
         this.setReward(args.playerId, args.newScore);
@@ -2473,12 +2475,8 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                if (args.gains && (typeof args.gains !== 'string' || args.gains[0] !== '<')) {
-                    var entries = Object.entries(args.gains);
-                    args.gains = entries.length ? entries.map(function (entry) { return "<strong>".concat(entry[1], "</strong> <div class=\"icon\" data-type=\"").concat(entry[0], "\"></div>"); }).join(' ') : "<strong>".concat(_('nothing'), "</strong>");
-                }
                 for (var property in args) {
-                    if (['number', 'color', 'card_color', 'card_type', 'artifact_name'].includes(property) && args[property][0] != '<') {
+                    if (['number'].includes(property) && args[property][0] != '<') {
                         args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
                 }

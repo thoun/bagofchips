@@ -95,7 +95,7 @@ class BagOfChips implements BagOfChipsGame {
             onDimensionsChange: () => {
                 const tablesAndCenter = document.getElementById('tables-and-center');
                 const clientWidth = tablesAndCenter.clientWidth;
-                tablesAndCenter.classList.toggle('double-column', clientWidth > 2678); // TODO
+                tablesAndCenter.classList.toggle('double-column', clientWidth > 1680); // 830px + 20px + 830px
             },
         });
 
@@ -395,10 +395,10 @@ class BagOfChips implements BagOfChipsGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['discardCards', ANIMATION_MS],
-            ['placeCards', ANIMATION_MS],
-            ['newHand', ANIMATION_MS],
-            ['revealChips', ANIMATION_MS],
+            ['discardCards', undefined],
+            ['placeCards', undefined],
+            ['newHand', undefined],
+            ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2],
             ['rewards', 1],
             ['endTurn', ANIMATION_MS],
@@ -448,7 +448,7 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     notif_scoreCard(args: NotifScoreCardArgs) {
-        return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
     }
 
     notif_rewards(args: NotifRewardsArgs) {
@@ -466,13 +466,8 @@ class BagOfChips implements BagOfChipsGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                if (args.gains && (typeof args.gains !== 'string' || args.gains[0] !== '<')) {
-                    const entries = Object.entries(args.gains);
-                    args.gains = entries.length ? entries.map(entry => `<strong>${entry[1]}</strong> <div class="icon" data-type="${entry[0]}"></div>`).join(' ') : `<strong>${_('nothing')}</strong>`;
-                }
-
                 for (const property in args) {
-                    if (['number', 'color', 'card_color', 'card_type', 'artifact_name'].includes(property) && args[property][0] != '<') {
+                    if (['number'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }
                 }

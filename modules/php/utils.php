@@ -233,14 +233,14 @@ trait UtilTrait {
                     $message = clienttranslate('${player_name} doesn\'t score the [-] card ${card_image}');
                 }
                 
-                self::notifyAllPlayers($scored ? 'scoreCard' : 'log', $message, [
+                self::notifyAllPlayers('scoreCard', $message, [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                     'card' => $card,
                     'card_image' => '',
                     'preserve' => ['card'],
-                    'score' => -$points,
-                    'points' => $points, // for log
+                    'score' => $scored ? -$points : 0,
+                    'points' => $scored ? -$points : 0, // for log
                 ]);
             }
             
@@ -261,14 +261,14 @@ trait UtilTrait {
                     $message = clienttranslate('${player_name} doesn\'t score the [+] card ${card_image}');
                 }
                 
-                self::notifyAllPlayers($scored ? 'scoreCard' : 'log', $message, [
+                self::notifyAllPlayers('scoreCard', $message, [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                     'card' => $card,
                     'card_image' => '',
                     'preserve' => ['card'],
-                    'score' => -$points,
-                    'points' => $points, // for log
+                    'score' => $scored ? $points : 0,
+                    'points' => $scored ? $points : 0, // for log
                 ]);
             }
         }

@@ -35,7 +35,7 @@ trait ActionTrait {
 
         $this->cards->moveCards($ids, 'discard', $playerId);
 
-        self::notifyAllPlayers('discardCards', clienttranslate('${player_name} discards {number} Objective cards'), [
+        self::notifyAllPlayers('discardCards', clienttranslate('${player_name} discards ${number} Objective cards'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'discard' => Card::onlyIds($this->getCardsByLocation('discard', $playerId)),
@@ -67,7 +67,7 @@ trait ActionTrait {
         $this->cards->moveCards($minus, 'minus', $playerId);
         $this->cards->moveCards($plus, 'plus', $playerId);
 
-        self::notifyAllPlayers('discardCards', clienttranslate('${player_name} places remaining Objective cards'), [
+        self::notifyAllPlayers('placeCards', clienttranslate('${player_name} places remaining Objective cards'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'minus' => $this->getCardsByLocation('minus', $playerId),
