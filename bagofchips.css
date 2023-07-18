@@ -499,8 +499,8 @@ body > .card {
 .objective {
   display: inline-block;
   position: relative;
-  width: 495px;
-  height: 692px;
+  width: 200px;
+  height: 280px;
   border-radius: 8px;
 }
 .objective .card-sides .card-side {
@@ -667,8 +667,8 @@ body > .card {
 .chip {
   display: inline-block;
   position: relative;
-  width: 254px;
-  height: 304px;
+  width: 82px;
+  height: 98px;
 }
 .chip .card-sides .card-side {
   box-shadow: unset;
@@ -701,15 +701,14 @@ body > .card {
 }
 
 #table-center {
-  min-width: 818px;
+  min-width: 830px;
   display: grid;
-  grid-template-columns: repeat(4, 495px);
-  grid-template-rows: 1063px;
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 #table-center .map {
-  width: 495px;
-  height: 1063px;
+  width: 200px;
+  height: 429px;
   background-size: auto 100%;
   background-image: url("img/maps.png");
   border-radius: 32px;
@@ -730,6 +729,8 @@ body > .card {
 }
 #table-center .map .slot {
   flex: 1;
+  align-items: center;
+  align-content: center;
 }
 
 .player-board {
@@ -910,21 +911,14 @@ html, .mode_3d #game_play_area_background {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
-  border-radius: 50%;
 }
-.icon.vp, .icon[data-type="1"] {
+.icon.reward {
   background-position-x: 0%;
 }
-.icon.reputation, .icon[data-type="4"] {
-  background-position-x: 25%;
-}
-.icon.bracelet, .icon[data-type="2"] {
+.icon.minus {
   background-position-x: 50%;
 }
-.icon.recruit, .icon[data-type="3"] {
-  background-position-x: 75%;
-}
-.icon.take-card, .icon[data-type="5"] {
+.icon.plus {
   background-position-x: 100%;
 }
 

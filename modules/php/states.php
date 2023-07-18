@@ -47,10 +47,10 @@ trait StateTrait {
                 $chip = $this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', $slot));
                 $this->notifRevealChips($slot, [$chip]);
             }
-            $chips = $this->getChipsFromDb(
+            $chips = $this->getChipsFromDb([
                 $this->chips->pickCardForLocation('bag', 'table', 5),
                 $this->chips->pickCardForLocation('bag', 'table', 6),
-            );
+            ]);
         } else {
             $number = 6 - $phase;
             $chips = $this->getChipsFromDb($this->chips->pickCardsForLocation($number, 'bag', 'table', $phase));
@@ -73,7 +73,7 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
-    function stEndTurn() {
+    function stEndRound() {
         $instantWinner = $this->scoreRound();
 
         if ($instantWinner != null) {
@@ -141,14 +141,14 @@ trait StateTrait {
         }
         
         if (!$end) {
-            $this->cards->moveAllCardsInLocation('hand', 'deck');
+            $this->cards->moveAllCardsInLocation(null, 'deck');
             $this->cards->shuffle('deck');
-            $this->chips->moveAllCardsInLocation('table', 'bag');
+            $this->chips->moveAllCardsInLocation(null, 'bag');
             $this->chips->shuffle('bag');
             self::notifyAllPlayers('endTurn', '', []);
         }
 
-        $this->gamestate->nextState($end ? 'endScore' : 'newTurn');
+        $this->gamestate->nextState($end ? 'endScore' : 'newRound');
     }
 
     function stEndScore() {

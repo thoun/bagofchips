@@ -4,16 +4,17 @@
 }
 
 #table-center {
-  min-width: 818px; // TODO
+  min-width: 830px;
 
   display: grid;
-  grid-template-columns: repeat(4, 495px);
-  grid-template-rows: 1063px;
+  grid-template-columns: repeat(4, 1fr);
+  //grid-template-columns: repeat(4, 200px);
+  //grid-template-rows: 429px;
   gap: 10px;
 
   .map {
-    width: 495px;
-    height: 1063px;
+    width: 200px;
+    height: 429px;
     background-size: auto 100%;
     background-image: url('img/maps.png');
     border-radius: 32px;
@@ -28,6 +29,8 @@
 
     .slot {
       flex: 1;
+      align-items: center;
+      align-content: center;
     }
   }
 }

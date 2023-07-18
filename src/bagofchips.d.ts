@@ -90,6 +90,12 @@ interface NotifScoreCardArgs {
     score: number;
 }
 
+// rewards
+interface NotifRewardsArgs {
+    playerId: number;
+    newScore: number;
+}
+
 // endTurn
 interface NotifEndTurnArgs {
 }

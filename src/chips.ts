@@ -7,8 +7,8 @@ class ChipsManager extends CardManager<Chip> {
                 div.dataset.type = ''+card.color;
             },
             isCardVisible: () => true,
-            cardWidth: 254,
-            cardHeight: 354,
+            cardWidth: 82,
+            cardHeight: 98,
         });
     }
 }

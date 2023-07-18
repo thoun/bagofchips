@@ -46,22 +46,15 @@ html, .mode_3d #game_play_area_background {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
-  border-radius: 50%;
   
-  &.vp, &[data-type="1"] {
-    background-position-x: #{0 * 100% / 4};
-  }  
-  &.reputation, &[data-type="4"] {
-    background-position-x: #{1 * 100% / 4};
-  }  
-  &.bracelet, &[data-type="2"] {
-    background-position-x: #{2 * 100% / 4};
+  &.reward {
+    background-position-x: #{0 * 100% / 2};
   }
-  &.recruit, &[data-type="3"] {
-    background-position-x: #{3 * 100% / 4};
+  &.minus {
+    background-position-x: #{1 * 100% / 2};
   }
-  &.take-card, &[data-type="5"] {
-    background-position-x: #{4 * 100% / 4};
+  &.plus {
+    background-position-x: #{2 * 100% / 2};
   }
 }
 

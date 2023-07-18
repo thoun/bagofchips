@@ -2008,8 +2008,8 @@ var CardsManager = /** @class */ (function (_super) {
                 game.setTooltip(div.id, _this.getTooltip(card));
             },
             isCardVisible: function (card) { return Boolean(card.type); },
-            cardWidth: 495,
-            cardHeight: 692,
+            cardWidth: 200,
+            cardHeight: 280,
         }) || this;
         _this.game = game;
         return _this;
@@ -2034,8 +2034,8 @@ var ChipsManager = /** @class */ (function (_super) {
                 div.dataset.type = '' + card.color;
             },
             isCardVisible: function () { return true; },
-            cardWidth: 254,
-            cardHeight: 354,
+            cardWidth: 82,
+            cardHeight: 98,
         }) || this;
         _this.game = game;
         return _this;
@@ -2116,7 +2116,7 @@ var PlayerTable = /** @class */ (function () {
         return this.hand.addCards(cards);
     };
     PlayerTable.prototype.scoreCard = function (card, score) {
-        this.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+        this.game.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
     };
     PlayerTable.prototype.endTurn = function () {
         var _a;
@@ -2138,6 +2138,9 @@ var BRACELET = 2;
 var RECRUIT = 3;
 var REWARD = 4;
 var CARD = 5;
+function formatTextIcons(str) {
+    return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
+}
 var BagOfChips = /** @class */ (function () {
     function BagOfChips() {
         this.playersTables = [];
@@ -2271,11 +2274,11 @@ var BagOfChips = /** @class */ (function () {
             button.classList.toggle('disabled', selection.length != +this.gamedatas.gamestate.args.number);
         }
         else if (this.gamedatas.gamestate.name == 'placeCards') {
-            var minusLabel = _('Set selected card on minus side');
+            var minusLabel = formatTextIcons(_('Set selected card on [-] side'));
             var minusButton = document.getElementById('placeMinus_button');
             minusButton.innerHTML = minusLabel;
             minusButton.classList.toggle('disabled', selection.length != 1);
-            var plusLabel = _('Set selected cards on plus side');
+            var plusLabel = formatTextIcons(_('Set selected cards on [+] side'));
             var plusButton = document.getElementById('placePlus_button');
             plusButton.innerHTML = plusLabel;
             plusButton.classList.toggle('disabled', selection.length != 2);
@@ -2413,11 +2416,12 @@ var BagOfChips = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
-            ['discardCards', undefined],
-            ['placeCards', undefined],
-            ['newHand', undefined],
-            ['revealChips', undefined],
+            ['discardCards', ANIMATION_MS],
+            ['placeCards', ANIMATION_MS],
+            ['newHand', ANIMATION_MS],
+            ['revealChips', ANIMATION_MS],
             ['scoreCard', ANIMATION_MS * 2],
+            ['rewards', 1],
             ['endTurn', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
@@ -2457,6 +2461,9 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.notif_scoreCard = function (args) {
         return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
     };
+    BagOfChips.prototype.notif_rewards = function (args) {
+        this.setReward(args.playerId, args.newScore);
+    };
     BagOfChips.prototype.notif_endTurn = function () {
         this.tableCenter.endTurn();
         this.playersTables.forEach(function (table) { return table.endTurn(); });
@@ -2475,6 +2482,7 @@ var BagOfChips = /** @class */ (function () {
                         args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
                 }
+                log = formatTextIcons(log);
             }
         }
         catch (e) {

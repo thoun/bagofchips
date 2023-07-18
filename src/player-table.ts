@@ -79,7 +79,7 @@ class PlayerTable {
     }
 
     public scoreCard(card: Card, score: number) {
-        (this as any).displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+        (this.game as any).displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
     }
     
     public endTurn(): void {

@@ -8,6 +8,9 @@ class Chip {
     public ?int $color;
 
     public function __construct($dbCard) {
+        if (gettype($dbCard) != 'array') {
+            throw new Exception(gettype($dbCard). ' '. $dbCard);
+        }
         $this->id = intval($dbCard['card_id'] ?? $dbCard['id']);
         $this->location = $dbCard['card_location'] ?? $dbCard['location'];
         $this->locationArg = intval($dbCard['card_location_arg'] ?? $dbCard['location_arg']);

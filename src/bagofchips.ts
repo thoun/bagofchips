@@ -20,6 +20,10 @@ const RECRUIT = 3;
 const REWARD = 4;
 const CARD = 5;
 
+function formatTextIcons(str: string) {
+    return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
+}
+
 class BagOfChips implements BagOfChipsGame {
     public cardsManager: CardsManager;
     public chipsManager: ChipsManager;
@@ -179,13 +183,13 @@ class BagOfChips implements BagOfChipsGame {
             button.innerHTML = label;
             button.classList.toggle('disabled', selection.length != +this.gamedatas.gamestate.args.number);
         } else if (this.gamedatas.gamestate.name == 'placeCards') {
-            const minusLabel = _('Set selected card on minus side');
+            const minusLabel = formatTextIcons(_('Set selected card on [-] side'));
 
             const minusButton = document.getElementById('placeMinus_button');
             minusButton.innerHTML = minusLabel;
             minusButton.classList.toggle('disabled', selection.length != 1);
 
-            const plusLabel = _('Set selected cards on plus side');
+            const plusLabel = formatTextIcons(_('Set selected cards on [+] side'));
 
             const plusButton = document.getElementById('placePlus_button');
             plusButton.innerHTML = plusLabel;
@@ -391,11 +395,12 @@ class BagOfChips implements BagOfChipsGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['discardCards', undefined],
-            ['placeCards', undefined],
-            ['newHand', undefined],
-            ['revealChips', undefined],
+            ['discardCards', ANIMATION_MS],
+            ['placeCards', ANIMATION_MS],
+            ['newHand', ANIMATION_MS],
+            ['revealChips', ANIMATION_MS],
             ['scoreCard', ANIMATION_MS * 2],
+            ['rewards', 1],
             ['endTurn', ANIMATION_MS],
         ];
     
@@ -446,6 +451,10 @@ class BagOfChips implements BagOfChipsGame {
         return this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
     }
 
+    notif_rewards(args: NotifRewardsArgs) {
+        this.setReward(args.playerId, args.newScore);
+    }
+
     notif_endTurn() {
         this.tableCenter.endTurn();
         this.playersTables.forEach(table => table.endTurn());
@@ -467,6 +476,8 @@ class BagOfChips implements BagOfChipsGame {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }
                 }
+
+                log = formatTextIcons(log);
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);
