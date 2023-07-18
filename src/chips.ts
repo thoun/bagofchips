@@ -11,4 +11,14 @@ class ChipsManager extends CardManager<Chip> {
             cardHeight: 98,
         });
     }
+    
+    public getHtml(card: Chip): string {
+        let html = `<div class="card chip" data-side="front" data-type="${card.color}">
+            <div class="card-sides">
+                <div class="card-side front">
+                </div>
+            </div>
+        </div>`;
+        return html;
+    }
 }

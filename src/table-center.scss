@@ -4,6 +4,7 @@
 }
 
 #table-center {
+  position: relative;
   min-width: 830px;
 
   display: grid;
@@ -11,6 +12,12 @@
   //grid-template-columns: repeat(4, 200px);
   //grid-template-rows: 429px;
   gap: 10px;
+
+  #bag {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 
   .map {
     width: 200px;

@@ -96,6 +96,6 @@ interface NotifRewardsArgs {
     newScore: number;
 }
 
-// endTurn
-interface NotifEndTurnArgs {
+// endRound
+interface NotifEndRoundArgs {
 }

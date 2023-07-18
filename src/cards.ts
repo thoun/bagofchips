@@ -25,4 +25,14 @@ class CardsManager extends CardManager<Card> {
  
         return message;
     }
+    
+    public getHtml(card: Card): string {
+        let html = `<div class="card objective" data-side="front">
+            <div class="card-sides">
+                <div class="card-side front" data-type="${card.type}" data-sub-type="${card.subType}">
+                </div>
+            </div>
+        </div>`;
+        return html;
+    }
 }

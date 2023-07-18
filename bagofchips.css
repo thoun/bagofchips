@@ -701,10 +701,16 @@ body > .card {
 }
 
 #table-center {
+  position: relative;
   min-width: 830px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+}
+#table-center #bag {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #table-center .map {
   width: 200px;
@@ -840,10 +846,10 @@ body > .card {
   gap: 8px;
   margin: 8px;
 }
-.player-table .visible-cards .slot, .player-table .discard-cards {
+.player-table .minus .slot, .player-table .plus .slot, .player-table .discard-cards {
   position: relative;
 }
-.player-table .visible-cards .slot::before, .player-table .discard-cards::before {
+.player-table .minus .slot::before, .player-table .plus .slot::before, .player-table .discard-cards::before {
   content: "";
   position: absolute;
   top: 0;
@@ -853,7 +859,7 @@ body > .card {
   border: 3px dashed white;
   border-radius: 12px;
 }
-.player-table .visible-cards .slot {
+.player-table .minus .slot, .player-table .plus .slot {
   width: 200px;
   height: 280px;
 }
@@ -989,4 +995,21 @@ body > .card {
 }
 #tables-and-center.double-column > div {
   flex: 1;
+}
+
+.log-chip-image {
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+}
+.log-chip-image .chip {
+  width: 41px;
+  height: 49px;
+}
+
+.log-card-image {
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+  height: 64px;
 }

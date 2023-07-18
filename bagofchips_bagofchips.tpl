@@ -5,7 +5,9 @@
 <div id="table">
     <div id="tables-and-center">
         <div id="table-center-wrapper">
-            <div id="table-center"></div>
+            <div id="table-center">
+                <div id="bag"></div>
+            </div>
         </div>
         <div id="tables"></div>
     </div>

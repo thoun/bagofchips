@@ -2022,6 +2022,10 @@ var CardsManager = /** @class */ (function (_super) {
         `;*/
         return message;
     };
+    CardsManager.prototype.getHtml = function (card) {
+        var html = "<div class=\"card objective\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-type=\"".concat(card.type, "\" data-sub-type=\"").concat(card.subType, "\">\n                </div>\n            </div>\n        </div>");
+        return html;
+    };
     return CardsManager;
 }(CardManager));
 var ChipsManager = /** @class */ (function (_super) {
@@ -2040,6 +2044,10 @@ var ChipsManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
+    ChipsManager.prototype.getHtml = function (card) {
+        var html = "<div class=\"card chip\" data-side=\"front\" data-type=\"".concat(card.color, "\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\">\n                </div>\n            </div>\n        </div>");
+        return html;
+    };
     return ChipsManager;
 }(CardManager));
 var TableCenter = /** @class */ (function () {
@@ -2047,6 +2055,7 @@ var TableCenter = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.chips = [];
+        this.bag = new VoidStock(game.chipsManager, document.getElementById("bag"));
         var tableCenter = document.getElementById("table-center");
         [1, 2, 3, 4].forEach(function (phase) {
             tableCenter.insertAdjacentHTML('beforeend', "\n                <div id=\"map".concat(phase, "\" class=\"map\" data-phase=\"").concat(phase, "\"></div>\n            "));
@@ -2059,11 +2068,11 @@ var TableCenter = /** @class */ (function () {
         });
     }
     TableCenter.prototype.revealChips = function (slot, chips) {
-        return this.chips[slot].addCards(chips);
+        return this.chips[slot].addCards(chips, { fromStock: this.bag });
     };
-    TableCenter.prototype.endTurn = function () {
+    TableCenter.prototype.endRound = function () {
         var _this = this;
-        [1, 2, 3, 4, 5].forEach(function (phase) { return _this.chips[phase].removeAll(); });
+        return Promise.all([1, 2, 3, 4, 5].map(function (phase) { return _this.bag.addCards(_this.chips[phase].getCards()); }));
     };
     return TableCenter;
 }());
@@ -2080,7 +2089,7 @@ var PlayerTable = /** @class */ (function () {
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n            <div class=\"player-visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-minus\" class=\"visible-cards\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard-cards\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-plus\" class=\"visible-cards\"></div>\n            </div>\n        </div>\n        ");
+        html += "\n            <div class=\"player-visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-minus\" class=\"minus\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-discard\" class=\"discard-cards\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-plus\" class=\"plus\"></div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
@@ -2115,17 +2124,14 @@ var PlayerTable = /** @class */ (function () {
         return Promise.all(__spreadArray(__spreadArray([], minus.map(function (card, index) { return _this.minus.addCard(card, { fromStock: _this.currentPlayer ? _this.hand : _this.voidStock }, { slot: index }); }), true), plus.map(function (card, index) { return _this.plus.addCard(card, { fromStock: _this.currentPlayer ? _this.hand : _this.voidStock }, { slot: index }); }), true));
     };
     PlayerTable.prototype.newHand = function (cards) {
-        return this.hand.addCards(cards);
+        return this.hand.addCards(cards, { fromStock: this.voidStock });
     };
     PlayerTable.prototype.scoreCard = function (card, score) {
         this.game.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
     };
-    PlayerTable.prototype.endTurn = function () {
-        var _a;
-        (_a = this.hand) === null || _a === void 0 ? void 0 : _a.removeAll();
-        this.minus.removeAll();
-        this.discard.removeAll();
-        this.plus.removeAll();
+    PlayerTable.prototype.endRound = function () {
+        var _a, _b;
+        return this.voidStock.addCards(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], ((_b = (_a = this.hand) === null || _a === void 0 ? void 0 : _a.getCards()) !== null && _b !== void 0 ? _b : []), true), this.minus.getCards(), true), this.discard.getCards(), true), this.plus.getCards(), true));
     };
     return PlayerTable;
 }());
@@ -2418,13 +2424,14 @@ var BagOfChips = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
+            ['wait1000', ANIMATION_MS],
             ['discardCards', undefined],
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2],
             ['rewards', 1],
-            ['endTurn', ANIMATION_MS],
+            ['endRound', undefined],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, function (notifDetails) {
@@ -2448,6 +2455,7 @@ var BagOfChips = /** @class */ (function () {
             });
         }
     };
+    BagOfChips.prototype.notif_wait1000 = function () { };
     BagOfChips.prototype.notif_discardCards = function (args) {
         return this.getPlayerTable(args.playerId).discardCards(args.discard);
     };
@@ -2466,15 +2474,23 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.notif_rewards = function (args) {
         this.setReward(args.playerId, args.newScore);
     };
-    BagOfChips.prototype.notif_endTurn = function () {
-        this.tableCenter.endTurn();
-        this.playersTables.forEach(function (table) { return table.endTurn(); });
+    BagOfChips.prototype.notif_endRound = function () {
+        return Promise.all(__spreadArray([
+            this.tableCenter.endRound()
+        ], this.playersTables.map(function (table) { return table.endRound(); }), true));
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     BagOfChips.prototype.format_string_recursive = function (log, args) {
+        var _this = this;
         try {
             if (log && args && !args.processed) {
+                if (args.chips_images === '' && args.chips) {
+                    args.chips_images = "<div class=\"log-chip-image\">".concat(args.chips.map(function (chip) { return _this.chipsManager.getHtml(chip); }).join(' '), "</div>");
+                }
+                if (args.card_image === '' && args.card) {
+                    args.card_image = "<div class=\"log-card-image\">".concat(this.cardsManager.getHtml(args.card), "</div>");
+                }
                 for (var property in args) {
                     if (['number'].includes(property) && args[property][0] != '<') {
                         args[property] = "<strong>".concat(_(args[property]), "</strong>");

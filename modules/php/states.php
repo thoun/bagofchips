@@ -14,6 +14,8 @@ trait StateTrait {
     function stStartRound() {
         $this->setGlobalVariable(PHASE, 0);
         $this->DbQuery("UPDATE player SET player_round_score = 0");
+
+        self::notifyAllPlayers('wait1000', clienttranslate('Shuffling the chips for the new round...'), []);
         
         $playersIds = $this->getPlayersIds();
 
@@ -28,12 +30,16 @@ trait StateTrait {
     }
 
     private function notifRevealChips(int $slot, array $chips) {
+        $count = count($chips);
 
-        self::notifyAllPlayers('revealChips', clienttranslate('${number} chips are revealed ${chips_image}'), [
+        $message = $count > 1 ? clienttranslate('${number} new chips are revealed ${chips_images}') :
+         ($slot == 4 ? clienttranslate('One new chip is revealed... ${chips_images}') : clienttranslate('And finally the last chip is revealed! ${chips_images}'));
+
+        self::notifyAllPlayers('revealChips', $message, [
             'slot' => $slot,
             'chips' => $chips,
-            'chips_image' => [],
-            'number' => count($chips), // for logs
+            'chips_images' => '',
+            'number' => $count, // for logs
             'preserve' => ['chips'],
         ]);
     }
@@ -43,14 +49,13 @@ trait StateTrait {
         $this->setGlobalVariable(PHASE, $phase);
 
         if ($phase == 4) {
-            foreach ([4, 5] as $slot) {
-                $chip = $this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', $slot));
-                $this->notifRevealChips($slot, [$chip]);
-            }
-            $chips = $this->getChipsFromDb([
-                $this->chips->pickCardForLocation('bag', 'table', 5),
-                $this->chips->pickCardForLocation('bag', 'table', 6),
-            ]);
+            $this->notifRevealChips(4, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 4))]);
+
+            self::notifyAllPlayers('wait1000', clienttranslate('Suspens for the last one...'), []);
+
+            $this->notifRevealChips(5, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 5))]);
+
+            self::notifyAllPlayers('wait1000', '', []);
         } else {
             $number = 6 - $phase;
             $chips = $this->getChipsFromDb($this->chips->pickCardsForLocation($number, 'bag', 'table', $phase));
@@ -145,7 +150,7 @@ trait StateTrait {
             $this->cards->shuffle('deck');
             $this->chips->moveAllCardsInLocation(null, 'bag');
             $this->chips->shuffle('bag');
-            self::notifyAllPlayers('endTurn', '', []);
+            self::notifyAllPlayers('endRound', '', []);
         }
 
         $this->gamestate->nextState($end ? 'endScore' : 'newRound');

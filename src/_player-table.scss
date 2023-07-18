@@ -56,7 +56,7 @@
     margin: 8px;
   }
 
-  .visible-cards .slot, .discard-cards {
+  .minus .slot, .plus .slot, .discard-cards {
     position: relative;
     &::before {
       content: '';
@@ -70,7 +70,7 @@
     }
   }
   
-  .visible-cards .slot {    
+  .minus .slot, .plus .slot {
     width: 200px;
     height: 280px;
   }

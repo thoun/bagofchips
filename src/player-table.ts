@@ -28,9 +28,9 @@ class PlayerTable {
         }
         html += `
             <div class="player-visible-cards">
-                <div id="player-table-${this.playerId}-minus" class="visible-cards"></div>
+                <div id="player-table-${this.playerId}-minus" class="minus"></div>
                 <div id="player-table-${this.playerId}-discard" class="discard-cards"></div>
-                <div id="player-table-${this.playerId}-plus" class="visible-cards"></div>
+                <div id="player-table-${this.playerId}-plus" class="plus"></div>
             </div>
         </div>
         `;
@@ -79,17 +79,19 @@ class PlayerTable {
     }
     
     public newHand(cards: Card[]): Promise<any> {
-        return this.hand.addCards(cards);
+        return this.hand.addCards(cards, { fromStock: this.voidStock });
     }
 
     public scoreCard(card: Card, score: number) {
         (this.game as any).displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
     }
     
-    public endTurn(): void {
-        this.hand?.removeAll();
-        this.minus.removeAll();
-        this.discard.removeAll();
-        this.plus.removeAll();
+    public endRound(): Promise<any> { 
+        return this.voidStock.addCards([
+            ...(this.hand?.getCards() ?? []),
+            ...this.minus.getCards(),
+            ...this.discard.getCards(),
+            ...this.plus.getCards(),
+        ]);
     }
 }

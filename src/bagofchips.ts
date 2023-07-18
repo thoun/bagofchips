@@ -395,13 +395,14 @@ class BagOfChips implements BagOfChipsGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
+            ['wait1000', ANIMATION_MS],
             ['discardCards', undefined],
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2],
             ['rewards', 1],
-            ['endTurn', ANIMATION_MS],
+            ['endRound', undefined],
         ];
     
         notifs.forEach((notif) => {
@@ -431,6 +432,8 @@ class BagOfChips implements BagOfChipsGame {
         }
     }
 
+    notif_wait1000() {}
+
     notif_discardCards(args: NotifDiscardCardsArgs) {
         return this.getPlayerTable(args.playerId).discardCards(args.discard);
     }
@@ -455,9 +458,11 @@ class BagOfChips implements BagOfChipsGame {
         this.setReward(args.playerId, args.newScore);
     }
 
-    notif_endTurn() {
-        this.tableCenter.endTurn();
-        this.playersTables.forEach(table => table.endTurn());
+    notif_endRound() {
+        return Promise.all([
+            this.tableCenter.endRound(),
+            ...this.playersTables.map(table => table.endRound()),
+        ]);
     }
     
 
@@ -466,6 +471,14 @@ class BagOfChips implements BagOfChipsGame {
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
+                if (args.chips_images === '' && args.chips) {
+                    args.chips_images = `<div class="log-chip-image">${args.chips.map((chip: Chip) => this.chipsManager.getHtml(chip)).join(' ')}</div>`;
+                }
+
+                if (args.card_image === '' && args.card) {
+                    args.card_image = `<div class="log-card-image">${this.cardsManager.getHtml(args.card)}</div>`;
+                }
+
                 for (const property in args) {
                     if (['number'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;

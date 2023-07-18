@@ -100,3 +100,21 @@
     }
   }
 }
+
+.log-chip-image {
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+
+  .chip {
+    width: 41px;
+    height: 49px;
+  }
+}
+
+.log-card-image {
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+  height: 64px;
+}

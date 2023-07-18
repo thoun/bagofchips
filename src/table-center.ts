@@ -1,7 +1,10 @@
 class TableCenter {
+    public bag: VoidStock<Chip>;
     public chips: LineStock<Chip>[] = [];
         
     constructor(private game: BagOfChipsGame, gamedatas: BagOfChipsGamedatas) {
+        this.bag = new VoidStock(game.chipsManager, document.getElementById(`bag`));
+
         const tableCenter = document.getElementById(`table-center`);
         [1, 2, 3, 4].forEach(phase => {
             tableCenter.insertAdjacentHTML('beforeend', `
@@ -21,10 +24,10 @@ class TableCenter {
     }
     
     public revealChips(slot: number, chips: Chip[]): Promise<any> {
-        return this.chips[slot].addCards(chips);
+        return this.chips[slot].addCards(chips, { fromStock: this.bag });
     }
     
-    public endTurn() {
-        [1, 2, 3, 4, 5].forEach(phase => this.chips[phase].removeAll());
+    public endRound(): Promise<any> {
+        return Promise.all([1, 2, 3, 4, 5].map(phase => this.bag.addCards(this.chips[phase].getCards())));
     }
 }
