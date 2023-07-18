@@ -836,30 +836,9 @@ body > .card {
   height: 280px;
 }
 
-.color-help-folded-content {
-  background-size: contain;
-}
-
-.color-help-unfolded-content {
-  display: grid;
-  grid-template-columns: 40px 80px;
-  align-items: center;
-  justify-items: center;
-  background: #dfe8e8;
-}
-.color-help-unfolded-content .color {
-  width: 18px;
-  height: 18px;
-}
-.color-help-unfolded-content .label {
-  font-size: 10pt;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  width: 100%;
-  height: 42px;
-  word-break: break-word;
-  color: black;
+.bga-help_expandable-button {
+  background: url("img/us/card-repartition.png") center no-repeat;
+  background-size: cover;
 }
 
 #help-popin h1 {

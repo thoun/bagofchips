@@ -16,14 +16,29 @@ class CardsManager extends CardManager<Card> {
         });
     }
 
+    public getPower(type: number): string {
+        switch (type) {
+            case 1: return _("This Objective is completed if at the end of the round there is at least one chip of each flavor on the Board Cards.");
+            case 2: return _("This Objective is completed if at the end of the round, the displayed combination appears on the Board Cards. If there are more chips on the Board Cards than indicated on the Objective Card, the Objective is completed.");
+            case 3: return _("This Objective is completed if at the end of the round there are as many chips of each of the two displayed flavors on the Board Cards.");
+            case 4: return _("This Objective is completed if the <strong>last</strong> chip of the round to be placed on the Board Card matches the displayed flavor.");
+            case 5: return _("This Objective is completed if at the end of the round there is no chip of the displayed flavor on the Board Cards.");
+            case 6: return _("This Objective is completed if at the end of the round there is at least one chip of the displayed flavor on the Board Cards. This Objective is worth the number of points indicated multiplied by the number of chips of the matching flavor.");
+            case 7: return _("This Objective is completed if at the end of the round, there is more (+) chips than (-) chips on the Board Cards.");
+            case 8: return this.getPower(7) + '<br><br>' + formatTextIcons(_("However, if it is completed while the card is on a player’s [+] side, that player immediately <strong>wins the game</strong> (and not just the current round!). If the Objective is completed while the card is on [-] the side of a player, that player automatically loses the round, regardless of their score."));
+        }
+    }
+
     private getTooltip(card: Card): string {
-        let message = `TODO`;/*
-        <strong>${_("Color:")}</strong> ${this.game.getTooltipColor(card.color)}
-        <br>
-        <strong>${_("Gain:")}</strong> <strong>1</strong> ${this.game.getTooltipGain(card.gain)}
-        `;*/
- 
-        return message;
+        if (card.type == 7 && card.subType == 7) {
+            return this.getPower(8);
+        } else {
+            return `
+                <strong>${_("Points:")}</strong> ${card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points}
+                <br><br>
+                ${this.getPower(card.type)}
+            `;
+        }
     }
     
     public getHtml(card: Card): string {

@@ -2014,13 +2014,25 @@ var CardsManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
+    CardsManager.prototype.getPower = function (type) {
+        switch (type) {
+            case 1: return _("This Objective is completed if at the end of the round there is at least one chip of each flavor on the Board Cards.");
+            case 2: return _("This Objective is completed if at the end of the round, the displayed combination appears on the Board Cards. If there are more chips on the Board Cards than indicated on the Objective Card, the Objective is completed.");
+            case 3: return _("This Objective is completed if at the end of the round there are as many chips of each of the two displayed flavors on the Board Cards.");
+            case 4: return _("This Objective is completed if the <strong>last</strong> chip of the round to be placed on the Board Card matches the displayed flavor.");
+            case 5: return _("This Objective is completed if at the end of the round there is no chip of the displayed flavor on the Board Cards.");
+            case 6: return _("This Objective is completed if at the end of the round there is at least one chip of the displayed flavor on the Board Cards. This Objective is worth the number of points indicated multiplied by the number of chips of the matching flavor.");
+            case 7: return _("This Objective is completed if at the end of the round, there is more (+) chips than (-) chips on the Board Cards.");
+            case 8: return this.getPower(7) + '<br><br>' + formatTextIcons(_("However, if it is completed while the card is on a player’s [+] side, that player immediately <strong>wins the game</strong> (and not just the current round!). If the Objective is completed while the card is on [-] the side of a player, that player automatically loses the round, regardless of their score."));
+        }
+    };
     CardsManager.prototype.getTooltip = function (card) {
-        var message = "TODO"; /*
-        <strong>${_("Color:")}</strong> ${this.game.getTooltipColor(card.color)}
-        <br>
-        <strong>${_("Gain:")}</strong> <strong>1</strong> ${this.game.getTooltipGain(card.gain)}
-        `;*/
-        return message;
+        if (card.type == 7 && card.subType == 7) {
+            return this.getPower(8);
+        }
+        else {
+            return "\n                <strong>".concat(_("Points:"), "</strong> ").concat(card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points, "\n                <br><br>\n                ").concat(this.getPower(card.type), "\n            ");
+        }
     };
     CardsManager.prototype.getHtml = function (card) {
         var html = "<div class=\"card objective\" data-side=\"front\">\n            <div class=\"card-sides\">\n                <div class=\"card-side front\" data-type=\"".concat(card.type, "\" data-sub-type=\"").concat(card.subType, "\">\n                </div>\n            </div>\n        </div>");
@@ -2147,6 +2159,7 @@ var ANIMATION_MS = 500;
 var ACTION_TIMER_DURATION = 5;
 var LOCAL_STORAGE_ZOOM_KEY = 'BagOfChips-zoom';
 var LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'BagOfChips-jump-to-folded';
+var LOCAL_STORAGE_HELP_FOLDED_KEY = 'BagOfChips-help-folded';
 var CODES = [
     null,
     'us',
@@ -2174,7 +2187,6 @@ var BagOfChips = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     BagOfChips.prototype.setup = function (gamedatas) {
-        var _this = this;
         var _a;
         var code = (_a = CODES[this.prefs[202].value]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
         //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
@@ -2228,15 +2240,13 @@ var BagOfChips = /** @class */ (function () {
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    onPopinCreated: function () { return _this.populateHelp(); },
-                    buttonBackground: '#5890a9',
+                    buttonBackground: '#db2028',
                 }),
                 new BgaHelpExpandableButton({
-                    //unfoldedHtml: this.getColorAddHtml(),
-                    foldedContentExtraClasses: 'color-help-folded-content',
-                    unfoldedContentExtraClasses: 'color-help-unfolded-content',
-                    expandedWidth: '120px',
-                    expandedHeight: '210px',
+                    expandedWidth: '200px',
+                    expandedHeight: '280px',
+                    defaultFolded: false,
+                    localStorageFoldedKey: LOCAL_STORAGE_HELP_FOLDED_KEY
                 }),
             ]
         });
@@ -2403,21 +2413,12 @@ var BagOfChips = /** @class */ (function () {
         this.rewardsCounters[playerId].toValue(count);
     };
     BagOfChips.prototype.getHelpHtml = function () {
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Assets"), "</h2>\n            <div class=\"help-section\">\n                <div class=\"icon vp\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Victory Point</strong>. The player moves their token forward 1 space on the Score Track."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon recruit\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Recruit</strong>: The player adds 1 Recruit token to their ship."), " ").concat(_("It is not possible to have more than 3."), " ").concat(_("A recruit allows a player to draw the Viking card of their choice when Recruiting or replaces a Viking card during Exploration."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon bracelet\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship."), " ").concat(_("It is not possible to have more than 3."), " ").concat(_("They are used for Trading."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon reward\"></div>\n                <div class=\"help-label\">").concat(_("Gain 1 <strong>Reward Point</strong>: The player moves their token forward 1 space on the Reward Track."), "</div>\n            </div>\n            <div class=\"help-section\">\n                <div class=\"icon take-card\"></div>\n                <div class=\"help-label\">").concat(_("Draw <strong>the first Viking card</strong> from the deck: It is placed in the player’s Crew Zone (without taking any assets)."), "</div>\n            </div>\n\n            <h1>").concat(_("Powers of the artifacts (variant option)"), "</h1>\n        ");
-        for (var i = 1; i <= 7; i++) {
-            /*html += `
-            <div class="help-section">
-                <div id="help-artifact-${i}"></div>
-                <div>${this.artifactsManager.getTooltip(i)}</div>
-            </div> `;*/
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Objective cards"), "</h1>\n        ");
+        for (var i = 1; i <= 8; i++) {
+            html += "\n            <div class=\"help-section\">\n                <div id=\"help-card-".concat(i, "\">").concat(this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 }), "</div>\n                <div>").concat(this.cardsManager.getPower(i), "</div>\n            </div> ");
         }
         html += "</div>";
         return html;
-    };
-    BagOfChips.prototype.populateHelp = function () {
-        for (var i = 1; i <= 7; i++) {
-            //this.artifactsManager.setForHelp(i, `help-artifact-${i}`);
-        }
     };
     BagOfChips.prototype.discardCards = function () {
         if (!this.checkAction('discardCards')) {

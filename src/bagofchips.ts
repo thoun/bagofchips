@@ -11,6 +11,7 @@ const ACTION_TIMER_DURATION = 5;
 
 const LOCAL_STORAGE_ZOOM_KEY = 'BagOfChips-zoom';
 const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'BagOfChips-jump-to-folded';
+const LOCAL_STORAGE_HELP_FOLDED_KEY = 'BagOfChips-help-folded';
 
 const CODES = [
     null,
@@ -113,15 +114,13 @@ class BagOfChips implements BagOfChipsGame {
                 new BgaHelpPopinButton({
                     title: _("Card help").toUpperCase(),
                     html: this.getHelpHtml(),
-                    onPopinCreated: () => this.populateHelp(),
-                    buttonBackground: '#5890a9',
+                    buttonBackground: '#db2028',
                 }),
                 new BgaHelpExpandableButton({
-                    //unfoldedHtml: this.getColorAddHtml(),
-                    foldedContentExtraClasses: 'color-help-folded-content',
-                    unfoldedContentExtraClasses: 'color-help-unfolded-content',
-                    expandedWidth: '120px',
-                    expandedHeight: '210px',
+                    expandedWidth: '200px',
+                    expandedHeight: '280px',
+                    defaultFolded: false,
+                    localStorageFoldedKey: LOCAL_STORAGE_HELP_FOLDED_KEY
                 }),
             ]
         });
@@ -332,47 +331,19 @@ class BagOfChips implements BagOfChipsGame {
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
-            <h1>${_("Assets")}</h2>
-            <div class="help-section">
-                <div class="icon vp"></div>
-                <div class="help-label">${_("Gain 1 <strong>Victory Point</strong>. The player moves their token forward 1 space on the Score Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon recruit"></div>
-                <div class="help-label">${_("Gain 1 <strong>Recruit</strong>: The player adds 1 Recruit token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("A recruit allows a player to draw the Viking card of their choice when Recruiting or replaces a Viking card during Exploration.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon bracelet"></div>
-                <div class="help-label">${_("Gain 1 <strong>Silver Bracelet</strong>: The player adds 1 Silver Bracelet token to their ship.")} ${_("It is not possible to have more than 3.")} ${_("They are used for Trading.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon reward"></div>
-                <div class="help-label">${_("Gain 1 <strong>Reward Point</strong>: The player moves their token forward 1 space on the Reward Track.")}</div>
-            </div>
-            <div class="help-section">
-                <div class="icon take-card"></div>
-                <div class="help-label">${_("Draw <strong>the first Viking card</strong> from the deck: It is placed in the player’s Crew Zone (without taking any assets).")}</div>
-            </div>
-
-            <h1>${_("Powers of the artifacts (variant option)")}</h1>
+            <h1>${_("Objective cards")}</h1>
         `;
 
-        for (let i = 1; i <=7; i++) {
-            /*html += `
+        for (let i = 1; i <= 8; i++) {
+            html += `
             <div class="help-section">
-                <div id="help-artifact-${i}"></div>
-                <div>${this.artifactsManager.getTooltip(i)}</div>
-            </div> `;*/
+                <div id="help-card-${i}">${this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 } as Card)}</div>
+                <div>${this.cardsManager.getPower(i)}</div>
+            </div> `;
         }
         html += `</div>`;
 
         return html;
-    }
-
-    private populateHelp() {
-        for (let i = 1; i <=7; i++) {
-            //this.artifactsManager.setForHelp(i, `help-artifact-${i}`);
-        }
     }
     
     public discardCards() {
