@@ -2127,11 +2127,19 @@ var PlayerTable = /** @class */ (function () {
         return this.hand.addCards(cards, { fromStock: this.voidStock });
     };
     PlayerTable.prototype.scoreCard = function (card, score) {
-        this.game.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+        this.displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score == 0 ? _('failed!') : "".concat(score));
     };
     PlayerTable.prototype.endRound = function () {
         var _a, _b;
         return this.voidStock.addCards(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], ((_b = (_a = this.hand) === null || _a === void 0 ? void 0 : _a.getCards()) !== null && _b !== void 0 ? _b : []), true), this.minus.getCards(), true), this.discard.getCards(), true), this.plus.getCards(), true));
+    };
+    PlayerTable.prototype.displayScoring = function (id, color, value) {
+        var duration = 1000;
+        var el = dojo.place("<div class=\"scorenumber\">".concat(value, "</div>"), id);
+        this.game.placeOnObject(el, id);
+        dojo.style(el, "color", "#" + color);
+        dojo.addClass(el, "scorenumber_anim");
+        this.game.fadeOutAndDestroy(el, duration, 2000);
     };
     return PlayerTable;
 }());

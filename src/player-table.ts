@@ -83,7 +83,11 @@ class PlayerTable {
     }
 
     public scoreCard(card: Card, score: number) {
-        (this.game as any).displayScoring(this.game.cardsManager.getId(card), this.game.getPlayer(this.playerId).color, score, 1000);
+        this.displayScoring(
+            this.game.cardsManager.getId(card), 
+            this.game.getPlayer(this.playerId).color, 
+            score == 0 ? _('failed!') : `${score}`
+        );
     }
     
     public endRound(): Promise<any> { 
@@ -93,5 +97,14 @@ class PlayerTable {
             ...this.discard.getCards(),
             ...this.plus.getCards(),
         ]);
+    }
+    
+    private displayScoring(id: string, color: string, value: string) {
+        const duration = 1000;
+        var el: any = dojo.place(`<div class=\"scorenumber\">${value}</div>`, id);
+        (this.game as any).placeOnObject(el, id);
+        dojo.style(el, "color", "#" + color);
+        dojo.addClass(el, "scorenumber_anim");
+        (this.game as any).fadeOutAndDestroy(el, duration, 2000);
     }
 }
