@@ -2165,7 +2165,8 @@ var LOCAL_STORAGE_HELP_FOLDED_KEY = 'BagOfChips-help-folded';
 var CODES = [
     null,
     'us',
-    'fr',
+    'de',
+    'ca',
 ];
 function formatTextIcons(str) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
@@ -2378,7 +2379,7 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.getCodeByLanguage = function () {
         switch (window.dataLayer[0].user_lang) {
             case 'en': return 'us';
-            case 'fr': return 'fr';
+            case 'de': return 'de';
             default: return 'us';
         }
     };

@@ -34,8 +34,9 @@ $game_preferences = [
         'needReload' => false,
         'values' => [
             0 => ['name' => totranslate('Automatic')],
-            1 => ['name' => totranslate('US')],
-            2 => ['name' => totranslate('FR')],
+            1 => ['name' => totranslate('Default - Bag of chips')],
+            2 => ['name' => totranslate('DE - ‘ne tutte chips')],
+            3 => ['name' => totranslate('CA - Sac de Chips')],
         ],
         'default' => 0
     ],

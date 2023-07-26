@@ -16,7 +16,8 @@ const LOCAL_STORAGE_HELP_FOLDED_KEY = 'BagOfChips-help-folded';
 const CODES = [
     null,
     'us',
-    'fr',
+    'de',
+    'ca',
 ];
 
 function formatTextIcons(str: string) {
@@ -275,7 +276,7 @@ class BagOfChips implements BagOfChipsGame {
     private getCodeByLanguage(): string {
         switch ((window as any).dataLayer[0].user_lang) {
             case 'en': return 'us';
-            case 'fr': return 'fr';
+            case 'de': return 'de';
 
             default: return 'us';
         }

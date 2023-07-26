@@ -41,3 +41,7 @@
 .chip .card-sides .card-side {
     background-image: url("./chips.png");
 }
+
+.bga-help_expandable-button {
+    background-image: url('./card-repartition.png');
+}

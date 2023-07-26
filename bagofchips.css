@@ -840,7 +840,8 @@ body > .card {
 }
 
 .bga-help_expandable-button {
-  background: url("img/us/card-repartition.png") center no-repeat;
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
 }
 
