@@ -272,7 +272,7 @@ trait UtilTrait {
                         }
                         
                         $message = $points == 99999 ?
-                            clienttranslate('${player_name} scores the [-] card and wins the game! ${card_image}') :
+                            clienttranslate('${player_name} scores the [+] card and wins the game! ${card_image}') :
                             clienttranslate('${player_name} scores the [+] card and gains ${points} points ${card_image}');
 
                         $this->incStat(1, 'validatedPlusObjective');
