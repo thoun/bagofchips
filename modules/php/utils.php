@@ -229,7 +229,7 @@ trait UtilTrait {
                 $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
                 $message = null;
                 if ($scored) {
-                    $this->DbQuery("UPDATE player SET player_round_score = player_round_score - $points WHERE player_id = $playerId");
+                    $this->DbQuery("UPDATE player SET player_round_score = player_round_score - $points, player_round_score_minus = player_round_score_minus + $points WHERE player_id = $playerId");
                     $message = $points == 99999 ?
                         clienttranslate('${player_name} scores the [-] card and loses the round! ${card_image}') :
                         clienttranslate('${player_name} scores the [-] card and loses ${points} points ${card_image}');
@@ -264,7 +264,7 @@ trait UtilTrait {
                     $scored = $this->isCardScored($card, $counts, $lastChip);
                     $points = $card->type == 6 ? $card->points * $counts[$card->params[0]] : $card->points;
                     if ($scored) {
-                        $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points WHERE player_id = $playerId");
+                        $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points, player_round_score_plus = player_round_score_plus + $points WHERE player_id = $playerId");
 
                         if ($points == 99999) {
                             $instantWinner = $playerId;

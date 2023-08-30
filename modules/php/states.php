@@ -14,7 +14,7 @@ trait StateTrait {
     function stStartRound() {
         $this->incStat(1, 'roundNumber');
         $this->setGlobalVariable(PHASE, 0);
-        $this->DbQuery("UPDATE player SET player_round_score = 0");
+        $this->DbQuery("UPDATE player SET player_round_score = 0, player_round_score_minus = 0, player_round_score_plus = 0");
 
         self::notifyAllPlayers('wait1000', clienttranslate('Shuffling the chips for the new round...'), []);
         
@@ -79,6 +79,44 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
+    function displayRoundResults(array $roundScores, array $rewards, bool $endGame) {
+        /// Display table window with results ////
+    
+        // Header line
+        $headers = [''];
+        $handMinusPoints = [ ['str' => clienttranslate('Hand [-] points'), 'args' => [] ] ];
+        $handPlusPoints = [ ['str' => clienttranslate('Hand [+] points'), 'args' => [] ] ];
+        $handPoints = [ ['str' => clienttranslate('Hand total points'), 'args' => [] ] ];
+        $rewardPoints = [ ['str' => clienttranslate('Rewards'), 'args' => [] ] ];
+
+        foreach($roundScores as $roundScore) {
+            $playerId = intval($roundScore['id']);
+            $playerName = $this->getPlayerName($playerId);
+
+            $headers[] = [
+                    'str' => '${player_name}',
+                    'args' => ['player_name' => $playerName],
+                    'type' => 'header'
+            ];
+            $handMinusPoints[] = intval($roundScore['score_minus']) > 999 ? '-' : -intval($roundScore['score_minus']);
+            $handPlusPoints[] = intval($roundScore['score_plus']) > 999 ? '-' : intval($roundScore['score_plus']);
+            $handPoints[] = intval($roundScore['score']) > 999 ? '-' : intval($roundScore['score']);
+            $rewardHtml = '';
+            for ($i = 0; $i < ($rewards[$playerId] ?? 0); $i++) {
+                $rewardHtml .= '<div class="reward icon"></div>';
+            }
+            $rewardPoints[] = $rewardHtml == '' ? '-' : $rewardHtml;
+        }
+        
+        $table = [$headers, $handMinusPoints, $handPlusPoints, $handPoints, $rewardPoints];
+        $this->notifyAllPlayers('tableWindow', '', [
+            "id" => 'finalScoring',
+            "title" =>  clienttranslate('Result of hand'),
+            "table" => $table,
+            "closing" => $endGame ? clienttranslate("End of game") : clienttranslate("Next hand"),
+        ]);
+    }
+
     function stEndRound() {
         $instantWinner = $this->scoreRound();
 
@@ -88,7 +126,7 @@ trait StateTrait {
             return;
         }
 
-        $sql = "SELECT player_id id, player_round_score score FROM player ORDER BY score DESC";
+        $sql = "SELECT player_id id, player_round_score score, player_round_score_minus score_minus, player_round_score_plus score_plus FROM player ORDER BY score DESC";
         $roundScores = array_values(self::getCollectionFromDb($sql));
         foreach ($roundScores as &$roundScore) {
             foreach ($roundScore as $key => $value) {
@@ -118,8 +156,11 @@ trait StateTrait {
             }
         }
 
+        $rewards = [];
         foreach ($firsts as $first) {
-            $this->incPlayerRewards($first, count($roundScores) > 2 ? 2 : 1, clienttranslate('${player_name} receives ${incScore} reward(s)'));
+            $reward = count($roundScores) > 2 ? 2 : 1;
+            $this->incPlayerRewards($first, $reward, clienttranslate('${player_name} receives ${incScore} reward(s)'));
+            $rewards[$first] = $reward;
         }
 
         if (count($firsts) > 1 && count($roundScores) > 2) {
@@ -128,6 +169,7 @@ trait StateTrait {
 
         foreach ($seconds as $second) {
             $this->incPlayerRewards($second, 1, clienttranslate('${player_name} receives ${incScore} reward(s)'));
+            $rewards[$second] = 1;
         }
 
         $end = $this->getMaxPlayerTokens() >= $this->getTokensToWin();
@@ -145,6 +187,8 @@ trait StateTrait {
                 $end = false;
             }
         }
+
+        $this->displayRoundResults($roundScores, $rewards, $end);
         
         if ($end) {
             $this->DbQuery("UPDATE player SET player_score = player_rewards, player_score_aux = player_round_score");
