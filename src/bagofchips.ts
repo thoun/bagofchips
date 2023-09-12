@@ -114,7 +114,7 @@ class BagOfChips implements BagOfChipsGame {
         new HelpManager(this, { 
             buttons: [
                 new BgaHelpPopinButton({
-                    title: _("Card help").toUpperCase(),
+                    title: _("Objective cards").toUpperCase(),
                     html: this.getHelpHtml(),
                     buttonBackground: '#a91216',
                 }),
@@ -333,7 +333,6 @@ class BagOfChips implements BagOfChipsGame {
     private getHelpHtml() {
         let html = `
         <div id="help-popin">
-            <h1>${_("Objective cards")}</h1>
         `;
 
         for (let i = 1; i <= 8; i++) {

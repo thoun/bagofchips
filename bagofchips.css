@@ -789,7 +789,7 @@ body > .card {
   justify-content: center;
   align-items: center;
   font-size: 20pt;
-  font-family: "teeshirt-regular";
+  font-family: "teeshirt";
 }
 .player-table .block-with-text {
   display: flex;
@@ -845,12 +845,12 @@ body > .card {
   background-size: cover;
 }
 
-#help-popin h1 {
+#popin_bgaHelpDialog_title {
   color: #a91216;
-  font-family: "teeshirt-regular";
+  font-family: "teeshirt";
   font-size: 18px;
-  margin: 8px 0;
 }
+
 #help-popin .help-section {
   padding: 5px;
   margin: 3px 0;

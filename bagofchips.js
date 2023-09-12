@@ -2242,7 +2242,7 @@ var BagOfChips = /** @class */ (function () {
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
-                    title: _("Card help").toUpperCase(),
+                    title: _("Objective cards").toUpperCase(),
                     html: this.getHelpHtml(),
                     buttonBackground: '#a91216',
                 }),
@@ -2417,7 +2417,7 @@ var BagOfChips = /** @class */ (function () {
         this.rewardsCounters[playerId].toValue(count);
     };
     BagOfChips.prototype.getHelpHtml = function () {
-        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Objective cards"), "</h1>\n        ");
+        var html = "\n        <div id=\"help-popin\">\n        ";
         for (var i = 1; i <= 8; i++) {
             html += "\n            <div class=\"help-section\">\n                <div id=\"help-card-".concat(i, "\">").concat(this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 }), "</div>\n                <div>").concat(this.cardsManager.getPower(i), "</div>\n            </div> ");
         }

@@ -4,14 +4,13 @@
     background-size: cover;
 }
 
-#help-popin {
-    h1 {
-        color: #a91216;
-        font-family: 'teeshirt-regular';
-        font-size: 18px;
-        margin: 8px 0;
-    }
+#popin_bgaHelpDialog_title {
+    color: #a91216;
+    font-family: 'teeshirt';
+    font-size: 18px;
+}
 
+#help-popin {
     .help-section {    
         padding: 5px;
         margin: 3px 0;
