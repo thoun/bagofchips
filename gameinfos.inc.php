@@ -50,7 +50,7 @@ $gameinfos = [
 
 
 // Estimated game duration, in minutes (used only for the launch, afterward the real duration is computed)
-'estimated_duration' => 30,           
+'estimated_duration' => 15,           
 
 // Time in second add to a player when "giveExtraTime" is called (speed profile = fast)
 'fast_additional_time' => 30,           
@@ -118,7 +118,7 @@ $gameinfos = [
     //  default: 740
     //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
     //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
-    'min' => 818, // TODO
+    'min' => 830,
 
     // Maximum width
     //  default: null (ie: no limit, the game interface is as big as the player's screen allows it).

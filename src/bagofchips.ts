@@ -173,13 +173,12 @@ class BagOfChips implements BagOfChipsGame {
                 case 'discardCards':
                     this.onEnteringSelectCards();
                     (this as any).addActionButton(`discardCards_button`, '', () => this.discardCards());
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand?.getSelection());
                     break;
                 case 'placeCards':
                     this.onEnteringSelectCards();
                     (this as any).addActionButton(`placeMinus_button`, '', () => this.placeCards());
-                    (this as any).addActionButton(`placePlus_button`, '', () => this.placeCards());
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand?.getSelection());
                     break;
             }
         }
@@ -189,21 +188,20 @@ class BagOfChips implements BagOfChipsGame {
         if (this.gamedatas.gamestate.name == 'discardCards') {
             const label = _('Discard ${number} selected cards').replace('${number}', `${selection.length}`);
 
+            const valid = selection.length == +this.gamedatas.gamestate.args.number;
             const button = document.getElementById('discardCards_button');
             button.innerHTML = label;
-            button.classList.toggle('disabled', selection.length != +this.gamedatas.gamestate.args.number);
+            button.classList.toggle('disabled', !valid);
+
+            this.getCurrentPlayerTable().hand.setSelectableCards(valid ? selection : undefined);
         } else if (this.gamedatas.gamestate.name == 'placeCards') {
+            const valid = selection.length == 1;
             const minusLabel = formatTextIcons(_('Set selected card on [-] side'));
 
             const minusButton = document.getElementById('placeMinus_button');
             minusButton.innerHTML = minusLabel;
-            minusButton.classList.toggle('disabled', selection.length != 1);
-
-            const plusLabel = formatTextIcons(_('Set selected cards on [+] side'));
-
-            const plusButton = document.getElementById('placePlus_button');
-            plusButton.innerHTML = plusLabel;
-            plusButton.classList.toggle('disabled', selection.length != 2);
+            minusButton.classList.toggle('disabled', !valid);
+            this.getCurrentPlayerTable().hand.setSelectableCards(valid ? selection : undefined);
         }
     }
 
@@ -369,8 +367,8 @@ class BagOfChips implements BagOfChipsGame {
 
 
         this.takeAction('placeCards', {
-            minus: (ids.length == 1 ? ids : others).join(','),
-            plus: (ids.length == 2 ? ids : others).join(','),
+            minus: ids.join(','),
+            plus: others.join(','),
         });
     }
 
@@ -401,7 +399,7 @@ class BagOfChips implements BagOfChipsGame {
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
-            ['scoreCard', ANIMATION_MS * 2],
+            ['scoreCard', ANIMATION_MS * 2.5],
             ['rewards', 1],
             ['endRound', undefined],
         ];
@@ -452,7 +450,7 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     notif_scoreCard(args: NotifScoreCardArgs) {
-        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score, args.side);
     }
 
     notif_rewards(args: NotifRewardsArgs) {

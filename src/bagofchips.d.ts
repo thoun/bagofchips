@@ -88,6 +88,7 @@ interface NotifScoreCardArgs {
     playerId: number;
     card: Card;
     score: number;
+    side: 'minus' | 'plus';
 }
 
 // rewards

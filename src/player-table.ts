@@ -82,31 +82,24 @@ class PlayerTable {
         return this.hand.addCards(cards, { fromStock: this.voidStock });
     }
 
-    public scoreCard(card: Card, score: number) {
-        let message = score == 0 ? _('Failed!') : `${score}`;
+    public scoreCard(card: Card, score: number, side: 'minus' | 'plus') {
+        let message = `${score}`;
+        let thumb = (score == 0 && side == 'minus') || (score > 0 && side == 'plus') ? '👍' : '👎';
         if (score != 0 && card.points == 99999) {
             message = score > 0 ? _('Win!!!') : _('Round lost!');
         }
         
-        this.displayScoring(
-            this.game.cardsManager.getId(card), 
-            message,
-        );
+        this.game.cardsManager.getCardElement(card).insertAdjacentHTML('beforeend', `<div class="card-score" style="color: #${this.game.getPlayer(this.playerId).color}">${thumb}<br>${message}</div>`);
     }
     
     public endRound(): Promise<any> { 
+        document.querySelectorAll('.card-score').forEach(elem => elem.remove());
+
         return this.voidStock.addCards([
             ...(this.hand?.getCards() ?? []),
             ...this.minus.getCards(),
             ...this.discard.getCards(),
             ...this.plus.getCards(),
         ]);
-    }
-    
-    private displayScoring(id: string, value: string) {
-        var el: any = dojo.place(`<div class=\"scorenumber\" style="color: #${this.game.getPlayer(this.playerId).color};">${value}</div>`, id);
-        (this.game as any).placeOnObject(el, id);
-        dojo.addClass(el, "scorenumber_anim");
-        (this.game as any).fadeOutAndDestroy(el, 1000, 2000);
     }
 }

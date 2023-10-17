@@ -100,6 +100,36 @@
             box-shadow: unset;
         }
     }
+
+    .card-score {
+        position: absolute;
+        bottom: -5px;
+        width: 80px;
+        height: 80px;
+        left: 60px;
+        box-shadow: 0 0 5px 2px #00000099;
+        border-radius: 50%;
+        background-color: white;
+        animation: card-score-animation 1s 1 forwards ease-in-out;
+        transform-origin: center center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 24px;
+    }
+}
+
+@keyframes card-score-animation {
+    0% {
+        transform: scale(0);
+    }
+    66% {
+        transform: scale(1.5);
+    }
+    100% { 
+        transform: scale(1);
+    }
 }
 
 @keyframes selectable-card-animation {

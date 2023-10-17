@@ -87,6 +87,10 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
+    function getPlayerRewards(int $playerId) {
+        return intval($this->getUniqueValueFromDB("SELECT player_rewards FROM player WHERE player_id = $playerId"));
+    }
+
     function incPlayerRewards(int $playerId, int $amount, $message = '', $args = []) {
         if ($amount != 0) {
             $this->DbQuery("UPDATE player SET `player_rewards` = `player_rewards` + $amount WHERE player_id = $playerId");
@@ -95,7 +99,7 @@ trait UtilTrait {
         $this->notifyAllPlayers('rewards', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'newScore' => intval(self::getUniqueValueFromDB("SELECT player_rewards FROM player WHERE player_id = $playerId")),
+            'newScore' => $this->getPlayerRewards($playerId),
             'incScore' => $amount,
         ] + $args);
     }
@@ -256,6 +260,7 @@ trait UtilTrait {
                     'preserve' => ['card'],
                     'score' => $scored ? -$points : 0,
                     'points' => $scored ? -$points : 0, // for log
+                    'side' => 'minus',
                 ]);
             }
             
@@ -296,6 +301,7 @@ trait UtilTrait {
                         'preserve' => ['card'],
                         'score' => $scored ? $points : 0,
                         'points' => $scored ? $points : 0, // for log
+                        'side' => 'plus',
                     ]);
                 }
             }

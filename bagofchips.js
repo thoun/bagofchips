@@ -2138,22 +2138,18 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.newHand = function (cards) {
         return this.hand.addCards(cards, { fromStock: this.voidStock });
     };
-    PlayerTable.prototype.scoreCard = function (card, score) {
-        var message = score == 0 ? _('Failed!') : "".concat(score);
+    PlayerTable.prototype.scoreCard = function (card, score, side) {
+        var message = "".concat(score);
+        var thumb = (score == 0 && side == 'minus') || (score > 0 && side == 'plus') ? '👍' : '👎';
         if (score != 0 && card.points == 99999) {
             message = score > 0 ? _('Win!!!') : _('Round lost!');
         }
-        this.displayScoring(this.game.cardsManager.getId(card), message);
+        this.game.cardsManager.getCardElement(card).insertAdjacentHTML('beforeend', "<div class=\"card-score\" style=\"color: #".concat(this.game.getPlayer(this.playerId).color, "\">").concat(thumb, "<br>").concat(message, "</div>"));
     };
     PlayerTable.prototype.endRound = function () {
         var _a, _b;
+        document.querySelectorAll('.card-score').forEach(function (elem) { return elem.remove(); });
         return this.voidStock.addCards(__spreadArray(__spreadArray(__spreadArray(__spreadArray([], ((_b = (_a = this.hand) === null || _a === void 0 ? void 0 : _a.getCards()) !== null && _b !== void 0 ? _b : []), true), this.minus.getCards(), true), this.discard.getCards(), true), this.plus.getCards(), true));
-    };
-    PlayerTable.prototype.displayScoring = function (id, value) {
-        var el = dojo.place("<div class=\"scorenumber\" style=\"color: #".concat(this.game.getPlayer(this.playerId).color, ";\">").concat(value, "</div>"), id);
-        this.game.placeOnObject(el, id);
-        dojo.addClass(el, "scorenumber_anim");
-        this.game.fadeOutAndDestroy(el, 1000, 2000);
     };
     return PlayerTable;
 }());
@@ -2289,18 +2285,18 @@ var BagOfChips = /** @class */ (function () {
     //
     BagOfChips.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        var _a, _b;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'discardCards':
                     this.onEnteringSelectCards();
                     this.addActionButton("discardCards_button", '', function () { return _this.discardCards(); });
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange((_a = this.getCurrentPlayerTable().hand) === null || _a === void 0 ? void 0 : _a.getSelection());
                     break;
                 case 'placeCards':
                     this.onEnteringSelectCards();
                     this.addActionButton("placeMinus_button", '', function () { return _this.placeCards(); });
-                    this.addActionButton("placePlus_button", '', function () { return _this.placeCards(); });
-                    this.onHandCardSelectionChange([]);
+                    this.onHandCardSelectionChange((_b = this.getCurrentPlayerTable().hand) === null || _b === void 0 ? void 0 : _b.getSelection());
                     break;
             }
         }
@@ -2308,19 +2304,19 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.onHandCardSelectionChange = function (selection) {
         if (this.gamedatas.gamestate.name == 'discardCards') {
             var label = _('Discard ${number} selected cards').replace('${number}', "".concat(selection.length));
+            var valid = selection.length == +this.gamedatas.gamestate.args.number;
             var button = document.getElementById('discardCards_button');
             button.innerHTML = label;
-            button.classList.toggle('disabled', selection.length != +this.gamedatas.gamestate.args.number);
+            button.classList.toggle('disabled', !valid);
+            this.getCurrentPlayerTable().hand.setSelectableCards(valid ? selection : undefined);
         }
         else if (this.gamedatas.gamestate.name == 'placeCards') {
+            var valid = selection.length == 1;
             var minusLabel = formatTextIcons(_('Set selected card on [-] side'));
             var minusButton = document.getElementById('placeMinus_button');
             minusButton.innerHTML = minusLabel;
-            minusButton.classList.toggle('disabled', selection.length != 1);
-            var plusLabel = formatTextIcons(_('Set selected cards on [+] side'));
-            var plusButton = document.getElementById('placePlus_button');
-            plusButton.innerHTML = plusLabel;
-            plusButton.classList.toggle('disabled', selection.length != 2);
+            minusButton.classList.toggle('disabled', !valid);
+            this.getCurrentPlayerTable().hand.setSelectableCards(valid ? selection : undefined);
         }
     };
     ///////////////////////////////////////////////////
@@ -2440,8 +2436,8 @@ var BagOfChips = /** @class */ (function () {
         var ids = this.getCurrentPlayerTable().hand.getSelection().map(function (card) { return card.id; });
         var others = this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return !ids.includes(card.id); }).map(function (card) { return card.id; });
         this.takeAction('placeCards', {
-            minus: (ids.length == 1 ? ids : others).join(','),
-            plus: (ids.length == 2 ? ids : others).join(','),
+            minus: ids.join(','),
+            plus: others.join(','),
         });
     };
     BagOfChips.prototype.takeAction = function (action, data) {
@@ -2469,7 +2465,7 @@ var BagOfChips = /** @class */ (function () {
             ['placeCards', undefined],
             ['newHand', undefined],
             ['revealChips', undefined],
-            ['scoreCard', ANIMATION_MS * 2],
+            ['scoreCard', ANIMATION_MS * 2.5],
             ['rewards', 1],
             ['endRound', undefined],
         ];
@@ -2509,7 +2505,7 @@ var BagOfChips = /** @class */ (function () {
         return this.tableCenter.revealChips(args.slot, args.chips);
     };
     BagOfChips.prototype.notif_scoreCard = function (args) {
-        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score);
+        this.getPlayerTable(args.playerId).scoreCard(args.card, args.score, args.side);
     };
     BagOfChips.prototype.notif_rewards = function (args) {
         this.setReward(args.playerId, args.newScore);

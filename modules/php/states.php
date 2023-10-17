@@ -87,7 +87,8 @@ trait StateTrait {
         $handMinusPoints = [ ['str' => clienttranslate('Hand [-] points'), 'args' => [] ] ];
         $handPlusPoints = [ ['str' => clienttranslate('Hand [+] points'), 'args' => [] ] ];
         $handPoints = [ ['str' => clienttranslate('Hand total points'), 'args' => [] ] ];
-        $rewardPoints = [ ['str' => clienttranslate('Rewards'), 'args' => [] ] ];
+        $handRewardPoints = [ ['str' => clienttranslate('Hand rewards'), 'args' => [] ] ];
+        $totalRewardPoints = [ ['str' => clienttranslate('Total rewards'), 'args' => [] ] ];
 
         foreach($roundScores as $roundScore) {
             $playerId = intval($roundScore['id']);
@@ -101,14 +102,21 @@ trait StateTrait {
             $handMinusPoints[] = intval($roundScore['score_minus']) > 999 ? '-' : -intval($roundScore['score_minus']);
             $handPlusPoints[] = intval($roundScore['score_plus']) > 999 ? '-' : intval($roundScore['score_plus']);
             $handPoints[] = intval($roundScore['score']) > 999 ? '-' : intval($roundScore['score']);
-            $rewardHtml = '';
+            $handRewardHtml = '';
             for ($i = 0; $i < ($rewards[$playerId] ?? 0); $i++) {
-                $rewardHtml .= '<div class="reward icon"></div>';
+                $handRewardHtml .= '<div class="reward icon"></div>';
             }
-            $rewardPoints[] = $rewardHtml == '' ? '-' : $rewardHtml;
+            $handRewardPoints[] = $handRewardHtml == '' ? '-' : $handRewardHtml;
+
+            $playerRewards = $this->getPlayerRewards($playerId);
+            $totalRewardHtml = '';
+            for ($i = 0; $i < $playerRewards; $i++) {
+                $totalRewardHtml .= '<div class="reward icon"></div>';
+            }
+            $totalRewardPoints[] = $totalRewardHtml == '' ? '-' : $totalRewardHtml;
         }
         
-        $table = [$headers, $handMinusPoints, $handPlusPoints, $handPoints, $rewardPoints];
+        $table = [$headers, $handMinusPoints, $handPlusPoints, $handPoints, $handRewardPoints, $totalRewardPoints];
         $this->notifyAllPlayers('tableWindow', '', [
             "id" => 'finalScoring',
             "title" =>  clienttranslate('Result of hand'),
