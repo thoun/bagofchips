@@ -484,7 +484,7 @@ class BagOfChips implements BagOfChipsGame {
                     }
                 }
 
-                log = formatTextIcons(log);
+                log = formatTextIcons(_(log));
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);

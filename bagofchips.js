@@ -2532,7 +2532,7 @@ var BagOfChips = /** @class */ (function () {
                         args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
                 }
-                log = formatTextIcons(log);
+                log = formatTextIcons(_(log));
             }
         }
         catch (e) {
