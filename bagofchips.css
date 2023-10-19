@@ -766,33 +766,8 @@ body > .card {
   align-items: center;
   margin: 5px 0;
 }
-.player-board .counters > div {
-  flex: 1;
-}
-.player-board .counters > div:last-child {
-  flex: 2;
-}
-.player-board .reputation-legend {
-  font-size: 75%;
-  vertical-align: middle;
-}
-.player-board .reputation-legend .icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 2px;
-}
-
-#first-player {
-  background: #6199b0;
-  color: white;
-  height: 20px;
-  font-size: 14px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  user-select: none;
-  padding: 0 10px;
+.player-board .grayed {
+  opacity: 0.4;
 }
 
 .player-table {

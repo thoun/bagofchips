@@ -2170,7 +2170,6 @@ function formatTextIcons(str) {
 var BagOfChips = /** @class */ (function () {
     function BagOfChips() {
         this.playersTables = [];
-        this.rewardsCounters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
     }
     /*
@@ -2387,14 +2386,16 @@ var BagOfChips = /** @class */ (function () {
         return orderedPlayers;
     };
     BagOfChips.prototype.createPlayerPanels = function (gamedatas) {
-        var _this = this;
-        Object.values(gamedatas.players).forEach(function (player) {
+        var players = Object.values(gamedatas.players);
+        var maxRewards = players.length <= 2 ? 3 : 4;
+        players.forEach(function (player) {
             var playerId = Number(player.id);
-            var html = "<div class=\"counters\">\n            \n                <div id=\"reward-counter-wrapper-".concat(player.id, "\" class=\"reward-counter\">\n                    <div class=\"reward icon\"></div>\n                    <span id=\"reward-counter-").concat(player.id, "\"></span>\n                </div>\n\n            </div>");
+            var html = "<div class=\"counters\">\n            \n                <div id=\"reward-counter-wrapper-".concat(player.id, "\" class=\"reward-counter\">");
+            for (var i = 0; i < Math.max(maxRewards, player.rewards); i++) {
+                html += "<div class=\"reward icon ".concat(i >= player.rewards ? 'grayed' : '', "\"></div>");
+            }
+            html += "    </div>\n            </div>";
             dojo.place(html, "player_board_".concat(player.id));
-            _this.rewardsCounters[playerId] = new ebg.counter();
-            _this.rewardsCounters[playerId].create("reward-counter-".concat(playerId));
-            _this.rewardsCounters[playerId].setValue(player.rewards);
         });
         this.setTooltipToClass('reward-counter', _('Rewards'));
     };
@@ -2410,7 +2411,11 @@ var BagOfChips = /** @class */ (function () {
         this.playersTables.push(table);
     };
     BagOfChips.prototype.setReward = function (playerId, count) {
-        this.rewardsCounters[playerId].toValue(count);
+        var tokens = Array.from(document.querySelectorAll("#reward-counter-wrapper-".concat(playerId, " .reward")));
+        tokens.forEach(function (token, index) { return token.classList.toggle('grayed', index >= count); });
+        for (var i = tokens.length; i < count; i++) {
+            document.getElementById("reward-counter-wrapper-".concat(playerId)).insertAdjacentHTML('beforeend', "<div class=\"reward icon\"></div>");
+        }
     };
     BagOfChips.prototype.getHelpHtml = function () {
         var html = "\n        <div id=\"help-popin\">\n        ";

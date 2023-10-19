@@ -33,7 +33,6 @@ class BagOfChips implements BagOfChipsGame {
     private gamedatas: BagOfChipsGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
-    private rewardsCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -288,24 +287,22 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     private createPlayerPanels(gamedatas: BagOfChipsGamedatas) {
+        const players = Object.values(gamedatas.players);
+        const maxRewards = players.length <=2 ? 3 : 4;
 
-        Object.values(gamedatas.players).forEach(player => {
+        players.forEach(player => {
             const playerId = Number(player.id);   
 
             let html = `<div class="counters">
             
-                <div id="reward-counter-wrapper-${player.id}" class="reward-counter">
-                    <div class="reward icon"></div>
-                    <span id="reward-counter-${player.id}"></span>
-                </div>
-
+                <div id="reward-counter-wrapper-${player.id}" class="reward-counter">`;
+            for (let i = 0; i < Math.max(maxRewards, player.rewards); i++) {
+                html += `<div class="reward icon ${i >= player.rewards ? 'grayed' : ''}"></div>`;
+            }
+            html += `    </div>
             </div>`;
 
             dojo.place(html, `player_board_${player.id}`);
-
-            this.rewardsCounters[playerId] = new ebg.counter();
-            this.rewardsCounters[playerId].create(`reward-counter-${playerId}`);
-            this.rewardsCounters[playerId].setValue(player.rewards);
         });
 
         this.setTooltipToClass('reward-counter', _('Rewards'));
@@ -325,7 +322,11 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     private setReward(playerId: number, count: number) {
-        this.rewardsCounters[playerId].toValue(count);
+        const tokens = Array.from(document.querySelectorAll(`#reward-counter-wrapper-${playerId} .reward`)) as HTMLElement[];
+        tokens.forEach((token, index) => token.classList.toggle('grayed', index >= count));
+        for (let i = tokens.length; i < count; i++) {
+            document.getElementById(`reward-counter-wrapper-${playerId}`).insertAdjacentHTML('beforeend', `<div class="reward icon"></div>`);
+        }
     }
 
     private getHelpHtml() {
