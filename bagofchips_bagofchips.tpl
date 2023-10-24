@@ -13,4 +13,6 @@
     </div>
 </div>
 
+<div id="skin"></div>
+
 {OVERALL_GAME_FOOTER}

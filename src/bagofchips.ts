@@ -128,6 +128,13 @@ class BagOfChips implements BagOfChipsGame {
         this.setupNotifications();
         this.setupPreferences();
 
+        let html = `<h3 class="title">${_("Skin")}</h3>
+        <div class="buttons">`;
+        CODES.filter(Boolean).forEach(code => html += `<button id="set-skin-${code}" class="bgabutton bgabutton_gray skin-button" style="background-image: url('${g_gamethemeurl}img/skin-${code}.png');"></button>`);
+        html += `</div>`;
+        document.getElementById('skin').insertAdjacentHTML('beforeend', html);
+        CODES.filter(Boolean).forEach(code => document.getElementById(`set-skin-${code}`).addEventListener('click', () => this.changeSkin(code)));
+
         log( "Ending game setup" );
     }
 
@@ -259,13 +266,29 @@ class BagOfChips implements BagOfChipsGame {
           el => onchange({ target: el })
         );
     }
+
+    private changeSkin(code: string) {
+        const value = CODES.indexOf(code);
+
+        [
+            document.getElementById(`preference_control_202`), 
+            document.getElementById(`preference_fontrol_202`)
+        ].forEach((control: HTMLSelectElement) => control.value = ''+value);  
+
+        //this.applySkin(code);     
+        document.getElementById(`preference_control_202`).dispatchEvent(new Event('change'));
+    }
+
+    private applySkin(code: string) {
+        document.getElementById(`code-stylesheet`)?.remove();
+        document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
+    }
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
             case 202:
                 const code = CODES[prefValue] ?? this.getCodeByLanguage();
-                document.getElementById(`code-stylesheet`)?.remove();
-                document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
+                this.applySkin(code);
                 break;
         }
     }

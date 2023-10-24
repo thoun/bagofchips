@@ -939,3 +939,24 @@ body > .card {
   justify-content: center;
   height: 64px;
 }
+
+#skin {
+  background: rgba(255, 255, 255, 0.5333333333);
+  border-radius: 15px;
+}
+#skin .title {
+  padding-top: 10px;
+  text-align: center;
+}
+#skin .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+#skin .buttons button {
+  width: 160px;
+  height: 160px;
+  background-size: 140px 140px;
+  background-position: center;
+  background-repeat: no-repeat;
+}

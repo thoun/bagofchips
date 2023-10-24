@@ -98,3 +98,27 @@
   justify-content: center;
   height: 64px;
 }
+
+#skin {
+  background: #FFFFFF88;
+  border-radius: 15px;
+
+  .title {
+    padding-top: 10px;
+    text-align: center;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    button {
+      width: 160px;
+      height: 160px;
+      background-size: 140px 140px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+}

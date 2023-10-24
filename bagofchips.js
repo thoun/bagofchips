@@ -2185,6 +2185,7 @@ var BagOfChips = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     BagOfChips.prototype.setup = function (gamedatas) {
+        var _this = this;
         var _a;
         var code = (_a = CODES[this.prefs[202].value]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
         //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
@@ -2251,6 +2252,11 @@ var BagOfChips = /** @class */ (function () {
         });
         this.setupNotifications();
         this.setupPreferences();
+        var html = "<h3 class=\"title\">".concat(_("Skin"), "</h3>\n        <div class=\"buttons\">");
+        CODES.filter(Boolean).forEach(function (code) { return html += "<button id=\"set-skin-".concat(code, "\" class=\"bgabutton bgabutton_gray skin-button\" style=\"background-image: url('").concat(g_gamethemeurl, "img/skin-").concat(code, ".png');\"></button>"); });
+        html += "</div>";
+        document.getElementById('skin').insertAdjacentHTML('beforeend', html);
+        CODES.filter(Boolean).forEach(function (code) { return document.getElementById("set-skin-".concat(code)).addEventListener('click', function () { return _this.changeSkin(code); }); });
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -2361,13 +2367,26 @@ var BagOfChips = /** @class */ (function () {
         // Call onPreferenceChange() now
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
     };
+    BagOfChips.prototype.changeSkin = function (code) {
+        var value = CODES.indexOf(code);
+        [
+            document.getElementById("preference_control_202"),
+            document.getElementById("preference_fontrol_202")
+        ].forEach(function (control) { return control.value = '' + value; });
+        //this.applySkin(code);     
+        document.getElementById("preference_control_202").dispatchEvent(new Event('change'));
+    };
+    BagOfChips.prototype.applySkin = function (code) {
+        var _a;
+        (_a = document.getElementById("code-stylesheet")) === null || _a === void 0 ? void 0 : _a.remove();
+        document.getElementById("table").insertAdjacentHTML("beforebegin", "<link id=\"code-stylesheet\" rel=\"stylesheet\" type=\"text/css\" href=\"".concat(g_gamethemeurl, "img/").concat(code, "/skin.css\"/>"));
+    };
     BagOfChips.prototype.onPreferenceChange = function (prefId, prefValue) {
-        var _a, _b;
+        var _a;
         switch (prefId) {
             case 202:
                 var code = (_a = CODES[prefValue]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
-                (_b = document.getElementById("code-stylesheet")) === null || _b === void 0 ? void 0 : _b.remove();
-                document.getElementById("table").insertAdjacentHTML("beforebegin", "<link id=\"code-stylesheet\" rel=\"stylesheet\" type=\"text/css\" href=\"".concat(g_gamethemeurl, "img/").concat(code, "/skin.css\"/>"));
+                this.applySkin(code);
                 break;
         }
     };
