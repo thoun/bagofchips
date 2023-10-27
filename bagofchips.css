@@ -960,3 +960,11 @@ body > .card {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+.round-result {
+  width: 100%;
+}
+.round-result td {
+  border: 1px solid lightgray;
+  padding: 5px;
+}

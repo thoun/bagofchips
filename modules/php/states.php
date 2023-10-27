@@ -89,10 +89,13 @@ trait StateTrait {
         $handPoints = [ ['str' => clienttranslate('Hand total points'), 'args' => [] ] ];
         $handRewardPoints = [ ['str' => clienttranslate('Hand rewards'), 'args' => [] ] ];
         $totalRewardPoints = [ ['str' => clienttranslate('Total rewards'), 'args' => [] ] ];
+        $handResultLogHtml = "<table class='round-result'>";
+
+        $players = $this->loadPlayersBasicInfos();
 
         foreach($roundScores as $roundScore) {
             $playerId = intval($roundScore['id']);
-            $playerName = $this->getPlayerName($playerId);
+            $playerName = $players[$playerId]['player_name'];
 
             $headers[] = [
                     'str' => '${player_name}',
@@ -101,7 +104,8 @@ trait StateTrait {
             ];
             $handMinusPoints[] = intval($roundScore['score_minus']) > 999 ? '-' : -intval($roundScore['score_minus']);
             $handPlusPoints[] = intval($roundScore['score_plus']) > 999 ? '-' : intval($roundScore['score_plus']);
-            $handPoints[] = intval($roundScore['score']) > 999 ? '-' : intval($roundScore['score']);
+            $playerHandPoints = intval($roundScore['score']) > 999 ? '-' : intval($roundScore['score']);
+            $handPoints[] = $playerHandPoints;
             $handRewardHtml = '';
             for ($i = 0; $i < ($rewards[$playerId] ?? 0); $i++) {
                 $handRewardHtml .= '<div class="reward icon"></div>';
@@ -114,10 +118,13 @@ trait StateTrait {
                 $totalRewardHtml .= '<div class="reward icon"></div>';
             }
             $totalRewardPoints[] = $totalRewardHtml == '' ? '-' : $totalRewardHtml;
+
+            $handResultLogHtml .= "<tr><td><strong style='color: #".$players[$playerId]['player_color'].";'>$playerName</strong></td><td>$playerHandPoints</td></td>";
         }
+        $handResultLogHtml .= "</table>";
         
         $table = [$headers, $handMinusPoints, $handPlusPoints, $handPoints, $handRewardPoints, $totalRewardPoints];
-        $this->notifyAllPlayers('tableWindow', '', [
+        $this->notifyAllPlayers('tableWindow', $handResultLogHtml, [
             "id" => 'finalScoring',
             "title" =>  clienttranslate('Result of hand'),
             "table" => $table,
