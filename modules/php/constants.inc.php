@@ -22,6 +22,7 @@ const ST_MULTIPLAYER_DISCARD_CARDS = 30;
 
 const ST_MULTIPLAYER_PLACE_CARDS = 40;
 
+const ST_MULTIPLAYER_BEFORE_END_ROUND = 75;
 const ST_END_ROUND = 80;
 
 const ST_END_SCORE = 90;
@@ -46,5 +47,6 @@ const COMPLETED_LINES = 22;
  * Global variables
  */
 const PHASE = 'PHASE';
+const ROUND_RESULT = 'ROUND_RESULT';
 
 ?>

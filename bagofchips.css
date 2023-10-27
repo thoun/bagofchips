@@ -961,10 +961,25 @@ body > .card {
   background-repeat: no-repeat;
 }
 
-.round-result {
+.roundedbox .round-result {
   width: 100%;
 }
+
+.round-result th {
+  text-align: left;
+  padding: 5px;
+}
 .round-result td {
+  text-align: center;
   border: 1px solid lightgray;
   padding: 5px;
+}
+
+#result {
+  display: flex;
+  justify-content: center;
+}
+#result .round-result {
+  background: rgba(255, 255, 255, 0.4);
+  margin: 10px;
 }

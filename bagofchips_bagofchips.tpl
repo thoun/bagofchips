@@ -2,6 +2,8 @@
 
 <link rel="stylesheet" href="https://use.typekit.net/jim0ypy.css">
 
+<div id="result"></div>
+
 <div id="table">
     <div id="tables-and-center">
         <div id="table-center-wrapper">

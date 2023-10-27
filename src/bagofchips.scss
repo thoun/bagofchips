@@ -123,11 +123,31 @@
   }
 }
 
+.roundedbox {
+  .round-result {
+    width: 100%;
+  }
+}
+
 .round-result {
-  width: 100%;
+  th {
+    text-align: left;
+    padding: 5px;
+  }
 
   td {
+    text-align: center;
     border: 1px solid lightgray;
     padding: 5px;
+  }
+}
+
+#result {
+  display: flex;
+  justify-content: center;
+
+  .round-result {
+    background: #FFFFFF66;
+    margin: 10px;
   }
 }

@@ -76,4 +76,12 @@ trait ActionTrait {
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
+
+    public function seen() {
+        $this->checkAction('seen');
+
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'endRound');
+    }
 }

@@ -218,8 +218,12 @@ trait UtilTrait {
         $lastChip = $this->array_find($chips, fn($chip) => $chip->locationArg == 5);
         
         $playersIds = $this->getPlayersIds();
-        $instantWinner = null;
-        $gameWon = false;
+
+        $result = [
+            'instantWinner' => null,
+            'gameWon' => false,
+            'cards' => [], // $id => [playerId, side, score, card points]
+        ];
 
         foreach($playersIds as $playerId) {
             $minus = $this->getCardsByLocation('minus', $playerId);
@@ -252,16 +256,19 @@ trait UtilTrait {
                     $message = clienttranslate('${player_name} doesn\'t score the [-] card ${card_image}');
                 }
                 
+                $score = $scored ? -$points : 0;
                 self::notifyAllPlayers('scoreCard', $message, [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                     'card' => $card,
                     'card_image' => '',
                     'preserve' => ['card'],
-                    'score' => $scored ? -$points : 0,
-                    'points' => $scored ? -$points : 0, // for log
+                    'score' => $score,
+                    'points' => $score, // for log
                     'side' => 'minus',
                 ]);
+
+                $result['cards'][$card->id] = [$playerId, 'minus', $score, $card->points];
             }
             
             if (!$roundLost) {
@@ -272,8 +279,8 @@ trait UtilTrait {
                         $this->DbQuery("UPDATE player SET player_round_score = player_round_score + $points, player_round_score_plus = player_round_score_plus + $points WHERE player_id = $playerId");
 
                         if ($points == 99999) {
-                            $instantWinner = $playerId;
-                            $gameWon = true;
+                            $result['instantWinner'] = $playerId;
+                            $result['gameWon'] = true;
                         }
                         
                         $message = $points == 99999 ?
@@ -293,24 +300,27 @@ trait UtilTrait {
                         $message = clienttranslate('${player_name} doesn\'t score the [+] card ${card_image}');
                     }
                     
+                $score = $scored ? $points : 0;
                     self::notifyAllPlayers('scoreCard', $message, [
                         'playerId' => $playerId,
                         'player_name' => $this->getPlayerName($playerId),
                         'card' => $card,
                         'card_image' => '',
                         'preserve' => ['card'],
-                        'score' => $scored ? $points : 0,
-                        'points' => $scored ? $points : 0, // for log
+                        'score' => $score,
+                        'points' => $score, // for log
                         'side' => 'plus',
                     ]);
+
+                    $result['cards'][$card->id] = [$playerId, 'plus', $score, $card->points];
                 }
             }
             
-            if ($gameWon) {
+            if ($result['gameWon']) {
                 break;
             }
 
-            if (!$roundLost && !$gameWon) {
+            if (!$roundLost && !$result['gameWon']) {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} scores ${number} points this round'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
@@ -319,6 +329,8 @@ trait UtilTrait {
             }
         }
 
-        return $instantWinner;
+        $this->setGlobalVariable(ROUND_RESULT, $result);
+
+        return $result;
     }
 }

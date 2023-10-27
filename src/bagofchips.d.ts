@@ -30,6 +30,14 @@ interface BagOfChipsPlayer extends Player {
     plus: Card[];
 }
 
+interface RoundResult {
+    cards: { [cardId: number]: [number, 'minus' | 'plus', number, number] };
+    end: boolean;
+    gameWon: boolean;
+    instantWinner: number | null;
+    table: { [playerId: number]: number[] };
+}
+
 interface BagOfChipsGamedatas {
     current_player_id: string;
     decision: {decision_type: string};
@@ -44,6 +52,7 @@ interface BagOfChipsGamedatas {
 
     // Add here variables you set up in getAllDatas
     chips: Chip[];
+    roundResult: RoundResult;
 }
 
 interface BagOfChipsGame extends Game {

@@ -122,7 +122,20 @@ $gameGameStates = [
         "transitions" => [
             "discard" => ST_MULTIPLAYER_DISCARD_CARDS,
             "place" => ST_MULTIPLAYER_PLACE_CARDS,
+            "endRound" => ST_MULTIPLAYER_BEFORE_END_ROUND,
+        ],
+    ],
+    
+    ST_MULTIPLAYER_BEFORE_END_ROUND => [
+        "name" => "beforeEndRound",
+        "description" => clienttranslate('Some players are seeing end round result'),
+        "descriptionmyturn" => clienttranslate('End round result'),
+        "type" => "multipleactiveplayer",
+        "action" => "stBeforeEndRound",
+        "possibleactions" => [ "seen" ],
+        "transitions" => [
             "endRound" => ST_END_ROUND,
+            "endScore" => ST_END_SCORE,
         ],
     ],
 
@@ -131,6 +144,7 @@ $gameGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stEndRound",
+        "possibleactions" => [ "seen" ],
         "updateGameProgression" => true,
         "transitions" => [
             "newRound" => ST_START_ROUND,

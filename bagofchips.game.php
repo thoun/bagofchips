@@ -143,8 +143,6 @@ class BagOfChips extends Table {
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // Gather all information about current game situation (visible by player $current_player_id).
-
-        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
         
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
@@ -161,6 +159,7 @@ class BagOfChips extends Table {
         }
 
         $result['chips'] = $this->getChipsByLocation('table');
+        $result['roundResult'] = $this->getGlobalVariable(ROUND_RESULT, true);
   
         return $result;
     }

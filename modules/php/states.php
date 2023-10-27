@@ -79,16 +79,10 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
-    function displayRoundResults(array $roundScores, array $rewards, bool $endGame) {
+    function displayRoundResults(array $roundScores, array $rewards) {
         /// Display table window with results ////
     
-        // Header line
-        $headers = [''];
-        $handMinusPoints = [ ['str' => clienttranslate('Hand [-] points'), 'args' => [] ] ];
-        $handPlusPoints = [ ['str' => clienttranslate('Hand [+] points'), 'args' => [] ] ];
-        $handPoints = [ ['str' => clienttranslate('Hand total points'), 'args' => [] ] ];
-        $handRewardPoints = [ ['str' => clienttranslate('Hand rewards'), 'args' => [] ] ];
-        $totalRewardPoints = [ ['str' => clienttranslate('Total rewards'), 'args' => [] ] ];
+        $table = [];
         $handResultLogHtml = "<table class='round-result'>";
 
         $players = $this->loadPlayersBasicInfos();
@@ -96,44 +90,29 @@ trait StateTrait {
         foreach($roundScores as $roundScore) {
             $playerId = intval($roundScore['id']);
             $playerName = $players[$playerId]['player_name'];
-
-            $headers[] = [
-                    'str' => '${player_name}',
-                    'args' => ['player_name' => $playerName],
-                    'type' => 'header'
+            $playerResult = [
+                -intval($roundScore['score_minus']), 
+                intval($roundScore['score_plus']), 
+                intval($roundScore['score']), 
+                $rewards[$playerId] ?? 0, 
+                $this->getPlayerRewards($playerId),
             ];
-            $handMinusPoints[] = intval($roundScore['score_minus']) > 999 ? '-' : -intval($roundScore['score_minus']);
-            $handPlusPoints[] = intval($roundScore['score_plus']) > 999 ? '-' : intval($roundScore['score_plus']);
-            $playerHandPoints = intval($roundScore['score']) > 999 ? '-' : intval($roundScore['score']);
-            $handPoints[] = $playerHandPoints;
-            $handRewardHtml = '';
-            for ($i = 0; $i < ($rewards[$playerId] ?? 0); $i++) {
-                $handRewardHtml .= '<div class="reward icon"></div>';
-            }
-            $handRewardPoints[] = $handRewardHtml == '' ? '-' : $handRewardHtml;
 
-            $playerRewards = $this->getPlayerRewards($playerId);
-            $totalRewardHtml = '';
-            for ($i = 0; $i < $playerRewards; $i++) {
-                $totalRewardHtml .= '<div class="reward icon"></div>';
-            }
-            $totalRewardPoints[] = $totalRewardHtml == '' ? '-' : $totalRewardHtml;
-
-            $handResultLogHtml .= "<tr><td><strong style='color: #".$players[$playerId]['player_color'].";'>$playerName</strong></td><td>$playerHandPoints</td></td>";
+            $table[$playerId] = $playerResult;
+            $handResultLogHtml .= "<tr><th><strong style='color: #".$players[$playerId]['player_color'].";'>$playerName</strong></th><td>".$roundScore['score']."</td></tr>";
         }
         $handResultLogHtml .= "</table>";
         
-        $table = [$headers, $handMinusPoints, $handPlusPoints, $handPoints, $handRewardPoints, $totalRewardPoints];
-        $this->notifyAllPlayers('tableWindow', $handResultLogHtml, [
-            "id" => 'finalScoring',
-            "title" =>  clienttranslate('Result of hand'),
+        $this->notifyAllPlayers('showRoundResult', $handResultLogHtml, [
             "table" => $table,
-            "closing" => $endGame ? clienttranslate("End of game") : clienttranslate("Next hand"),
         ]);
+
+        return $table;
     }
 
-    function stEndRound() {
-        $instantWinner = $this->scoreRound();
+    function stBeforeEndRound() {
+        $scoreRound = $this->scoreRound();
+        $instantWinner = $scoreRound['instantWinner'];
 
         if ($instantWinner != null) {
             $this->DbQuery("UPDATE player SET player_score = 1 WHERE player_id = $instantWinner");
@@ -203,19 +182,35 @@ trait StateTrait {
             }
         }
 
-        $this->displayRoundResults($roundScores, $rewards, $end);
-        
+        $table = $this->displayRoundResults($roundScores, $rewards);
+
+        $scoreRound['table'] = $table;
+        $scoreRound['end'] = $end;
+        $this->setGlobalVariable(ROUND_RESULT, $scoreRound);
+
         if ($end) {
+            $this->gamestate->nextState('endRound');
+        } else {
+            $this->gamestate->setAllPlayersMultiactive();
+        }
+    }
+
+    function stEndRound() {
+        $scoreRound = $this->getGlobalVariable(ROUND_RESULT, true);
+
+        if ($scoreRound['end']) {
             $this->DbQuery("UPDATE player SET player_score = player_rewards, player_score_aux = player_round_score");
+            $this->gamestate->nextState('endScore');
         } else  {
+            $this->deleteGlobalVariable(ROUND_RESULT);
+
             $this->cards->moveAllCardsInLocation(null, 'deck');
             $this->cards->shuffle('deck');
             $this->chips->moveAllCardsInLocation(null, 'bag');
             $this->chips->shuffle('bag');
             self::notifyAllPlayers('endRound', '', []);
+            $this->gamestate->nextState('newRound');
         }
-
-        $this->gamestate->nextState($end ? 'endScore' : 'newRound');
     }
 
     function stEndScore() {

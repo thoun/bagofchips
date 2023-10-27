@@ -128,6 +128,18 @@ class BagOfChips implements BagOfChipsGame {
         this.setupNotifications();
         this.setupPreferences();
 
+        if (gamedatas.roundResult) {
+            Object.entries(gamedatas.roundResult.cards).forEach(([cardId, result]) => {
+                const id = Number(cardId);
+                const playerTable = this.getPlayerTable(result[0]);
+                const card = playerTable.plus.getCards().find(card => card.id == id) ?? playerTable.minus.getCards().find(card => card.id == id);
+                if (card) {
+                    this.getPlayerTable(result[0]).scoreCard(card, result[2], result[1]);
+                }
+            });
+            this.setRoundResult(gamedatas.roundResult.table);
+        }
+
         let html = `<h3 class="title">${_("Skin")}</h3>
         <div class="buttons">`;
         CODES.filter(Boolean).forEach(code => html += `<button id="set-skin-${code}" class="bgabutton bgabutton_gray skin-button" style="background-image: url('${g_gamethemeurl}img/skin-${code}.png');"></button>`);
@@ -185,6 +197,9 @@ class BagOfChips implements BagOfChipsGame {
                     this.onEnteringSelectCards();
                     (this as any).addActionButton(`placeMinus_button`, '', () => this.placeCards());
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand?.getSelection());
+                    break;
+                case 'beforeEndRound':
+                    (this as any).addActionButton(`seen_button`, _("Seen"), () => this.seen());
                     break;
             }
         }
@@ -396,6 +411,14 @@ class BagOfChips implements BagOfChipsGame {
         });
     }
 
+    public seen() {
+        if(!(this as any).checkAction('seen')) {
+            return;
+        }
+
+        this.takeAction('seen');
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
@@ -425,6 +448,7 @@ class BagOfChips implements BagOfChipsGame {
             ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2.5],
             ['rewards', 1],
+            ['showRoundResult', 1],
             ['endRound', undefined],
         ];
     
@@ -481,7 +505,27 @@ class BagOfChips implements BagOfChipsGame {
         this.setReward(args.playerId, args.newScore);
     }
 
+    private setRoundResult(table: { [playerId: number]: number[] }) {
+        const playersIds = Object.keys(table).map(Number);
+
+        let html = `<table class='round-result'>
+            <tr><th></th>${playersIds.map(playerId => `<td><strong style='color: #${this.getPlayer(playerId).color};'>${this.getPlayer(playerId).name}</strong></td>`).join('')}</tr>
+            <tr><th>${_('Hand [-] points')}</th>${playersIds.map(playerId => `<td>${Math.abs(table[playerId][0]) > 999 ? '-' : table[playerId][0]}</td>`).join('')}</tr>
+            <tr><th>${_('Hand [+] points')}</th>${playersIds.map(playerId => `<td>${table[playerId][1] > 999 ? '-' : table[playerId][1]}</td>`).join('')}</tr>
+            <tr><th>${_('Hand total points')}</th>${playersIds.map(playerId => `<td>${table[playerId][2] > 999 ? '-' : table[playerId][2]}</td>`).join('')}</tr>
+            <tr><th>${_('Hand rewards')}</th>${playersIds.map(playerId => `<td>${Array(table[playerId][3]).fill(0).map(() => `<div class="reward icon"></div>`).join('')}</td>`).join('')}</tr>
+            <tr><th>${_('Total rewards')}</th>${playersIds.map(playerId => `<td>${Array(table[playerId][4]).fill(0).map(() => `<div class="reward icon"></div>`).join('')}</td>`).join('')}</tr>
+        </table>`;
+
+        document.getElementById(`result`).innerHTML = formatTextIcons(html);
+    }
+
+    notif_showRoundResult(args: { table: { [playerId: number]: number[] } }) {
+        this.setRoundResult(args.table);
+    }
+
     notif_endRound() {
+        document.getElementById(`result`).innerHTML = ``;
         return Promise.all([
             this.tableCenter.endRound(),
             ...this.playersTables.map(table => table.endRound()),

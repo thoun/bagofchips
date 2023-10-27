@@ -2252,6 +2252,19 @@ var BagOfChips = /** @class */ (function () {
         });
         this.setupNotifications();
         this.setupPreferences();
+        if (gamedatas.roundResult) {
+            Object.entries(gamedatas.roundResult.cards).forEach(function (_a) {
+                var _b;
+                var cardId = _a[0], result = _a[1];
+                var id = Number(cardId);
+                var playerTable = _this.getPlayerTable(result[0]);
+                var card = (_b = playerTable.plus.getCards().find(function (card) { return card.id == id; })) !== null && _b !== void 0 ? _b : playerTable.minus.getCards().find(function (card) { return card.id == id; });
+                if (card) {
+                    _this.getPlayerTable(result[0]).scoreCard(card, result[2], result[1]);
+                }
+            });
+            this.setRoundResult(gamedatas.roundResult.table);
+        }
         var html = "<h3 class=\"title\">".concat(_("Skin"), "</h3>\n        <div class=\"buttons\">");
         CODES.filter(Boolean).forEach(function (code) { return html += "<button id=\"set-skin-".concat(code, "\" class=\"bgabutton bgabutton_gray skin-button\" style=\"background-image: url('").concat(g_gamethemeurl, "img/skin-").concat(code, ".png');\"></button>"); });
         html += "</div>";
@@ -2302,6 +2315,9 @@ var BagOfChips = /** @class */ (function () {
                     this.onEnteringSelectCards();
                     this.addActionButton("placeMinus_button", '', function () { return _this.placeCards(); });
                     this.onHandCardSelectionChange((_b = this.getCurrentPlayerTable().hand) === null || _b === void 0 ? void 0 : _b.getSelection());
+                    break;
+                case 'beforeEndRound':
+                    this.addActionButton("seen_button", _("Seen"), function () { return _this.seen(); });
                     break;
             }
         }
@@ -2464,6 +2480,12 @@ var BagOfChips = /** @class */ (function () {
             plus: others.join(','),
         });
     };
+    BagOfChips.prototype.seen = function () {
+        if (!this.checkAction('seen')) {
+            return;
+        }
+        this.takeAction('seen');
+    };
     BagOfChips.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -2491,6 +2513,7 @@ var BagOfChips = /** @class */ (function () {
             ['revealChips', undefined],
             ['scoreCard', ANIMATION_MS * 2.5],
             ['rewards', 1],
+            ['showRoundResult', 1],
             ['endRound', undefined],
         ];
         notifs.forEach(function (notif) {
@@ -2534,7 +2557,17 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.notif_rewards = function (args) {
         this.setReward(args.playerId, args.newScore);
     };
+    BagOfChips.prototype.setRoundResult = function (table) {
+        var _this = this;
+        var playersIds = Object.keys(table).map(Number);
+        var html = "<table class='round-result'>\n            <tr><th></th>".concat(playersIds.map(function (playerId) { return "<td><strong style='color: #".concat(_this.getPlayer(playerId).color, ";'>").concat(_this.getPlayer(playerId).name, "</strong></td>"); }).join(''), "</tr>\n            <tr><th>").concat(_('Hand [-] points'), "</th>").concat(playersIds.map(function (playerId) { return "<td>".concat(Math.abs(table[playerId][0]) > 999 ? '-' : table[playerId][0], "</td>"); }).join(''), "</tr>\n            <tr><th>").concat(_('Hand [+] points'), "</th>").concat(playersIds.map(function (playerId) { return "<td>".concat(table[playerId][1] > 999 ? '-' : table[playerId][1], "</td>"); }).join(''), "</tr>\n            <tr><th>").concat(_('Hand total points'), "</th>").concat(playersIds.map(function (playerId) { return "<td>".concat(table[playerId][2] > 999 ? '-' : table[playerId][2], "</td>"); }).join(''), "</tr>\n            <tr><th>").concat(_('Hand rewards'), "</th>").concat(playersIds.map(function (playerId) { return "<td>".concat(Array(table[playerId][3]).fill(0).map(function () { return "<div class=\"reward icon\"></div>"; }).join(''), "</td>"); }).join(''), "</tr>\n            <tr><th>").concat(_('Total rewards'), "</th>").concat(playersIds.map(function (playerId) { return "<td>".concat(Array(table[playerId][4]).fill(0).map(function () { return "<div class=\"reward icon\"></div>"; }).join(''), "</td>"); }).join(''), "</tr>\n        </table>");
+        document.getElementById("result").innerHTML = formatTextIcons(html);
+    };
+    BagOfChips.prototype.notif_showRoundResult = function (args) {
+        this.setRoundResult(args.table);
+    };
     BagOfChips.prototype.notif_endRound = function () {
+        document.getElementById("result").innerHTML = "";
         return Promise.all(__spreadArray([
             this.tableCenter.endRound()
         ], this.playersTables.map(function (table) { return table.endRound(); }), true));
