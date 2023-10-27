@@ -134,6 +134,7 @@ $gameGameStates = [
         "action" => "stBeforeEndRound",
         "possibleactions" => [ "seen" ],
         "transitions" => [
+            "next" => ST_END_ROUND, // for zombie
             "endRound" => ST_END_ROUND,
             "endScore" => ST_END_SCORE,
         ],
