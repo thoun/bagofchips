@@ -137,12 +137,12 @@ trait StateTrait {
                 $firsts[] = $roundScores[1]['id'];
             }
         } else {
-            for ($i = 0; $roundScores[$i]['score'] == $roundScores[0]['score']; $i++) {
+            for ($i = 0; $i < count($roundScores) && $roundScores[$i]['score'] == $roundScores[0]['score']; $i++) {
                 $firsts[] = $roundScores[$i]['id'];
             }
 
             if (count($firsts) <= 1) {
-                for ($i = 1; $roundScores[$i]['score'] == $roundScores[1]['score']; $i++) {
+                for ($i = 1; $i < count($roundScores) && $roundScores[$i]['score'] == $roundScores[1]['score']; $i++) {
                     if ($roundScores[$i]['score'] > -9999) {
                         $seconds[] = $roundScores[$i]['id'];
                     }
