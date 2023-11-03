@@ -46,6 +46,11 @@ trait StateTrait {
     }
 
     function stRevealChips() {
+        $playersIds = $this->getPlayersIds();
+        foreach($playersIds as $playerId) {
+            $this->giveExtraTime($playerId);
+        }
+
         $phase = $this->getPhase() + 1;
         $this->setGlobalVariable(PHASE, $phase);
 
