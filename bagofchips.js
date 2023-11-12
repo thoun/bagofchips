@@ -2507,6 +2507,7 @@ var BagOfChips = /** @class */ (function () {
         var _this = this;
         var notifs = [
             ['wait1000', ANIMATION_MS],
+            ['wait3000', ANIMATION_MS * 3],
             ['discardCards', undefined],
             ['placeCards', undefined],
             ['newHand', undefined],
@@ -2539,6 +2540,7 @@ var BagOfChips = /** @class */ (function () {
         }
     };
     BagOfChips.prototype.notif_wait1000 = function () { };
+    BagOfChips.prototype.notif_wait3000 = function () { };
     BagOfChips.prototype.notif_discardCards = function (args) {
         return this.getPlayerTable(args.playerId).discardCards(args.discard);
     };

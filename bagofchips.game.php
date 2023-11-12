@@ -149,9 +149,12 @@ class BagOfChips extends Table {
 
             $player['rewards'] = intval($player['rewards']);
             
-            $player['minus'] = $this->getCardsByLocation('minus', $playerId);
             $player['discard'] = Card::onlyIds($this->getCardsByLocation('discard', $playerId));
-            $player['plus'] = $this->getCardsByLocation('plus', $playerId);
+
+            $stateId = intval($this->gamestate->state_id());
+            $hidePlusMinus = $stateId == ST_MULTIPLAYER_PLACE_CARDS && $currentPlayerId != $playerId;
+            $player['minus'] = $hidePlusMinus ? [] : $this->getCardsByLocation('minus', $playerId);
+            $player['plus'] = $hidePlusMinus ? [] : $this->getCardsByLocation('plus', $playerId);
 
             if ($currentPlayerId == $playerId) {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);

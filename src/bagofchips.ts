@@ -442,6 +442,7 @@ class BagOfChips implements BagOfChipsGame {
 
         const notifs = [
             ['wait1000', ANIMATION_MS],
+            ['wait3000', ANIMATION_MS * 3],
             ['discardCards', undefined],
             ['placeCards', undefined],
             ['newHand', undefined],
@@ -480,6 +481,7 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     notif_wait1000() {}
+    notif_wait3000() {}
 
     notif_discardCards(args: NotifDiscardCardsArgs) {
         return this.getPlayerTable(args.playerId).discardCards(args.discard);

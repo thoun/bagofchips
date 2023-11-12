@@ -46,18 +46,27 @@ trait StateTrait {
     }
 
     function stRevealChips() {
+        $phase = $this->getPhase() + 1;
+        $this->setGlobalVariable(PHASE, $phase);
+
         $playersIds = $this->getPlayersIds();
         foreach($playersIds as $playerId) {
             $this->giveExtraTime($playerId);
-        }
 
-        $phase = $this->getPhase() + 1;
-        $this->setGlobalVariable(PHASE, $phase);
+            if ($phase == 4) {
+                self::notifyAllPlayers('placeCards', clienttranslate('${player_name} places remaining Objective cards'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'minus' => $this->getCardsByLocation('minus', $playerId),
+                    'plus' => $this->getCardsByLocation('plus', $playerId),
+                ]);
+            }
+        }
 
         if ($phase == 4) {
             $this->notifRevealChips(4, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 4))]);
 
-            self::notifyAllPlayers('wait1000', clienttranslate('Suspens for the last one...'), []);
+            self::notifyAllPlayers('wait3000', clienttranslate('Suspens for the last one...'), []);
 
             $this->notifRevealChips(5, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 5))]);
 
