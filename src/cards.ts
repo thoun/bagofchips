@@ -16,9 +16,9 @@ class CardsManager extends CardManager<Card> {
         });
     }
 
-    public getPower(type: number): string {
+    public getPower(type: number, number?: string | number): string {
         switch (type) {
-            case 1: return _("This Objective is completed if at the end of the round there is at least one chip of each flavor on the Board Cards.");
+            case 1: return _("This Objective is completed if at the end of the round there is at least ${number} chip(s) of each flavor on the Board Cards.").replace('${number}', number);
             case 2: return _("This Objective is completed if at the end of the round, the displayed combination appears on the Board Cards. If there are more chips on the Board Cards than indicated on the Objective Card, the Objective is completed.");
             case 3: return _("This Objective is completed if at the end of the round there are as many chips of each of the two displayed flavors on the Board Cards.");
             case 4: return _("This Objective is completed if the <strong>last</strong> chip of the round to be placed on the Board Card matches the displayed flavor.");
@@ -36,7 +36,7 @@ class CardsManager extends CardManager<Card> {
             return `
                 <strong>${_("Points:")}</strong> ${card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points}
                 <br><br>
-                ${this.getPower(card.type)}
+                ${this.getPower(card.type, card.type == 1 ? card.subType : undefined)}
             `;
         }
     }

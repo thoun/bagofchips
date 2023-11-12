@@ -2014,9 +2014,9 @@ var CardsManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
-    CardsManager.prototype.getPower = function (type) {
+    CardsManager.prototype.getPower = function (type, number) {
         switch (type) {
-            case 1: return _("This Objective is completed if at the end of the round there is at least one chip of each flavor on the Board Cards.");
+            case 1: return _("This Objective is completed if at the end of the round there is at least ${number} chip(s) of each flavor on the Board Cards.").replace('${number}', number);
             case 2: return _("This Objective is completed if at the end of the round, the displayed combination appears on the Board Cards. If there are more chips on the Board Cards than indicated on the Objective Card, the Objective is completed.");
             case 3: return _("This Objective is completed if at the end of the round there are as many chips of each of the two displayed flavors on the Board Cards.");
             case 4: return _("This Objective is completed if the <strong>last</strong> chip of the round to be placed on the Board Card matches the displayed flavor.");
@@ -2031,7 +2031,7 @@ var CardsManager = /** @class */ (function (_super) {
             return this.getPower(8);
         }
         else {
-            return "\n                <strong>".concat(_("Points:"), "</strong> ").concat(card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points, "\n                <br><br>\n                ").concat(this.getPower(card.type), "\n            ");
+            return "\n                <strong>".concat(_("Points:"), "</strong> ").concat(card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points, "\n                <br><br>\n                ").concat(this.getPower(card.type, card.type == 1 ? card.subType : undefined), "\n            ");
         }
     };
     CardsManager.prototype.getHtml = function (card) {
@@ -2455,7 +2455,7 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.getHelpHtml = function () {
         var html = "\n        <div id=\"help-popin\">\n        ";
         for (var i = 1; i <= 8; i++) {
-            html += "\n            <div class=\"help-section\">\n                <div id=\"help-card-".concat(i, "\">").concat(this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 }), "</div>\n                <div>").concat(this.cardsManager.getPower(i), "</div>\n            </div> ");
+            html += "\n            <div class=\"help-section\">\n                <div id=\"help-card-".concat(i, "\">").concat(this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 }), "</div>\n                <div>").concat(this.cardsManager.getPower(i, i == 1 ? 1 : undefined), "</div>\n            </div> ");
         }
         html += "</div>";
         return html;

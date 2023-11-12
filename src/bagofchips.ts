@@ -376,7 +376,7 @@ class BagOfChips implements BagOfChipsGame {
             html += `
             <div class="help-section">
                 <div id="help-card-${i}">${this.cardsManager.getHtml({ type: Math.min(7, i), subType: i == 8 ? 7 : 1 } as Card)}</div>
-                <div>${this.cardsManager.getPower(i)}</div>
+                <div>${this.cardsManager.getPower(i, i == 1 ? 1 : undefined)}</div>
             </div> `;
         }
         html += `</div>`;
