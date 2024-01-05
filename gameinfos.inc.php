@@ -19,7 +19,7 @@ $gameinfos = [
 'designer' => 'Mathieu Aubert, Théo Rivière',       
 
 // Game artist (or game artists, separated by commas)
-'artist' => 'Hervine Galliou, Mathieu Lidon',         
+'artist' => 'Mathieu Lidon',         
 
 // Year of FIRST publication of this game. Can be negative.
 'year' => 2021,
