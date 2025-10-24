@@ -15,6 +15,7 @@
  */
 
 use Bga\GameFramework\GameStateBuilder;
+use Bga\Games\BagOfChips\States\EndScore;
 
 /*
    Game state machine is a tool used to facilitate game developpement by doing common stuff that can be set up
@@ -120,7 +121,7 @@ $gameGameStates = [
         "transitions" => [
             "next" => ST_END_ROUND, // for zombie
             "endRound" => ST_END_ROUND,
-            "endScore" => ST_END_SCORE,
+            "endScore" => EndScore::class,
         ],
     ],
 
@@ -134,16 +135,6 @@ $gameGameStates = [
         "transitions" => [
             "newRound" => ST_START_ROUND,
             "endScore" => ST_END_SCORE,
-        ],
-    ],
-
-    ST_END_SCORE => [
-        "name" => "endScore",
-        "description" => "",
-        "type" => "game",
-        "action" => "stEndScore",
-        "transitions" => [
-            "endGame" => ST_END_GAME,
         ],
     ],
 ];

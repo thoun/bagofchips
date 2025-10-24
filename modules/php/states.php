@@ -226,25 +226,4 @@ trait StateTrait {
             $this->gamestate->nextState('newRound');
         }
     }
-
-    function stEndScore() {
-        $playersIds = $this->getPlayersIds();
-        $rounds = $this->getStat('roundNumber');
-
-        $this->setStat($this->getStat('validatedMinusObjective') / $rounds, 'avgValidatedMinusObjective');
-        $this->setStat($this->getStat('validatedPlusObjective') / $rounds, 'avgValidatedPlusObjective');
-        $this->setStat($this->getStat('pointsMinusObjectives') / $rounds, 'avgPointsMinusObjectives');
-        $this->setStat($this->getStat('pointsPlusObjectives') / $rounds, 'avgPointsPlusObjectives');
-        $this->setStat($this->getStat('rewards') / $rounds, 'avgRewardsPerRound');
-
-        foreach($playersIds as $playerId) {
-            $this->setStat($this->getStat('validatedMinusObjective', $playerId) / $rounds, 'avgValidatedMinusObjective', $playerId);
-            $this->setStat($this->getStat('validatedPlusObjective', $playerId) / $rounds, 'avgValidatedPlusObjective', $playerId);
-            $this->setStat($this->getStat('pointsMinusObjectives', $playerId) / $rounds, 'avgPointsMinusObjectives', $playerId);
-            $this->setStat($this->getStat('pointsPlusObjectives', $playerId) / $rounds, 'avgPointsPlusObjectives', $playerId);
-            $this->setStat($this->getStat('rewards', $playerId) / $rounds, 'avgRewardsPerRound', $playerId);
-        }
-
-        $this->gamestate->nextState('endGame');
-    }
 }
