@@ -106,7 +106,7 @@ class BeforeEndRound extends GameState
 
     #[PossibleAction]
     public function actSeen(int $currentPlayerId) {
-        $this->gamestate->setPlayerNonMultiactive($currentPlayerId, 'endRound');
+        $this->gamestate->setPlayerNonMultiactive($currentPlayerId, EndRound::class);
     }
 
     public function zombie(int $playerId) {

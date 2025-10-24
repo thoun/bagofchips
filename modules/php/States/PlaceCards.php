@@ -61,8 +61,8 @@ class PlaceCards extends GameState
     public function zombie(int $playerId) {
         $hand = $this->game->getCardsByLocation('hand', $playerId);
         $ids = array_map(fn($card) => $card->id, $hand);
-        $minus = $this->getRandomZombieChoice($ids);
-        $plus = array_values(array_diff($ids, [$minus]));
+        $minus = [$this->getRandomZombieChoice($ids)];
+        $plus = array_values(array_diff($ids, $minus));
         return $this->actPlaceCards($minus, $plus, $playerId);
     }
 }

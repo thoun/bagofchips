@@ -34,6 +34,11 @@ class DiscardCards extends GameState
         ];
     }
 
+    public function onEnteringState(): void
+    {
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
     #[PossibleAction]
     public function actDiscardCards(#[IntArrayParam] array $ids, int $currentPlayerId) {
         $phase = $this->game->getPhase();
@@ -67,7 +72,7 @@ class DiscardCards extends GameState
         $hand = $this->game->getCardsByLocation('hand', $playerId);
         $ids = array_map(fn($card) => $card->id, $hand);
         shuffle($ids); // random choice over possible moves
-        $zombieChoice = array_slice(array_map(fn($card) => intval($card['id']), $hand), 0, $number);
+        $zombieChoice = array_slice($ids, 0, $number);
         return $this->actDiscardCards($zombieChoice, $playerId);
     }
 }
