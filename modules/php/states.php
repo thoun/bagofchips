@@ -11,25 +11,6 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
-    function stStartRound() {
-        $this->incStat(1, 'roundNumber');
-        $this->setGlobalVariable(PHASE, 0);
-        $this->DbQuery("UPDATE player SET player_round_score = 0, player_round_score_minus = 0, player_round_score_plus = 0");
-
-        self::notifyAllPlayers('wait1000', clienttranslate('Shuffling the chips for the new round...'), []);
-        
-        $playersIds = $this->getPlayersIds();
-
-        foreach($playersIds as $playerId) {
-            $cards = $this->getCardsFromDb($this->cards->pickCardsForLocation(6, 'deck', 'hand', $playerId));
-            self::notifyPlayer($playerId, 'newHand', '', [
-                'cards' => $cards,
-            ]);
-        }
-        
-        $this->gamestate->nextState('next');
-    }
-
     private function notifRevealChips(int $slot, array $chips) {
         $count = count($chips);
 

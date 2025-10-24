@@ -16,6 +16,7 @@
 
 use Bga\GameFramework\GameStateBuilder;
 use Bga\Games\BagOfChips\States\EndScore;
+use Bga\Games\BagOfChips\States\StartRound;
 
 /*
    Game state machine is a tool used to facilitate game developpement by doing common stuff that can be set up
@@ -52,7 +53,7 @@ use Bga\Games\BagOfChips\States\EndScore;
 require_once("modules/php/constants.inc.php");
 
 $basicGameStates = [
-    ST_BGA_GAME_SETUP => GameStateBuilder::gameSetup(ST_START_ROUND)->build(),
+    ST_BGA_GAME_SETUP => GameStateBuilder::gameSetup(StartRound::class)->build(),
 ];
 
 $playerActionsGameStates = [
@@ -87,16 +88,6 @@ $playerActionsGameStates = [
 ];
 
 $gameGameStates = [
-
-    ST_START_ROUND => [
-        "name" => "startRound",
-        "description" => clienttranslate('Dealing 6 Objective cards to each player...'),
-        "type" => "game",
-        "action" => "stStartRound",
-        "transitions" => [
-            "next" => ST_REVEAL_CHIPS,
-        ]
-    ],
 
     ST_REVEAL_CHIPS => [
         "name" => "revealChips",
@@ -133,13 +124,12 @@ $gameGameStates = [
         "possibleactions" => [ "actSeen" ],
         "updateGameProgression" => true,
         "transitions" => [
-            "newRound" => ST_START_ROUND,
-            "endScore" => ST_END_SCORE,
+            "newRound" => StartRound::class,
+            "endScore" => EndScore::class,
         ],
     ],
 ];
  
 $machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
-
 
 
