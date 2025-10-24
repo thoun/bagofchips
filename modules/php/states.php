@@ -11,69 +11,6 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
-    private function notifRevealChips(int $slot, array $chips) {
-        $count = count($chips);
-
-        $message = $count > 1 ? clienttranslate('${number} new chips are revealed ${chips_images}') :
-         ($slot == 4 ? clienttranslate('One new chip is revealed... ${chips_images}') : clienttranslate('And finally the last chip is revealed! ${chips_images}'));
-
-        self::notifyAllPlayers('revealChips', $message, [
-            'slot' => $slot,
-            'chips' => $chips,
-            'chips_images' => '',
-            'number' => $count, // for logs
-            'preserve' => ['chips'],
-        ]);
-    }
-
-    function stRevealChips() {
-        $phase = $this->getPhase() + 1;
-        $this->setGlobalVariable(PHASE, $phase);
-
-        $playersIds = $this->getPlayersIds();
-        foreach($playersIds as $playerId) {
-            $this->giveExtraTime($playerId);
-
-            if ($phase == 4) {
-                self::notifyAllPlayers('placeCards', clienttranslate('${player_name} places remaining Objective cards'), [
-                    'playerId' => $playerId,
-                    'player_name' => $this->getPlayerName($playerId),
-                    'minus' => $this->getCardsByLocation('minus', $playerId),
-                    'plus' => $this->getCardsByLocation('plus', $playerId),
-                ]);
-            }
-        }
-
-        if ($phase == 4) {
-            $this->notifRevealChips(4, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 4))]);
-
-            self::notifyAllPlayers('wait3000', clienttranslate('Suspens for the last one...'), []);
-
-            $this->notifRevealChips(5, [$this->getChipFromDb($this->chips->pickCardForLocation('bag', 'table', 5))]);
-
-            self::notifyAllPlayers('wait1000', '', []);
-        } else {
-            $number = 6 - $phase;
-            $chips = $this->getChipsFromDb($this->chips->pickCardsForLocation($number, 'bag', 'table', $phase));
-            $this->notifRevealChips($phase, $chips);
-        }
-
-        $nextState = '';
-        switch ($phase) {
-            case 1: case 2:
-                $nextState = 'discard';
-                break;
-            case 3:
-                $nextState = 'place';
-                break;
-            case 4:
-                $nextState = 'endRound';
-                break;
-        }
-        
-        $this->gamestate->nextState($nextState);
-    }
-
     function displayRoundResults(array $roundScores, array $rewards) {
         /// Display table window with results ////
     

@@ -37,6 +37,6 @@ class StartRound extends GameState
             ]);
         }
 
-        return \ST_REVEAL_CHIPS;
+        return RevealChips::class;
     }
 }

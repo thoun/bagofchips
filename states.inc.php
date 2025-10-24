@@ -17,6 +17,7 @@
 use Bga\GameFramework\GameStateBuilder;
 use Bga\Games\BagOfChips\States\EndRound;
 use Bga\Games\BagOfChips\States\EndScore;
+use Bga\Games\BagOfChips\States\RevealChips;
 use Bga\Games\BagOfChips\States\StartRound;
 
 /*
@@ -69,7 +70,7 @@ $playerActionsGameStates = [
             "actDiscardCards",
         ],
         "transitions" => [
-            "next" => ST_REVEAL_CHIPS,
+            "next" => RevealChips::class,
         ],
     ],
 
@@ -83,26 +84,12 @@ $playerActionsGameStates = [
             "actPlaceCards",
         ],
         "transitions" => [
-            "next" => ST_REVEAL_CHIPS,
+            "next" => RevealChips::class,
         ],
     ],
 ];
 
 $gameGameStates = [
-
-    ST_REVEAL_CHIPS => [
-        "name" => "revealChips",
-        "description" => "",
-        "type" => "game",
-        "action" => "stRevealChips",
-        "updateGameProgression" => true,
-        "transitions" => [
-            "discard" => ST_MULTIPLAYER_DISCARD_CARDS,
-            "place" => ST_MULTIPLAYER_PLACE_CARDS,
-            "endRound" => ST_MULTIPLAYER_BEFORE_END_ROUND,
-        ],
-    ],
-    
     ST_MULTIPLAYER_BEFORE_END_ROUND => [
         "name" => "beforeEndRound",
         "description" => clienttranslate('Some players are seeing end round result'),
@@ -119,4 +106,3 @@ $gameGameStates = [
 ];
  
 $machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
-
