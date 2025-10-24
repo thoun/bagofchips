@@ -1,4 +1,5 @@
 <?php
+namespace Bga\Games\BagOfChips;
 
 trait DebugUtilTrait {
 
@@ -55,35 +56,20 @@ trait DebugUtilTrait {
         }
     }
 
-    public function debugReplacePlayersIds() {
-        if ($this->getBgaEnvironment() != 'studio') { 
-            return;
-        } 
+    public function debug_playToEnd() {
+        $this->debug_playAutomatically(999999);
+    }
 
-		// These are the id's from the BGAtable I need to debug.
-		/*$ids = [
-            84319026,
-86175279
-		];*/
-        $ids = array_map(fn($dbPlayer) => intval($dbPlayer['player_id']), array_values($this->getCollectionFromDb('select player_id from player order by player_no')));
-
-		// Id of the first player in BGA Studio
-		$sid = 2343492;
-		
-		foreach ($ids as $id) {
-			// basic tables
-			$this->DbQuery("UPDATE player SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE global SET global_value=$sid WHERE global_value = $id" );
-
-			// 'other' game specific tables. example:
-			// tables specific to your schema that use player_ids
-			$this->DbQuery("UPDATE card SET card_location_arg=$sid WHERE card_location_arg = $id" );
-            
-			++$sid;
-		}
-
-        self::reloadPlayersBasicInfos();
-	}
+    public function debug_playAutomatically(int $moves = 50) {
+        $count = 0;
+        while (intval($this->gamestate->getCurrentMainStateId()) < 99 && $count < $moves) {
+            $count++;
+            foreach($this->gamestate->getActivePlayerList() as $playerId) {
+                $playerId = (int)$playerId;
+                $this->gamestate->runStateClassZombie($this->gamestate->getCurrentState($playerId), $playerId);
+            }
+        }
+    }
 
     function debug($debugData) {
         if ($this->getBgaEnvironment() != 'studio') { 

@@ -90,7 +90,7 @@ class BeforeEndRound extends GameState
             }
         }
 
-        $table = $this->game->displayRoundResults($roundScores, $rewards);
+        $table = $this->displayRoundResults($roundScores, $rewards);
 
         $scoreRound['table'] = $table;
         $scoreRound['end'] = $end;
@@ -111,5 +111,36 @@ class BeforeEndRound extends GameState
 
     public function zombie(int $playerId) {
         return $this->actSeen($playerId);
+    }
+
+    private function displayRoundResults(array $roundScores, array $rewards) {
+        /// Display table window with results ////
+    
+        $table = [];
+        $handResultLogHtml = "<table class='round-result'>";
+
+        $players = $this->game->loadPlayersBasicInfos();
+
+        foreach($roundScores as $roundScore) {
+            $playerId = intval($roundScore['id']);
+            $playerName = $players[$playerId]['player_name'];
+            $playerResult = [
+                -intval($roundScore['score_minus']), 
+                intval($roundScore['score_plus']), 
+                intval($roundScore['score']), 
+                $rewards[$playerId] ?? 0, 
+                $this->game->getPlayerRewards($playerId),
+            ];
+
+            $table[$playerId] = $playerResult;
+            $handResultLogHtml .= "<tr><th><strong style='color: #".$players[$playerId]['player_color'].";'>$playerName</strong></th><td>".$roundScore['score']."</td></tr>";
+        }
+        $handResultLogHtml .= "</table>";
+        
+        $this->notify->all('showRoundResult', $handResultLogHtml, [
+            "table" => $table,
+        ]);
+
+        return $table;
     }
 }
