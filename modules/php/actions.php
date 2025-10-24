@@ -1,5 +1,7 @@
 <?php
 
+use Bga\GameFramework\Actions\Types\IntArrayParam;
+
 if (!function_exists('str_starts_with')) {
     function str_starts_with($haystack, $needle) {
         return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
@@ -17,9 +19,7 @@ trait ActionTrait {
         (note: each method below must match an input method in nicodemus.action.php)
     */
 
-    public function discardCards(array $ids) {
-        self::checkAction('discardCards');
-
+    public function actDiscardCards(#[IntArrayParam] array $ids) {
         $args = $this->argDiscardCards();
 
         if ($args['number'] != count($ids)) {
@@ -45,9 +45,7 @@ trait ActionTrait {
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
 
-    public function placeCards(array $minus, array $plus) {
-        self::checkAction('placeCards');
-
+    public function actPlaceCards(#[IntArrayParam] array $minus, #[IntArrayParam] array $plus) {
         $playerId = intval($this->getActivePlayerId());
 
         if (count($minus) != 1 || count($plus) != 2) {
@@ -77,9 +75,7 @@ trait ActionTrait {
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
 
-    public function seen() {
-        $this->checkAction('seen');
-
+    public function actSeen() {
         $playerId = intval($this->getCurrentPlayerId());
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'endRound');

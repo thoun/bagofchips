@@ -15,27 +15,35 @@
   * In this PHP file, you are going to defines the rules of the game.
   *
   */
+namespace Bga\Games\BagOfChips;
 
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
+use Bga\GameFramework\VisibleSystemException;
+use Card;
+use CardType;
 
-require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+require_once('Objects/card.php');
+require_once('Objects/chip.php');
+require_once('Objects/player.php');
+require_once('Objects/undo.php');
+require_once('constants.inc.php');
+require_once('utils.php');
+require_once('actions.php');
+require_once('states.php');
+require_once('args.php');
+require_once('debug-util.php');
 
-require_once('modules/php/objects/card.php');
-require_once('modules/php/objects/chip.php');
-require_once('modules/php/objects/player.php');
-require_once('modules/php/objects/undo.php');
-require_once('modules/php/constants.inc.php');
-require_once('modules/php/utils.php');
-require_once('modules/php/actions.php');
-require_once('modules/php/states.php');
-require_once('modules/php/args.php');
-require_once('modules/php/debug-util.php');
+class Game extends Table {
+    use \UtilTrait;
+    use \ActionTrait;
+    use \StateTrait;
+    use \ArgsTrait;
+    use \DebugUtilTrait;
 
-class BagOfChips extends Table {
-    use UtilTrait;
-    use ActionTrait;
-    use StateTrait;
-    use ArgsTrait;
-    use DebugUtilTrait;
+    public Deck $cards;
+    public Deck $chips;
+    public array $CARDS;
 
 	function __construct() {
         // Your global variables labels:
@@ -48,19 +56,69 @@ class BagOfChips extends Table {
         
         self::initGameStateLabels([]);   
 		
-        $this->cards = $this->getNew("module.common.deck");
-        $this->cards->init("card");
+        $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = true;     
 		
-        $this->chips = $this->getNew("module.common.deck");
-        $this->chips->init("chip");
+        $this->chips = $this->deckFactory->createDeck("chip");
         $this->chips->autoreshuffle = false;   
+
+        $this->CARDS = [
+            1 => [ // one of each
+                1 => new CardType(1, [1]),
+                2 => new CardType(42, [2]),
+            ],
+            2 => [ // min colors
+                1 => new CardType(4, [YELLOW => 3, GREEN => 3]),
+                2 => new CardType(9, [RED => 2, GREEN => 3]),
+                3 => new CardType(16, [PURPLE => 2, RED => 2]),
+                4 => new CardType(120, [ORANGE => 3]),
+                5 => new CardType(140, [PURPLE => 4]),
+                6 => new CardType(160, [RED => 5]),
+                7 => new CardType(180, [GREEN => 6]),
+                8 => new CardType(200, [YELLOW => 7]),
+            ],
+            3 => [ // color A = color B
+                1 => new CardType(25, [GREEN, YELLOW]),
+                2 => new CardType(30, [RED, GREEN]),
+                3 => new CardType(35, [PURPLE, RED]),
+                4 => new CardType(40, [ORANGE, PURPLE]),
+                5 => new CardType(70, [PURPLE, GREEN]),
+                6 => new CardType(100, [PURPLE, YELLOW]),
+                7 => new CardType(110, [ORANGE, GREEN]),
+            ],
+            
+            4 => [ // last chip color
+                1 => new CardType(61, [YELLOW]),
+                2 => new CardType(71, [GREEN]),
+                3 => new CardType(81, [RED]),
+                4 => new CardType(91, [PURPLE]),
+                5 => new CardType(111, [ORANGE]),
+            ],
+            
+            5 => [ // no color
+                1 => new CardType(201, [ORANGE]),
+                2 => new CardType(202, [PURPLE]),
+            ],
+            
+            6 => [ // points / color
+                1 => new CardType(5, [YELLOW]),
+                2 => new CardType(8, [GREEN]),
+                3 => new CardType(11, [RED]),
+                4 => new CardType(15, [PURPLE]),
+                5 => new CardType(22, [ORANGE]),
+            ],
+
+            7 => [ // more A than B
+                1 => new CardType(45, [GREEN, YELLOW]),
+                2 => new CardType(50, [RED, GREEN]),
+                3 => new CardType(55, [PURPLE, RED]),
+                4 => new CardType(60, [ORANGE, PURPLE]),
+                5 => new CardType(80, [RED, YELLOW]),
+                6 => new CardType(90, [ORANGE, RED]),
+                7 => new CardType(99999, [ORANGE, YELLOW]),
+            ],
+        ];
 	}
-	
-    protected function getGameName() {
-		// Used for translations and stuff. Please do not modify.
-        return "bagofchips";
-    }	
 
     /*
         setupNewGame:
@@ -117,9 +175,6 @@ class BagOfChips extends Table {
         $this->setupCards();
         $this->setupChips();
 
-        // TODO TEMP
-        //$this->debugSetup();
-
         /************ End of the game initialization *****/
     }
 
@@ -132,7 +187,7 @@ class BagOfChips extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $result = [];
     
         $currentPlayerId = intval(self::getCurrentPlayerId());    // !! We must only return informations visible by this player !!
@@ -151,7 +206,7 @@ class BagOfChips extends Table {
             
             $player['discard'] = Card::onlyIds($this->getCardsByLocation('discard', $playerId));
 
-            $stateId = intval($this->gamestate->state_id());
+            $stateId = $this->gamestate->getCurrentMainStateId();
             $hidePlusMinus = $stateId == ST_MULTIPLAYER_PLACE_CARDS && $currentPlayerId != $playerId;
             $player['minus'] = $hidePlusMinus ? [] : $this->getCardsByLocation('minus', $playerId);
             $player['plus'] = $hidePlusMinus ? [] : $this->getCardsByLocation('plus', $playerId);
@@ -209,7 +264,7 @@ class BagOfChips extends Table {
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new VisibleSystemException( "Zombie mode not supported at this game state: ".$statename );
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:

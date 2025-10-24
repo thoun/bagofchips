@@ -1,9 +1,3 @@
-declare const define;
-declare const ebg;
-declare const $;
-declare const dojo: Dojo;
-declare const _;
-declare const g_gamethemeurl;
 declare const g_img_preload;
 
 const ANIMATION_MS = 500;
@@ -24,19 +18,26 @@ function formatTextIcons(str: string) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
 }
 
-class BagOfChips implements BagOfChipsGame {
+// @ts-ignore
+GameGui = (function () { // this hack required so we fake extend GameGui
+  function GameGui() {}
+  return GameGui;
+})();
+
+class BagOfChips extends GameGui<BagOfChipsGamedatas> implements BagOfChipsGame {
     public cardsManager: CardsManager;
     public chipsManager: ChipsManager;
 
     private zoomManager: ZoomManager;
     private animationManager: AnimationManager;
-    private gamedatas: BagOfChipsGamedatas;
+    public gamedatas: BagOfChipsGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
     constructor() {
+        super();
     }
     
     /*
@@ -53,7 +54,26 @@ class BagOfChips implements BagOfChipsGame {
     */
 
     public setup(gamedatas: BagOfChipsGamedatas) {
-        const code = CODES[(this as any).prefs[202].value] ?? this.getCodeByLanguage();
+        this.getGameAreaElement().insertAdjacentHTML('beforeend', `
+            <link rel="stylesheet" href="https://use.typekit.net/jim0ypy.css">
+
+            <div id="result"></div>
+
+            <div id="table">
+                <div id="tables-and-center">
+                    <div id="table-center-wrapper">
+                        <div id="table-center">
+                            <div id="bag"></div>
+                        </div>
+                    </div>
+                    <div id="tables"></div>
+                </div>
+            </div>
+
+            <div id="skin"></div>
+        `);
+
+        const code = CODES[this.getGameUserPreference(202)] ?? this.getCodeByLanguage();
         //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
         
         g_img_preload.push(...[
@@ -64,14 +84,6 @@ class BagOfChips implements BagOfChipsGame {
             `${code}/icons.png`,
             `${code}/maps.png`,
         ]);
-        /* TODO if (!gamedatas.variantOption) {
-            (this as any).dontPreloadImage('artefacts.jpg');
-        }
-        if (gamedatas.boatSideOption == 2) {
-            (this as any).dontPreloadImage('boats-normal.png');
-        } else {
-            (this as any).dontPreloadImage('boats-advanced.png');
-        }*/
 
         log( "Starting game setup" );
         
@@ -126,7 +138,6 @@ class BagOfChips implements BagOfChipsGame {
             ]
         });
         this.setupNotifications();
-        this.setupPreferences();
 
         if (gamedatas.roundResult) {
             Object.entries(gamedatas.roundResult.cards).forEach(([cardId, result]) => {
@@ -161,7 +172,7 @@ class BagOfChips implements BagOfChipsGame {
     }
 
     private onEnteringSelectCards() {
-        if ((this as any).isCurrentPlayerActive()) {
+        if (this.isCurrentPlayerActive()) {
             this.getCurrentPlayerTable().setHandSelectable(true);
         }
     }
@@ -186,20 +197,20 @@ class BagOfChips implements BagOfChipsGame {
     //
     public onUpdateActionButtons(stateName: string, args: any) {
         
-        if ((this as any).isCurrentPlayerActive()) {
+        if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'discardCards':
                     this.onEnteringSelectCards();
-                    (this as any).addActionButton(`discardCards_button`, '', () => this.discardCards());
+                    this.statusBar.addActionButton('', () => this.discardCards(), { id: `discardCards_button` });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand?.getSelection());
                     break;
                 case 'placeCards':
                     this.onEnteringSelectCards();
-                    (this as any).addActionButton(`placeMinus_button`, '', () => this.placeCards());
+                    this.statusBar.addActionButton('', () => this.placeCards(), { id: `placeMinus_button` });
                     this.onHandCardSelectionChange(this.getCurrentPlayerTable().hand?.getSelection());
                     break;
                 case 'beforeEndRound':
-                    (this as any).addActionButton(`seen_button`, _("Seen"), () => this.seen());
+                    this.statusBar.addActionButton(_("Seen"), () => this.bgaPerformAction('actSeen'));
                     break;
             }
         }
@@ -233,14 +244,14 @@ class BagOfChips implements BagOfChipsGame {
     ///////////////////////////////////////////////////
 
     public setTooltip(id: string, html: string) {
-        (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
+        this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     }
     public setTooltipToClass(className: string, html: string) {
-        (this as any).addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
+        this.addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY);
     }
 
     public getPlayerId(): number {
-        return Number((this as any).player_id);
+        return Number(this.player_id);
     }
 
     public getPlayer(playerId: number): BagOfChipsPlayer {
@@ -257,29 +268,6 @@ class BagOfChips implements BagOfChipsGame {
 
     public getGameStateName(): string {
         return this.gamedatas.gamestate.name;
-    }
-
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
     }
 
     private changeSkin(code: string) {
@@ -299,7 +287,8 @@ class BagOfChips implements BagOfChipsGame {
         document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
     }
       
-    private onPreferenceChange(prefId: number, prefValue: number) {
+    // @ts-ignore
+    public onGameUserPreferenceChanged(prefId: number, prefValue: number) {
         switch (prefId) {
             case 202:
                 const code = CODES[prefValue] ?? this.getCodeByLanguage();
@@ -319,7 +308,7 @@ class BagOfChips implements BagOfChipsGame {
 
     private getOrderedPlayers(gamedatas: BagOfChipsGamedatas) {
         const players = Object.values(gamedatas.players).sort((a, b) => a.playerNo - b.playerNo);
-        const playerIndex = players.findIndex(player => Number(player.id) === Number((this as any).player_id));
+        const playerIndex = players.findIndex(player => Number(player.id) === Number(this.player_id));
         const orderedPlayers = playerIndex > 0 ? [...players.slice(playerIndex), ...players.slice(0, playerIndex)] : players;
         return orderedPlayers;
     }
@@ -385,44 +374,22 @@ class BagOfChips implements BagOfChipsGame {
     }
     
     public discardCards() {
-        if(!(this as any).checkAction('discardCards')) {
-            return;
-        }
-
         const ids = this.getCurrentPlayerTable().hand.getSelection().map(card => card.id);
 
-        this.takeAction('discardCards', {
+        this.bgaPerformAction('actDiscardCards', {
             ids: ids.join(','),
         });
     }
     
     public placeCards() {
-        if(!(this as any).checkAction('placeCards')) {
-            return;
-        }
-
         const ids = this.getCurrentPlayerTable().hand.getSelection().map(card => card.id);
         const others = this.getCurrentPlayerTable().hand.getCards().filter(card => !ids.includes(card.id)).map(card => card.id);
 
 
-        this.takeAction('placeCards', {
+        this.bgaPerformAction('actPlaceCards', {
             minus: ids.join(','),
             plus: others.join(','),
         });
-    }
-
-    public seen() {
-        if(!(this as any).checkAction('seen')) {
-            return;
-        }
-
-        this.takeAction('seen');
-    }
-
-    public takeAction(action: string, data?: any) {
-        data = data || {};
-        data.lock = true;
-        (this as any).ajaxcall(`/bagofchips/bagofchips/${action}.html`, data, this, () => {});
     }
 
     ///////////////////////////////////////////////////
@@ -537,7 +504,7 @@ class BagOfChips implements BagOfChipsGame {
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
-    public format_string_recursive(log: string, args: any) {
+    public bgaFormatText(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
                 if (args.chips_images === '' && args.chips) {
@@ -559,6 +526,6 @@ class BagOfChips implements BagOfChipsGame {
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);
         }
-        return (this as any).inherited(arguments);
+        return { log, args };
     }
 }

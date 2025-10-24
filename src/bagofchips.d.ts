@@ -55,7 +55,7 @@ interface BagOfChipsGamedatas {
     roundResult: RoundResult;
 }
 
-interface BagOfChipsGame extends Game {
+interface BagOfChipsGame extends GameGui<BagOfChipsGamedatas> {
     cardsManager: CardsManager;
     chipsManager: ChipsManager;
 

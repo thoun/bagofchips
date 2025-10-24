@@ -14,6 +14,8 @@
  *
  */
 
+use Bga\GameFramework\GameStateBuilder;
+
 /*
    Game state machine is a tool used to facilitate game developpement by doing common stuff that can be set up
    in a very easy way from this configuration file.
@@ -49,25 +51,7 @@
 require_once("modules/php/constants.inc.php");
 
 $basicGameStates = [
-
-    // The initial state. Please do not modify.
-    ST_BGA_GAME_SETUP => [
-        "name" => "gameSetup",
-        "description" => clienttranslate("Game setup"),
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => [ "" => ST_START_ROUND ]
-    ],
-   
-    // Final state.
-    // Please do not modify.
-    ST_END_GAME => [
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd",
-    ],
+    ST_BGA_GAME_SETUP => GameStateBuilder::gameSetup(ST_START_ROUND)->build(),
 ];
 
 $playerActionsGameStates = [
@@ -79,7 +63,7 @@ $playerActionsGameStates = [
         "args" => "argDiscardCards",
         'action' => 'stMakeEveryoneActive',
         "possibleactions" => [ 
-            "discardCards",
+            "actDiscardCards",
         ],
         "transitions" => [
             "next" => ST_REVEAL_CHIPS,
@@ -93,7 +77,7 @@ $playerActionsGameStates = [
         "type" => "multipleactiveplayer",
         'action' => 'stMakeEveryoneActive',
         "possibleactions" => [ 
-            "placeCards",
+            "actPlaceCards",
         ],
         "transitions" => [
             "next" => ST_REVEAL_CHIPS,
@@ -132,7 +116,7 @@ $gameGameStates = [
         "descriptionmyturn" => clienttranslate('End round result'),
         "type" => "multipleactiveplayer",
         "action" => "stBeforeEndRound",
-        "possibleactions" => [ "seen" ],
+        "possibleactions" => [ "actSeen" ],
         "transitions" => [
             "next" => ST_END_ROUND, // for zombie
             "endRound" => ST_END_ROUND,
@@ -145,7 +129,7 @@ $gameGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stEndRound",
-        "possibleactions" => [ "seen" ],
+        "possibleactions" => [ "actSeen" ],
         "updateGameProgression" => true,
         "transitions" => [
             "newRound" => ST_START_ROUND,

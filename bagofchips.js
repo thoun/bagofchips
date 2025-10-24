@@ -2245,10 +2245,18 @@ var CODES = [
 function formatTextIcons(str) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
 }
-var BagOfChips = /** @class */ (function () {
+// @ts-ignore
+GameGui = (function () {
+    function GameGui() { }
+    return GameGui;
+})();
+var BagOfChips = /** @class */ (function (_super) {
+    __extends(BagOfChips, _super);
     function BagOfChips() {
-        this.playersTables = [];
-        this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        var _this = _super.call(this) || this;
+        _this.playersTables = [];
+        _this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
+        return _this;
     }
     /*
         setup:
@@ -2265,7 +2273,8 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.setup = function (gamedatas) {
         var _this = this;
         var _a;
-        var code = (_a = CODES[this.prefs[202].value]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
+        this.getGameAreaElement().insertAdjacentHTML('beforeend', "\n            <link rel=\"stylesheet\" href=\"https://use.typekit.net/jim0ypy.css\">\n\n            <div id=\"result\"></div>\n\n            <div id=\"table\">\n                <div id=\"tables-and-center\">\n                    <div id=\"table-center-wrapper\">\n                        <div id=\"table-center\">\n                            <div id=\"bag\"></div>\n                        </div>\n                    </div>\n                    <div id=\"tables\"></div>\n                </div>\n            </div>\n\n            <div id=\"skin\"></div>\n        ");
+        var code = (_a = CODES[this.getGameUserPreference(202)]) !== null && _a !== void 0 ? _a : this.getCodeByLanguage();
         //document.getElementById(`table`).insertAdjacentHTML(`beforebegin`, `<link id="code-stylesheet" rel="stylesheet" type="text/css" href="${g_gamethemeurl}img/${code}/skin.css"/>`);
         g_img_preload.push.apply(g_img_preload, __spreadArray(__spreadArray([
             "".concat(code, "/card-back.png"),
@@ -2275,14 +2284,6 @@ var BagOfChips = /** @class */ (function () {
             "".concat(code, "/icons.png"),
             "".concat(code, "/maps.png"),
         ], false));
-        /* TODO if (!gamedatas.variantOption) {
-            (this as any).dontPreloadImage('artefacts.jpg');
-        }
-        if (gamedatas.boatSideOption == 2) {
-            (this as any).dontPreloadImage('boats-normal.png');
-        } else {
-            (this as any).dontPreloadImage('boats-advanced.png');
-        }*/
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
@@ -2329,7 +2330,6 @@ var BagOfChips = /** @class */ (function () {
             ]
         });
         this.setupNotifications();
-        this.setupPreferences();
         if (gamedatas.roundResult) {
             Object.entries(gamedatas.roundResult.cards).forEach(function (_a) {
                 var _b;
@@ -2386,16 +2386,16 @@ var BagOfChips = /** @class */ (function () {
             switch (stateName) {
                 case 'discardCards':
                     this.onEnteringSelectCards();
-                    this.addActionButton("discardCards_button", '', function () { return _this.discardCards(); });
+                    this.statusBar.addActionButton('', function () { return _this.discardCards(); }, { id: "discardCards_button" });
                     this.onHandCardSelectionChange((_a = this.getCurrentPlayerTable().hand) === null || _a === void 0 ? void 0 : _a.getSelection());
                     break;
                 case 'placeCards':
                     this.onEnteringSelectCards();
-                    this.addActionButton("placeMinus_button", '', function () { return _this.placeCards(); });
+                    this.statusBar.addActionButton('', function () { return _this.placeCards(); }, { id: "placeMinus_button" });
                     this.onHandCardSelectionChange((_b = this.getCurrentPlayerTable().hand) === null || _b === void 0 ? void 0 : _b.getSelection());
                     break;
                 case 'beforeEndRound':
-                    this.addActionButton("seen_button", _("Seen"), function () { return _this.seen(); });
+                    this.statusBar.addActionButton(_("Seen"), function () { return _this.bgaPerformAction('actSeen'); });
                     break;
             }
         }
@@ -2443,24 +2443,6 @@ var BagOfChips = /** @class */ (function () {
     BagOfChips.prototype.getGameStateName = function () {
         return this.gamedatas.gamestate.name;
     };
-    BagOfChips.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-            _this.onPreferenceChange(prefId, prefValue);
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
-    };
     BagOfChips.prototype.changeSkin = function (code) {
         var value = CODES.indexOf(code);
         [
@@ -2475,7 +2457,8 @@ var BagOfChips = /** @class */ (function () {
         (_a = document.getElementById("code-stylesheet")) === null || _a === void 0 ? void 0 : _a.remove();
         document.getElementById("table").insertAdjacentHTML("beforebegin", "<link id=\"code-stylesheet\" rel=\"stylesheet\" type=\"text/css\" href=\"".concat(g_gamethemeurl, "img/").concat(code, "/skin.css\"/>"));
     };
-    BagOfChips.prototype.onPreferenceChange = function (prefId, prefValue) {
+    // @ts-ignore
+    BagOfChips.prototype.onGameUserPreferenceChanged = function (prefId, prefValue) {
         var _a;
         switch (prefId) {
             case 202:
@@ -2539,35 +2522,18 @@ var BagOfChips = /** @class */ (function () {
         return html;
     };
     BagOfChips.prototype.discardCards = function () {
-        if (!this.checkAction('discardCards')) {
-            return;
-        }
         var ids = this.getCurrentPlayerTable().hand.getSelection().map(function (card) { return card.id; });
-        this.takeAction('discardCards', {
+        this.bgaPerformAction('actDiscardCards', {
             ids: ids.join(','),
         });
     };
     BagOfChips.prototype.placeCards = function () {
-        if (!this.checkAction('placeCards')) {
-            return;
-        }
         var ids = this.getCurrentPlayerTable().hand.getSelection().map(function (card) { return card.id; });
         var others = this.getCurrentPlayerTable().hand.getCards().filter(function (card) { return !ids.includes(card.id); }).map(function (card) { return card.id; });
-        this.takeAction('placeCards', {
+        this.bgaPerformAction('actPlaceCards', {
             minus: ids.join(','),
             plus: others.join(','),
         });
-    };
-    BagOfChips.prototype.seen = function () {
-        if (!this.checkAction('seen')) {
-            return;
-        }
-        this.takeAction('seen');
-    };
-    BagOfChips.prototype.takeAction = function (action, data) {
-        data = data || {};
-        data.lock = true;
-        this.ajaxcall("/bagofchips/bagofchips/".concat(action, ".html"), data, this, function () { });
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
@@ -2654,7 +2620,7 @@ var BagOfChips = /** @class */ (function () {
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
-    BagOfChips.prototype.format_string_recursive = function (log, args) {
+    BagOfChips.prototype.bgaFormatText = function (log, args) {
         var _this = this;
         try {
             if (log && args && !args.processed) {
@@ -2675,10 +2641,10 @@ var BagOfChips = /** @class */ (function () {
         catch (e) {
             console.error(log, args, "Exception thrown", e.stack);
         }
-        return this.inherited(arguments);
+        return { log: log, args: args };
     };
     return BagOfChips;
-}());
+}(GameGui));
 define([
     "dojo", "dojo/_base/declare",
     "ebg/core/gamegui",

@@ -1,0 +1,21 @@
+{
+    "202": {
+        "name": "Skin",
+        "needReload": false,
+        "values": [
+            {
+                "name": "Automatic"
+            },
+            {
+                "name": "Default - Bag of chips"
+            },
+            {
+                "name": "DE - \u2018ne tutte chips"
+            },
+            {
+                "name": "CA - Sac de Chips"
+            }
+        ],
+        "default": 0
+    }
+}

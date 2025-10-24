@@ -1,0 +1,131 @@
+{
+    "table": {
+        "validatedMinusObjective": {
+            "id": 20,
+            "name": "Validated [-] objectives",
+            "type": "int"
+        },
+        "validatedPlusObjective": {
+            "id": 21,
+            "name": "Validated [+] objectives",
+            "type": "int"
+        },
+        "avgValidatedMinusObjective": {
+            "id": 22,
+            "name": "Validated [-] objectives (average per round)",
+            "type": "float"
+        },
+        "avgValidatedPlusObjective": {
+            "id": 23,
+            "name": "Validated [+] objectives (average per round)",
+            "type": "float"
+        },
+        "pointsMinusObjectives": {
+            "id": 30,
+            "name": "Points lost with [-] objectives",
+            "type": "int"
+        },
+        "pointsPlusObjectives": {
+            "id": 31,
+            "name": "Points gained with [+] objectives",
+            "type": "int"
+        },
+        "avgPointsMinusObjectives": {
+            "id": 32,
+            "name": "Points lost with [-] objectives (average per round)",
+            "type": "float"
+        },
+        "avgPointsPlusObjectives": {
+            "id": 33,
+            "name": "Points gained with [+] objectives (average per round)",
+            "type": "float"
+        },
+        "rewards": {
+            "id": 40,
+            "name": "Rewards",
+            "type": "int"
+        },
+        "avgRewardsPerRound": {
+            "id": 41,
+            "name": "Rewards (average per round)",
+            "type": "float"
+        },
+        "specialObjectiveWin": {
+            "id": 50,
+            "name": "Game won with special objective",
+            "type": "bool"
+        },
+        "specialObjectiveLoss": {
+            "id": 51,
+            "name": "Rounds lost with special objective",
+            "type": "int"
+        },
+        "roundNumber": {
+            "id": 10,
+            "name": "Number of rounds",
+            "type": "int"
+        }
+    },
+    "player": {
+        "validatedMinusObjective": {
+            "id": 20,
+            "name": "Validated [-] objectives",
+            "type": "int"
+        },
+        "validatedPlusObjective": {
+            "id": 21,
+            "name": "Validated [+] objectives",
+            "type": "int"
+        },
+        "avgValidatedMinusObjective": {
+            "id": 22,
+            "name": "Validated [-] objectives (average per round)",
+            "type": "float"
+        },
+        "avgValidatedPlusObjective": {
+            "id": 23,
+            "name": "Validated [+] objectives (average per round)",
+            "type": "float"
+        },
+        "pointsMinusObjectives": {
+            "id": 30,
+            "name": "Points lost with [-] objectives",
+            "type": "int"
+        },
+        "pointsPlusObjectives": {
+            "id": 31,
+            "name": "Points gained with [+] objectives",
+            "type": "int"
+        },
+        "avgPointsMinusObjectives": {
+            "id": 32,
+            "name": "Points lost with [-] objectives (average per round)",
+            "type": "float"
+        },
+        "avgPointsPlusObjectives": {
+            "id": 33,
+            "name": "Points gained with [+] objectives (average per round)",
+            "type": "float"
+        },
+        "rewards": {
+            "id": 40,
+            "name": "Rewards",
+            "type": "int"
+        },
+        "avgRewardsPerRound": {
+            "id": 41,
+            "name": "Rewards (average per round)",
+            "type": "float"
+        },
+        "specialObjectiveWin": {
+            "id": 50,
+            "name": "Game won with special objective",
+            "type": "bool"
+        },
+        "specialObjectiveLoss": {
+            "id": 51,
+            "name": "Rounds lost with special objective",
+            "type": "int"
+        }
+    }
+}
