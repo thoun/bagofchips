@@ -74,10 +74,4 @@ trait ActionTrait {
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
     }
-
-    public function actSeen() {
-        $playerId = intval($this->getCurrentPlayerId());
-
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'endRound');
-    }
 }

@@ -15,6 +15,7 @@
  */
 
 use Bga\GameFramework\GameStateBuilder;
+use Bga\Games\BagOfChips\States\BeforeEndRound;
 use Bga\Games\BagOfChips\States\EndRound;
 use Bga\Games\BagOfChips\States\EndScore;
 use Bga\Games\BagOfChips\States\RevealChips;
@@ -54,7 +55,8 @@ use Bga\Games\BagOfChips\States\StartRound;
 */
 require_once("modules/php/constants.inc.php");
 
-$playerActionsGameStates = [
+ 
+$machinestates = [
     ST_MULTIPLAYER_DISCARD_CARDS => [
         "name" => "discardCards",
         "description" => clienttranslate('Waiting for other players'),
@@ -83,22 +85,4 @@ $playerActionsGameStates = [
             "next" => RevealChips::class,
         ],
     ],
-];
-
-$gameGameStates = [
-    ST_MULTIPLAYER_BEFORE_END_ROUND => [
-        "name" => "beforeEndRound",
-        "description" => clienttranslate('Some players are seeing end round result'),
-        "descriptionmyturn" => clienttranslate('End round result'),
-        "type" => "multipleactiveplayer",
-        "action" => "stBeforeEndRound",
-        "possibleactions" => [ "actSeen" ],
-        "transitions" => [
-            "next" => EndRound::class, // for zombie
-            "endRound" => EndRound::class,
-            "endScore" => EndScore::class,
-        ],
-    ],
-];
- 
-$machinestates = $playerActionsGameStates + $gameGameStates;
+];;
