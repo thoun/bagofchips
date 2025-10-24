@@ -2,20 +2,23 @@
     "202": {
         "name": "Skin",
         "needReload": false,
-        "values": [
-            {
+        "values": {
+            "0": {
                 "name": "Automatic"
             },
-            {
+            "1": {
                 "name": "Default - Bag of chips"
             },
-            {
+            "2": {
                 "name": "DE - \u2018ne tutte chips"
             },
-            {
+            "3": {
                 "name": "CA - Sac de Chips"
+            },
+            "2026": {
+                "name": "New edition"
             }
-        ],
-        "default": 0
+          },
+        "default": 2026
     }
 }

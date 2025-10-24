@@ -879,6 +879,7 @@ body > .card {
 }
 .icon.reward {
   background-position-x: 0%;
+  border-radius: 50%;
 }
 .icon.minus {
   background-position-x: 50%;

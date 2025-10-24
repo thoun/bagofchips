@@ -2242,6 +2242,7 @@ var CODES = [
     'de',
     'ca',
 ];
+CODES[2026] = 'int';
 function formatTextIcons(str) {
     return str.replace(/\[\-\]/g, '<div class="minus icon"></div>').replace(/\[\+\]/g, '<div class="plus icon"></div>');
 }
