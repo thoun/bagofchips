@@ -20,6 +20,7 @@ namespace Bga\Games\BagOfChips;
 use Bga\GameFramework\Components\Deck;
 use Bga\GameFramework\Table;
 use Bga\GameFramework\VisibleSystemException;
+use Bga\Games\BagOfChips\States\StartRound;
 use Card;
 use CardType;
 
@@ -176,6 +177,7 @@ class Game extends Table {
         $this->setupChips();
 
         /************ End of the game initialization *****/
+        return StartRound::class;
     }
 
     /*

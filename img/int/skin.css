@@ -1,0 +1,47 @@
+.icon {
+    background-image: url('./icons.png');
+}
+
+#table-center .map {
+    background-image: url("./maps.png");
+}
+
+.objective .card-sides .card-side.back {
+    background-image: url("./card-back.png");
+}
+
+.objective .card-sides .card-side.front[data-type="1"] {
+    background-image: url("./cards1.png");
+}
+
+.objective .card-sides .card-side.front[data-type="2"] {
+    background-image: url("./cards2.png");
+}
+
+.objective .card-sides .card-side.front[data-type="3"] {
+    background-image: url("./cards3.png");
+}
+
+.objective .card-sides .card-side.front[data-type="4"] {
+    background-image: url("./cards4.png");
+}
+
+.objective .card-sides .card-side.front[data-type="5"] {
+    background-image: url("./cards5.png");
+}
+
+.objective .card-sides .card-side.front[data-type="6"] {
+    background-image: url("./cards6.png");
+}
+
+.objective .card-sides .card-side.front[data-type="7"] {
+    background-image: url("./cards7.png");
+}
+
+.chip .card-sides .card-side {
+    background-image: url("./chips.png");
+}
+
+.bga-help_expandable-button {
+    background-image: url('./card-repartition.png');
+}

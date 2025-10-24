@@ -54,10 +54,6 @@ use Bga\Games\BagOfChips\States\StartRound;
 */
 require_once("modules/php/constants.inc.php");
 
-$basicGameStates = [
-    ST_BGA_GAME_SETUP => GameStateBuilder::gameSetup(StartRound::class)->build(),
-];
-
 $playerActionsGameStates = [
     ST_MULTIPLAYER_DISCARD_CARDS => [
         "name" => "discardCards",
@@ -105,4 +101,4 @@ $gameGameStates = [
     ],
 ];
  
-$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
+$machinestates = $playerActionsGameStates + $gameGameStates;
