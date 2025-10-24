@@ -15,6 +15,7 @@
  */
 
 use Bga\GameFramework\GameStateBuilder;
+use Bga\Games\BagOfChips\States\EndRound;
 use Bga\Games\BagOfChips\States\EndScore;
 use Bga\Games\BagOfChips\States\StartRound;
 
@@ -110,26 +111,12 @@ $gameGameStates = [
         "action" => "stBeforeEndRound",
         "possibleactions" => [ "actSeen" ],
         "transitions" => [
-            "next" => ST_END_ROUND, // for zombie
-            "endRound" => ST_END_ROUND,
-            "endScore" => EndScore::class,
-        ],
-    ],
-
-    ST_END_ROUND => [
-        "name" => "endRound",
-        "description" => "",
-        "type" => "game",
-        "action" => "stEndRound",
-        "possibleactions" => [ "actSeen" ],
-        "updateGameProgression" => true,
-        "transitions" => [
-            "newRound" => StartRound::class,
+            "next" => EndRound::class, // for zombie
+            "endRound" => EndRound::class,
             "endScore" => EndScore::class,
         ],
     ],
 ];
  
 $machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
-
 

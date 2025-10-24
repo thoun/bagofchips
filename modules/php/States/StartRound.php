@@ -26,13 +26,13 @@ class StartRound extends GameState
         $this->game->setGlobalVariable(\PHASE, 0);
         $this->game->DbQuery("UPDATE player SET player_round_score = 0, player_round_score_minus = 0, player_round_score_plus = 0");
 
-        $this->game->notify->all('wait1000', clienttranslate('Shuffling the chips for the new round...'), []);
+        $this->notify->all('wait1000', clienttranslate('Shuffling the chips for the new round...'), []);
 
         $playersIds = $this->game->getPlayersIds();
 
         foreach ($playersIds as $playerId) {
             $cards = $this->game->getCardsFromDb($this->game->cards->pickCardsForLocation(6, 'deck', 'hand', $playerId));
-            $this->game->notify->player($playerId, 'newHand', '', [
+            $this->notify->player($playerId, 'newHand', '', [
                 'cards' => $cards,
             ]);
         }

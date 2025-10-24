@@ -189,22 +189,4 @@ trait StateTrait {
             $this->gamestate->setAllPlayersMultiactive();
         }
     }
-
-    function stEndRound() {
-        $scoreRound = $this->getGlobalVariable(ROUND_RESULT, true);
-
-        if ($scoreRound['end']) {
-            $this->DbQuery("UPDATE player SET player_score = player_rewards, player_score_aux = player_round_score");
-            $this->gamestate->nextState('endScore');
-        } else  {
-            $this->deleteGlobalVariable(ROUND_RESULT);
-
-            $this->cards->moveAllCardsInLocation(null, 'deck');
-            $this->cards->shuffle('deck');
-            $this->chips->moveAllCardsInLocation(null, 'bag');
-            $this->chips->shuffle('bag');
-            self::notifyAllPlayers('endRound', '', []);
-            $this->gamestate->nextState('newRound');
-        }
-    }
 }
