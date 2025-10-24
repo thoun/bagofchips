@@ -29,7 +29,7 @@ trait ActionTrait {
         $playerId = intval($this->getCurrentPlayerId());
         $hand = $this->getCardsByLocation('hand', $playerId);
 
-        if ($this->array_some($ids, fn($id) => !$this->array_some($hand, fn($card) => $card->id == $id))) {
+        if (array_any($ids, fn($id) => !array_any($hand, fn($card) => $card->id == $id))) {
             throw new BgaUserException("You must select your own cards");
         }
 
@@ -37,39 +37,9 @@ trait ActionTrait {
 
         self::notifyAllPlayers('discardCards', clienttranslate('${player_name} discards ${number} Objective cards'), [
             'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
+            'player_name' => $this->getPlayerNameById($playerId),
             'discard' => Card::onlyIds($this->getCardsByLocation('discard', $playerId)),
             'number' => $args['number'], // for logs
-        ]);
-
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'next');
-    }
-
-    public function actPlaceCards(#[IntArrayParam] array $minus, #[IntArrayParam] array $plus) {
-        $playerId = intval($this->getActivePlayerId());
-
-        if (count($minus) != 1 || count($plus) != 2) {
-            throw new BgaUserException("Invalid card count");
-        }
-
-        $playerId = intval($this->getCurrentPlayerId());
-        $hand = $this->getCardsByLocation('hand', $playerId);
-
-        if ($this->array_some($minus, fn($id) => !$this->array_some($hand, fn($card) => $card->id == $id))) {
-            throw new BgaUserException("You must select your own cards");
-        }
-        if ($this->array_some($plus, fn($id) => !$this->array_some($hand, fn($card) => $card->id == $id))) {
-            throw new BgaUserException("You must select your own cards");
-        }
-
-        $this->cards->moveCards($minus, 'minus', $playerId);
-        $this->cards->moveCards($plus, 'plus', $playerId);
-
-        self::notifyPlayer($playerId, 'placeCards', '', [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'minus' => $this->getCardsByLocation('minus', $playerId),
-            'plus' => $this->getCardsByLocation('plus', $playerId),
         ]);
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'next');

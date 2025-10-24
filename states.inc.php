@@ -71,18 +71,4 @@ $machinestates = [
             "next" => RevealChips::class,
         ],
     ],
-
-    ST_MULTIPLAYER_PLACE_CARDS => [
-        "name" => "placeCards",
-        "description" => clienttranslate('Waiting for other players'),
-        "descriptionmyturn" => clienttranslate('${you} must place 1 Objective card in [-] (remaining objectives will be placed on [+] side)'),
-        "type" => "multipleactiveplayer",
-        'action' => 'stMakeEveryoneActive',
-        "possibleactions" => [ 
-            "actPlaceCards",
-        ],
-        "transitions" => [
-            "next" => RevealChips::class,
-        ],
-    ],
-];;
+];

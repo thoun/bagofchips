@@ -83,10 +83,6 @@ trait UtilTrait {
         return array_keys($this->loadPlayersBasicInfos());
     }
 
-    function getPlayerName(int $playerId) {
-        return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
-    }
-
     function getPlayerRewards(int $playerId) {
         return intval($this->getUniqueValueFromDB("SELECT player_rewards FROM player WHERE player_id = $playerId"));
     }
@@ -98,7 +94,7 @@ trait UtilTrait {
             
         $this->notifyAllPlayers('rewards', $message, [
             'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
+            'player_name' => $this->getPlayerNameById($playerId),
             'newScore' => $this->getPlayerRewards($playerId),
             'incScore' => $amount,
         ] + $args);
@@ -259,7 +255,7 @@ trait UtilTrait {
                 $score = $scored ? -$points : 0;
                 self::notifyAllPlayers('scoreCard', $message, [
                     'playerId' => $playerId,
-                    'player_name' => $this->getPlayerName($playerId),
+                    'player_name' => $this->getPlayerNameById($playerId),
                     'card' => $card,
                     'card_image' => '',
                     'preserve' => ['card'],
@@ -303,7 +299,7 @@ trait UtilTrait {
                 $score = $scored ? $points : 0;
                     self::notifyAllPlayers('scoreCard', $message, [
                         'playerId' => $playerId,
-                        'player_name' => $this->getPlayerName($playerId),
+                        'player_name' => $this->getPlagetPlayerNameByIdyerName($playerId),
                         'card' => $card,
                         'card_image' => '',
                         'preserve' => ['card'],
@@ -323,7 +319,7 @@ trait UtilTrait {
             if (!$roundLost && !$result['gameWon']) {
                 self::notifyAllPlayers('log', clienttranslate('${player_name} scores ${number} points this round'), [
                     'playerId' => $playerId,
-                    'player_name' => $this->getPlayerName($playerId),
+                    'player_name' => $this->getPlayerNameById($playerId),
                     'number' => $roundScore, // for log
                 ]);
             }

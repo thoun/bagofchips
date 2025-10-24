@@ -31,7 +31,7 @@ class RevealChips extends GameState
             if ($phase === 4) {
                 $this->notify->all('placeCards', clienttranslate('${player_name} places remaining Objective cards'), [
                     'playerId' => $playerId,
-                    'player_name' => $this->game->getPlayerName($playerId),
+                    'player_name' => $this->game->getPlayerNameById($playerId),
                     'minus' => $this->game->getCardsByLocation('minus', $playerId),
                     'plus' => $this->game->getCardsByLocation('plus', $playerId),
                 ]);
