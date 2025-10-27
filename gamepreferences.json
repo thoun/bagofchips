@@ -14,11 +14,8 @@
             },
             "3": {
                 "name": "CA - Sac de Chips"
-            },
-            "2026": {
-                "name": "New edition"
             }
           },
-        "default": 2026
+        "default": 0
     }
 }

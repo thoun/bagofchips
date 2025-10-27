@@ -80,6 +80,14 @@
                     }
                 }
             }
+
+            &.front[data-type="8"] {
+                @for $subType from 1 through 5 {
+                    &[data-sub-type="#{$subType}"] {
+                        background-position-x: #{($subType - 1) * 100% / 4};
+                    }
+                }
+            }
         }
     }    
 

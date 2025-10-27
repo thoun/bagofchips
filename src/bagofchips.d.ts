@@ -53,9 +53,10 @@ interface BagOfChipsGamedatas {
     // Add here variables you set up in getAllDatas
     chips: Chip[];
     roundResult: RoundResult;
+    edition: number;
 }
 
-interface BagOfChipsGame extends GameGui<BagOfChipsGamedatas> {
+interface BagOfChipsGame {
     cardsManager: CardsManager;
     chipsManager: ChipsManager;
 

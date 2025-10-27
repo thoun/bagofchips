@@ -71,6 +71,17 @@ trait DebugUtilTrait {
         }
     }
 
+    public function debug_playRound() {
+        $count = 0;
+        while (intval($this->gamestate->getCurrentMainStateId()) < \ST_MULTIPLAYER_BEFORE_END_ROUND && $count < 50) {
+            $count++;
+            foreach($this->gamestate->getActivePlayerList() as $playerId) {
+                $playerId = (int)$playerId;
+                $this->gamestate->runStateClassZombie($this->gamestate->getCurrentState($playerId), $playerId);
+            }
+        }
+    }
+
     function debug($debugData) {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;

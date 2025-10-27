@@ -627,6 +627,21 @@ body > .card {
 .objective .card-sides .card-side.front[data-type="7"][data-sub-type="7"] {
   background-position-x: 100%;
 }
+.objective .card-sides .card-side.front[data-type="8"][data-sub-type="1"] {
+  background-position-x: 0%;
+}
+.objective .card-sides .card-side.front[data-type="8"][data-sub-type="2"] {
+  background-position-x: 25%;
+}
+.objective .card-sides .card-side.front[data-type="8"][data-sub-type="3"] {
+  background-position-x: 50%;
+}
+.objective .card-sides .card-side.front[data-type="8"][data-sub-type="4"] {
+  background-position-x: 75%;
+}
+.objective .card-sides .card-side.front[data-type="8"][data-sub-type="5"] {
+  background-position-x: 100%;
+}
 .objective.bga-cards_selectable-card:not(.bga-cards_disabled-card):not(.bga-cards_selected-card) {
   animation: selectable-card-animation 1s alternate infinite ease-in-out;
 }

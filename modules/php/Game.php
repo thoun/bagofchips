@@ -35,7 +35,8 @@ class Game extends Table {
 
     public Deck $cards;
     public Deck $chips;
-    public array $CARDS;
+    public array $CARDS_2026;
+    public array $CARDS_2021;
 
 	function __construct() {
         // Your global variables labels:
@@ -46,68 +47,126 @@ class Game extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels([]);   
+        $this->initGameStateLabels([]);   
 		
         $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = true;     
 		
         $this->chips = $this->deckFactory->createDeck("chip");
-        $this->chips->autoreshuffle = false;   
+        $this->chips->autoreshuffle = false; 
 
-        $this->CARDS = [
+        $this->CARDS_2026 = [
             1 => [ // one of each
                 1 => new CardType(1, [1]),
                 2 => new CardType(42, [2]),
             ],
             2 => [ // min colors
-                1 => new CardType(4, [YELLOW => 3, GREEN => 3]),
-                2 => new CardType(9, [RED => 2, GREEN => 3]),
-                3 => new CardType(16, [PURPLE => 2, RED => 2]),
-                4 => new CardType(120, [ORANGE => 3]),
-                5 => new CardType(140, [PURPLE => 4]),
-                6 => new CardType(160, [RED => 5]),
-                7 => new CardType(180, [GREEN => 6]),
-                8 => new CardType(200, [YELLOW => 7]),
+                1 => new CardType(15, [RED => 2, ORANGE => 3]),
+                2 => new CardType(20, [ORANGE => 3, YELLOW => 3]),
+                3 => new CardType(45, [GREEN => 3]),
+                4 => new CardType(50, [PURPLE => 2]),
+                5 => new CardType(95, [RED => 4]),
+                6 => new CardType(105, [ORANGE => 5]),
+                7 => new CardType(120, [PURPLE => 3]),
+                8 => new CardType(140, [GREEN => 4]),
+                9 => new CardType(200, [YELLOW => 6]),
             ],
             3 => [ // color A = color B
-                1 => new CardType(25, [GREEN, YELLOW]),
-                2 => new CardType(30, [RED, GREEN]),
-                3 => new CardType(35, [PURPLE, RED]),
-                4 => new CardType(40, [ORANGE, PURPLE]),
-                5 => new CardType(70, [PURPLE, GREEN]),
-                6 => new CardType(100, [PURPLE, YELLOW]),
-                7 => new CardType(110, [ORANGE, GREEN]),
+                1 => new CardType(25, [ORANGE, YELLOW]),
+                2 => new CardType(30, [RED, ORANGE]),
+                3 => new CardType(35, [GREEN, RED]),
+                4 => new CardType(40, [PURPLE, GREEN]),
+                5 => new CardType(75, [GREEN, ORANGE]),
+                6 => new CardType(100, [GREEN, YELLOW]),
+                7 => new CardType(110, [PURPLE, ORANGE]),
             ],
             
             4 => [ // last chip color
                 1 => new CardType(61, [YELLOW]),
-                2 => new CardType(71, [GREEN]),
+                2 => new CardType(71, [ORANGE]),
                 3 => new CardType(81, [RED]),
-                4 => new CardType(91, [PURPLE]),
-                5 => new CardType(111, [ORANGE]),
+                4 => new CardType(91, [GREEN]),
+                5 => new CardType(111, [PURPLE]),
             ],
             
             5 => [ // no color
-                1 => new CardType(201, [ORANGE]),
-                2 => new CardType(202, [PURPLE]),
+                1 => new CardType(201, [PURPLE]),
+                2 => new CardType(202, [GREEN]),
+            ],
+
+            7 => [ // more A than B
+                1 => new CardType(55, [ORANGE, YELLOW]),
+                2 => new CardType(60, [RED, ORANGE]),
+                3 => new CardType(65, [GREEN, RED]),
+                4 => new CardType(70, [PURPLE, GREEN]),
+                5 => new CardType(80, [RED, YELLOW]),
+                6 => new CardType(90, [PURPLE, RED]),
+                7 => new CardType(99999, [PURPLE, YELLOW]),
+            ],
+            
+            8 => [ // exactly
+                1 => new CardType(115, [YELLOW => 5]),
+                2 => new CardType(125, [ORANGE => 4]),
+                3 => new CardType(130, [RED => 3]),
+                4 => new CardType(140, [GREEN => 2]),
+                5 => new CardType(160, [PURPLE => 1]),
+            ],
+        ];
+
+        $this->CARDS_2021 = [
+            1 => [ // one of each
+                1 => new CardType(1, [1]),
+                2 => new CardType(42, [2]),
+            ],
+            2 => [ // min colors
+                1 => new CardType(4, [YELLOW => 3, ORANGE => 3]),
+                2 => new CardType(9, [RED => 2, ORANGE => 3]),
+                3 => new CardType(16, [GREEN => 2, RED => 2]),
+                4 => new CardType(120, [PURPLE => 3]),
+                5 => new CardType(140, [GREEN => 4]),
+                6 => new CardType(160, [RED => 5]),
+                7 => new CardType(180, [ORANGE => 6]),
+                8 => new CardType(200, [YELLOW => 7]),
+            ],
+            3 => [ // color A = color B
+                1 => new CardType(25, [ORANGE, YELLOW]),
+                2 => new CardType(30, [RED, ORANGE]),
+                3 => new CardType(35, [GREEN, RED]),
+                4 => new CardType(40, [PURPLE, GREEN]),
+                5 => new CardType(70, [GREEN, ORANGE]),
+                6 => new CardType(100, [GREEN, YELLOW]),
+                7 => new CardType(110, [PURPLE, ORANGE]),
+            ],
+            
+            4 => [ // last chip color
+                1 => new CardType(61, [YELLOW]),
+                2 => new CardType(71, [ORANGE]),
+                3 => new CardType(81, [RED]),
+                4 => new CardType(91, [GREEN]),
+                5 => new CardType(111, [PURPLE]),
+            ],
+            
+            5 => [ // no color
+                1 => new CardType(201, [PURPLE]),
+                2 => new CardType(202, [GREEN]),
             ],
             
             6 => [ // points / color
                 1 => new CardType(5, [YELLOW]),
-                2 => new CardType(8, [GREEN]),
+                2 => new CardType(8, [ORANGE]),
                 3 => new CardType(11, [RED]),
-                4 => new CardType(15, [PURPLE]),
-                5 => new CardType(22, [ORANGE]),
+                4 => new CardType(15, [GREEN]),
+                5 => new CardType(22, [PURPLE]),
             ],
 
             7 => [ // more A than B
-                1 => new CardType(45, [GREEN, YELLOW]),
-                2 => new CardType(50, [RED, GREEN]),
-                3 => new CardType(55, [PURPLE, RED]),
-                4 => new CardType(60, [ORANGE, PURPLE]),
+                1 => new CardType(45, [ORANGE, YELLOW]),
+                2 => new CardType(50, [RED, ORANGE]),
+                3 => new CardType(55, [GREEN, RED]),
+                4 => new CardType(60, [PURPLE, GREEN]),
                 5 => new CardType(80, [RED, YELLOW]),
-                6 => new CardType(90, [ORANGE, RED]),
-                7 => new CardType(99999, [ORANGE, YELLOW]),
+                6 => new CardType(90, [PURPLE, RED]),
+                7 => new CardType(99999, [PURPLE, YELLOW]),
             ],
         ];
 	}
@@ -123,7 +182,7 @@ class Game extends Table {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
-        $gameinfos = self::getGameinfos();
+        $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
  
         // Create players
@@ -137,9 +196,9 @@ class Game extends Table {
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
         $sql .= implode(',', $values);
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
-        self::reloadPlayersBasicInfos();
+        $this->DbQuery( $sql );
+        $this->reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $this->reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
@@ -147,21 +206,17 @@ class Game extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        $this->initStat('table', 'roundNumber', 0);
-        foreach(['table', 'player'] as $type) {
-            foreach([                      
-                // objectives
-                "validatedMinusObjective", "validatedPlusObjective", "avgValidatedMinusObjective", "avgValidatedPlusObjective",
-                // points
-                "pointsMinusObjectives", "pointsPlusObjectives", "avgPointsMinusObjectives", "avgPointsPlusObjectives",
-                // rewards
-                "rewards", "avgRewardsPerRound",
-                // special objective
-                "specialObjectiveWin", "specialObjectiveLoss",
-            ] as $name) {
-                $this->initStat($type, $name, 0);
-            }
-        }
+        $this->tableStats->init('roundNumber', 0);
+        $this->playerStats->init([                      
+            // objectives
+            "validatedMinusObjective", "validatedPlusObjective", "avgValidatedMinusObjective", "avgValidatedPlusObjective",
+            // points
+            "pointsMinusObjectives", "pointsPlusObjectives", "avgPointsMinusObjectives", "avgPointsPlusObjectives",
+            // rewards
+            "rewards", "avgRewardsPerRound",
+            // special objective
+            "specialObjectiveWin", "specialObjectiveLoss",
+        ], 0, true);
 
         // setup the initial game situation here
         $this->setupCards();
@@ -183,12 +238,12 @@ class Game extends Table {
     protected function getAllDatas(): array {
         $result = [];
     
-        $currentPlayerId = intval(self::getCurrentPlayerId());    // !! We must only return informations visible by this player !!
+        $currentPlayerId = intval($this->getCurrentPlayerId());    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_no playerNo, player_rewards rewards FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $result['players'] = $this->getCollectionFromDb( $sql );
   
         // Gather all information about current game situation (visible by player $current_player_id).
         
@@ -211,6 +266,7 @@ class Game extends Table {
 
         $result['chips'] = $this->getChipsByLocation('table');
         $result['roundResult'] = $this->getGlobalVariable(ROUND_RESULT, true);
+        $result['edition'] = $this->tableOptions->get(100) ?? 2021;
   
         return $result;
     }
@@ -277,11 +333,19 @@ class Game extends Table {
         ] + $args);
     }
 
+    function getCardTypes(): array {
+        return match($this->tableOptions->get(100)) {
+            2026 => $this->CARDS_2026,
+            2021 => $this->CARDS_2021,
+            default => $this->CARDS_2021,
+        };
+    }
+
     function getCardFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;
         }
-        return new Card($dbCard, $this->CARDS);
+        return new Card($dbCard, $this->getCardTypes());
     }
 
     function getCardsFromDb(array $dbCards) {
@@ -307,7 +371,7 @@ class Game extends Table {
 
     function setupCards() {
         $cards = [];
-        foreach ($this->CARDS as $type => $cardsOfType) {
+        foreach ($this->getCardTypes() as $type => $cardsOfType) {
             foreach ($cardsOfType as $subTtype => $cardsType) {
                 $cards[] = [ 'type' => $type, 'type_arg' => $subTtype, 'nbr' => 1 ];
             }
@@ -379,6 +443,13 @@ class Game extends Table {
                 return $counts[$card->params[0]] > 0;
             case 7:
                 return $counts[$card->params[0]] > $counts[$card->params[1]];
+            case 8:
+                foreach ($card->params as $color => $expected) {
+                    if ($counts[$color] != $expected) {
+                        return false;
+                    }
+                }
+                return true;
         }
     }
     
@@ -529,7 +600,7 @@ class Game extends Table {
 
         /*if ($from_version <= 2305241900) {
             // ! important ! Use DBPREFIX_<table_name> for all tables
-            self::applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player CHANGE COLUMN `player_fame` `player_reputation` tinyint UNSIGNED NOT NULL DEFAULT 0");
+            $this->applyDbUpgradeToAllDB("ALTER TABLE DBPREFIX_player CHANGE COLUMN `player_fame` `player_reputation` tinyint UNSIGNED NOT NULL DEFAULT 0");
         }*/
     }    
 }

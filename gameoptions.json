@@ -1,1 +1,25 @@
-{}
+{
+    "100": {
+        "name": "Edition",
+        "values": {
+            "2026": {
+                "name": "New edition (2026)",
+                "tmdisplay": "New edition (2026)"
+            },
+            "2021": {
+                "name": "First edition (2021)",
+                "tmdisplay": "First edition (2021)"
+            }
+        },
+        "default": 2026,
+        "startcondition": {
+            "2021": [
+                {
+                "type": "maxplayers",
+                "value": 5,
+                "message": "You need to play the new edition to play with 6 players"
+                }
+            ]
+        }
+    }
+}

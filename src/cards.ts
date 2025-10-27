@@ -25,13 +25,14 @@ class CardsManager extends CardManager<Card> {
             case 5: return _("This Objective is completed if at the end of the round there is no chip of the displayed flavor on the Board Cards.");
             case 6: return _("This Objective is completed if at the end of the round there is at least one chip of the displayed flavor on the Board Cards. This Objective is worth the number of points indicated multiplied by the number of chips of the matching flavor.");
             case 7: return _("This Objective is completed if at the end of the round, there is more (+) chips than (-) chips on the Board Cards.");
-            case 8: return this.getPower(7) + '<br><br>' + formatTextIcons(_("However, if it is completed while the card is on a player’s [+] side, that player immediately <strong>wins the game</strong> (and not just the current round!). If the Objective is completed while the card is on [-] the side of a player, that player automatically loses the round, regardless of their score."));
+            case 8: return _("This Objective is completed if at the end of the round, <strong>the exact displayed combination</strong> appears one the Board cards. If there are more Chips than indicated on the Objective card, the objective is not completed.");
+            case 77: return this.getPower(7) + '<br><br>' + formatTextIcons(_("However, if it is completed while the card is on a player’s [+] side, that player immediately <strong>wins the game</strong> (and not just the current round!). If the Objective is completed while the card is on [-] the side of a player, that player automatically loses the round, regardless of their score."));
         }
     }
 
     private getTooltip(card: Card): string {
         if (card.type == 7 && card.subType == 7) {
-            return this.getPower(8);
+            return this.getPower(77);
         } else {
             return `
                 <strong>${_("Points:")}</strong> ${card.type == 6 ? _("${points} / matching chip").replace('${points}', card.points) : card.points}

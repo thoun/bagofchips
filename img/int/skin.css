@@ -30,12 +30,12 @@
     background-image: url("./cards5.png");
 }
 
-.objective .card-sides .card-side.front[data-type="6"] {
-    background-image: url("./cards6.png");
-}
-
 .objective .card-sides .card-side.front[data-type="7"] {
     background-image: url("./cards7.png");
+}
+
+.objective .card-sides .card-side.front[data-type="8"] {
+    background-image: url("./cards8.png");
 }
 
 .chip .card-sides .card-side {
@@ -44,4 +44,32 @@
 
 .bga-help_expandable-button {
     background-image: url('./card-repartition.png');
+}
+
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="1"] {
+  background-position-x: 0%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="2"] {
+  background-position-x: 12.5%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="3"] {
+  background-position-x: 25%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="4"] {
+  background-position-x: 37.5%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="5"] {
+  background-position-x: 50%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="6"] {
+  background-position-x: 62.5%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="7"] {
+  background-position-x: 75%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="8"] {
+  background-position-x: 87.5%;
+}
+.objective .card-sides .card-side.front[data-type="2"][data-sub-type="9"] {
+  background-position-x: 100%;
 }

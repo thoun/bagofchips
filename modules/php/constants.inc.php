@@ -3,10 +3,10 @@
 /*
  * Chips types / Color (english)
  */
-const ORANGE = 1;
-const PURPLE = 2;
+const PURPLE = 1;
+const GREEN = 2;
 const RED = 3;
-const GREEN = 4;
+const ORANGE = 4;
 const YELLOW = 5;
 
 /*
