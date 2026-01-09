@@ -16,10 +16,10 @@ $gameinfos = [
 'game_name' => "Bag of Chips",
 
 // Game publisher (use empty string if there is no publisher)
-'publisher' => 'Mixlore',
+'publisher' => 'Zigomatic',
 
 // Url of game publisher website
-'publisher_website' => 'http://mixlore.com/',
+'publisher_website' => 'https://www.zygomatic-games.com/',
 
 // Board Game Geek ID of the publisher
 'publisher_bgg_id' => 41833,
