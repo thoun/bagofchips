@@ -220,6 +220,11 @@ declare class UserPreferences {
    * Method to programmatically change a game-specific user preference.
    */
   set(prefId: number, value: number): void;
+
+  /**
+   * Hide or show a game-specific user preference.
+   */
+  toggleVisibility(prefId: number, visible?: boolean): void;
 }
 
 declare class Players {
@@ -403,6 +408,14 @@ declare class PlayerPanels {
    * @returns the div element for game specific content on player panels
    */
   getElement(playerId: number): HTMLDivElement;
+
+  /**
+   * Return the score counter of a player.
+   *
+   * @param {number} playerId the player id
+   * @returns the score counter
+   */
+  getScoreCounter(playerId: number): Counter;
 
   /**
    * Add a player panel for an automata.

@@ -23,3 +23,13 @@
         } 
     }
 }
+
+html[data-theme="dark"] {
+    #popin_bgaHelpDialog {
+        background-color: var(--game-palette-bga-gray-244);
+    }
+
+    #popin_bgaHelpDialog_title {
+        color: unset;
+    }
+}

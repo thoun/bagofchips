@@ -2357,14 +2357,7 @@ var BagOfChips = /** @class */ (function () {
             CODES.filter(Boolean).forEach(function (code) { return document.getElementById("set-skin-".concat(code)).addEventListener('click', function () { return _this.changeSkin(code); }); });
         }
         else {
-            try {
-                document.getElementById('preference_control_202').closest(".preference_choice").style.display = 'none';
-            }
-            catch (e) { }
-            try {
-                document.getElementById('preference_fontrol_202').closest(".preference_choice").style.display = 'none';
-            }
-            catch (e) { }
+            this.bga.userPreferences.toggleVisibility(202, false);
         }
         log("Ending game setup");
     };

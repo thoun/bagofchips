@@ -764,15 +764,10 @@ body > .card {
   align-content: center;
 }
 
-.player-board {
-  background-color: white;
+html[data-theme=light] .player-board {
+  --game-bga-player-panel-background: white;
 }
-.player-board.spectator-mode {
-  color: black;
-}
-.player-board.spectator-mode * {
-  background: white !important;
-}
+
 .player-board .icon {
   margin-right: 5px;
 }
@@ -874,6 +869,13 @@ body > .card {
 #help-popin .help-section > div:not(:first-child) {
   margin-left: 5px;
   flex: 1;
+}
+
+html[data-theme=dark] #popin_bgaHelpDialog {
+  background-color: var(--game-palette-bga-gray-244);
+}
+html[data-theme=dark] #popin_bgaHelpDialog_title {
+  color: unset;
 }
 
 /* make space between buttons on touch devices */

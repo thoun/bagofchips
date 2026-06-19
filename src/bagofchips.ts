@@ -164,12 +164,7 @@ class BagOfChips implements BagOfChipsGame {
             document.getElementById('skin').insertAdjacentHTML('beforeend', html);
             CODES.filter(Boolean).forEach(code => document.getElementById(`set-skin-${code}`).addEventListener('click', () => this.changeSkin(code)));
         } else {
-            try {
-                (document.getElementById('preference_control_202').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
-            } catch (e) {}
-            try {
-                (document.getElementById('preference_fontrol_202').closest(".preference_choice") as HTMLDivElement).style.display = 'none';
-            } catch (e) {}
+            this.bga.userPreferences.toggleVisibility(202, false);
         }
 
         log( "Ending game setup" );
