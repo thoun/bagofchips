@@ -338,7 +338,7 @@ class BagOfChips implements BagOfChipsGame {
             html += `    </div>
             </div>`;
 
-            dojo.place(html, `player_board_${player.id}`);
+           this.bga.playerPanels.getElement(playerId).insertAdjacentHTML('beforeend', html);
         });
 
         this.setTooltipToClass('reward-counter', _('Rewards'));

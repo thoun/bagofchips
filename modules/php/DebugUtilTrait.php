@@ -24,32 +24,32 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
-    function debugSetScore($score) {
-		$this->DbQuery("UPDATE player SET `player_score` = $score");
+    function debug_SetScore(int $score) {
+        $this->bga->playerScore->setAll($score);
     }
     
-    function debugSetPlayerScore($playerId, $score) {
-		$this->DbQuery("UPDATE player SET `player_score` = $score WHERE player_id = $playerId");
+    function debug_SetPlayerScore(int $playerId, int $score) {
+        $this->bga->playerScore->set($playerId, $score);
     }
 
-    function debugSetReputation($score) {
+    function debug_SetReputation(int $score) {
 		$this->DbQuery("UPDATE player SET `player_reputation` = $score");
     }
     
-    function debugSetPlayerReputation($playerId, $score) {
+    function debug_SetPlayerReputation(int $playerId, int $score) {
 		$this->DbQuery("UPDATE player SET `player_reputation` = $score WHERE player_id = $playerId");
     }
 
-    function debugLastTurn() {
+    function debug_LastTurn() {
         $this->setGameStateValue(LAST_TURN, 1);
     }
     
-    function debugEmpty() {
+    function debug_Empty() {
 		$this->cards->moveAllCardsInLocation('deck', 'void');
         $this->cards->moveAllCardsInLocation('discard', 'void');
     }
 
-    function debugAddChips($playerId, $letter, $number) {
+    function debug_AddChips(int $playerId, string $letter, int $number) {
         for ($i = 0; $i < $number; $i++) {
             $chipIndex = intval($this->chips->countCardInLocation('played'.$playerId));
             $this->chips->pickCardForLocation('deck'.$letter, 'played'.$playerId, $chipIndex);

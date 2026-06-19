@@ -2495,6 +2495,7 @@ var BagOfChips = /** @class */ (function () {
         return orderedPlayers;
     };
     BagOfChips.prototype.createPlayerPanels = function (gamedatas) {
+        var _this = this;
         var players = Object.values(gamedatas.players);
         var maxRewards = players.length <= 2 ? 3 : 4;
         players.forEach(function (player) {
@@ -2504,7 +2505,7 @@ var BagOfChips = /** @class */ (function () {
                 html += "<div class=\"reward icon ".concat(i >= player.rewards ? 'grayed' : '', "\"></div>");
             }
             html += "    </div>\n            </div>";
-            dojo.place(html, "player_board_".concat(player.id));
+            _this.bga.playerPanels.getElement(playerId).insertAdjacentHTML('beforeend', html);
         });
         this.setTooltipToClass('reward-counter', _('Rewards'));
     };

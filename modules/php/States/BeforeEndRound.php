@@ -29,7 +29,7 @@ class BeforeEndRound extends GameState
         $instantWinner = $scoreRound['instantWinner'];
 
         if ($instantWinner !== null) {
-            $this->game->DbQuery("UPDATE player SET player_score = 1 WHERE player_id = $instantWinner");
+            $this->bga->playerScore->set($instantWinner, 1, null);
             return EndScore::class;
         }
 
